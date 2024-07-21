@@ -4,18 +4,23 @@
 #include "cmosAlarm.h"
 
 int __memset(char * dst, int value, int len) {
+#ifdef _DEBUG
+	return 0;
+#else
 	__asm {
-		mov ecx,len
+		mov ecx, len
 
-		mov edi,dst
+		mov edi, dst
 
-		mov al,byte ptr value
+		mov al, byte ptr value
 
 		cld
 
 		rep stosb
-		mov eax,len
+		mov eax, len
 	}
+#endif
+
 }
 
 int __memset4(char * dst, int value, int len) {

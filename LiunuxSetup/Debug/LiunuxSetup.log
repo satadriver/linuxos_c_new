@@ -1,1 +1,9 @@
-﻿C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\MSBuild\Microsoft\VC\v160\Microsoft.CppBuild.targets(439,5): error MSB8020: 无法找到 Visual Studio 2015 - Windows XP 的生成工具(平台工具集 =“v140_xp”)。若要使用 v140_xp 生成工具进行生成，请安装 Visual Studio 2015 - Windows XP 生成工具。或者，可以升级到当前 Visual Studio 工具，方式是通过选择“项目”菜单或右键单击该解决方案，然后选择“重定解决方案目标”。
+﻿d:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Microsoft\VC\v150\Platforms\Win32\PlatformToolsets\v141_xp\Toolset.targets(39,5): warning MSB8051: 面向 Windows XP 的支持已被弃用，将来的 Visual Studio 版本不再提供该支持。请访问 https://go.microsoft.com/fwlink/?linkid=2023588，获取详细信息。
+  fileOper.cpp
+  main.cpp
+  osWriter.cpp
+E:\virtualbox\vmshare\liunux\liunuxos_c\LiunuxSetup\osWriter.cpp(56): warning C4244: “=”: 从“unsigned __int64”转换到“unsigned int”，可能丢失数据
+E:\virtualbox\vmshare\liunux\liunuxos_c\LiunuxSetup\osWriter.cpp(117): warning C4018: “>=”: 有符号/无符号不匹配
+  sectorRW.cpp
+  正在生成代码...
+  LiunuxSetup.vcxproj -> E:\virtualbox\vmshare\liunux\liunuxos_c\Debug\LiunuxSetup.exe

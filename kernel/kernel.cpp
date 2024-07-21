@@ -229,6 +229,22 @@ void __kKernelMain(DWORD retaddr,int pid,char * filename,char * funcname,DWORD p
 //注意二位数组在内存中的排列和结构
 void mytest() {
 
+
+	char tmp[0x4000] = { 0 };
+
+	TssDescriptor d;
+
+	TssDescriptor* ld = &d;
+
+	IntTrapGateDescriptor i;
+
+	IntTrapGateDescriptor* li = &i;
+
+	initKernelTss((TSS*)tmp, TASKS_STACK0_BASE + TASK_STACK0_SIZE - STACK_TOP_DUMMY,KERNEL_TASK_STACK_TOP, 0, PDE_ENTRY_VALUE, 0);
+	makeTssDescriptor((DWORD)0x12345678, 3,  0xabcd, (TssDescriptor*)&d);
+
+	makeIntGateDescriptor((DWORD)0x12345678, KERNEL_MODE_CODE, 3, &i);
+
 	return;
 }
 

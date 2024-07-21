@@ -10,8 +10,8 @@
 #include "page.h"
 #include "def.h"
 #include "malloc.h"
-
-
+#include "core.h"
+#include "vectorRoutine.h"
 
 
 
@@ -95,7 +95,36 @@ TASK_LIST_ENTRY* removeTaskList(int tid) {
 
 
 
-void initTss() {
+void initTaskSwitchTss() {
+	
+
+	DescriptTableReg idtbase;
+	__asm {
+		sidt idtbase
+	}
+
+	IntTrapGateDescriptor* descriptor = (IntTrapGateDescriptor*)idtbase.addr;
+
+	initKernelTss((TSS*)CURRENT_TASK_TSS_BASE, TASKS_STACK0_BASE + TASK_STACK0_SIZE - STACK_TOP_DUMMY,
+		KERNEL_TASK_STACK_TOP, 0, PDE_ENTRY_VALUE, 0);
+	makeTssDescriptor(CURRENT_TASK_TSS_BASE, 3, sizeof(TSS) - 1, (TssDescriptor*)(GDT_BASE + kTssTaskSelector));
+#ifdef TASK_SINGLE_TSS
+	makeIntGateDescriptor((DWORD)TimerInterrupt, KERNEL_MODE_CODE, 3, descriptor + INTR_8259_MASTER + 0);
+#else
+
+
+	initKernelTss((TSS*)TIMER_TSS_BASE, TSSTIMER_STACK0_TOP, TSSTIMER_STACK_TOP, (DWORD)TimerInterrupt, PDE_ENTRY_VALUE, 0);
+	makeTssDescriptor((DWORD)TIMER_TSS_BASE, 3,  sizeof(TSS) - 1, (TssDescriptor*)(GDT_BASE + kTssTimerSelector));
+	makeTaskGateDescriptor((DWORD)kTssTimerSelector, 3, (TaskGateDescriptor*)(descriptor + INTR_8259_MASTER + 0));
+#endif
+
+	__asm
+	{
+		mov eax, kTssTaskSelector
+		ltr ax
+		mov ax, ldtSelector
+		lldt ax
+	}
 
 }
 
@@ -107,6 +136,7 @@ int __initTask() {
 		__memset((char*)&tssbase[i], 0, sizeof(PROCESS_INFO));
 	}
 
+	//initTaskSwitchTss();
 	LPPROCESS_INFO process0 = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
 	__strcpy(process0->filename, KERNEL_DLL_MODULE_NAME);
 	__strcpy(process0->funcname, "__kernelEntry");
@@ -115,13 +145,6 @@ int __initTask() {
 	process0->moduleaddr = (DWORD)KERNEL_DLL_BASE;
 	process0->level = 0;
 	process0->counter = 0;
-	process0->tss.ss0 = KERNEL_MODE_STACK;
-	process0->tss.esp0 = TASKS_STACK0_BASE + TASK_STACK0_SIZE - STACK_TOP_DUMMY;
-	process0->tss.iomapOffset = 136;
-	process0->tss.iomapEnd = 0xff; 
-	__memset((char*)process0->tss.intMap, 0, sizeof(process0->tss.intMap));
-	__memset((char*)process0->tss.iomap, 0, sizeof(process0->tss.iomap));
-	process0->tss.cr3 = PDE_ENTRY_VALUE;
 	process0->status = TASK_RUN;
 	process0->vaddr = KERNEL_DLL_BASE;
 	process0->vasize = 0;

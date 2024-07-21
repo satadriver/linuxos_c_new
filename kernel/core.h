@@ -141,7 +141,7 @@ void makeDataSegDescriptor(DWORD base, int dpl, int bit, int direction, int w, S
 
 void makeCodeSegDescriptor(DWORD base, int dpl, int bit, int conforming, int r, SegDescriptor* descriptor);
 
-void makeTssDescriptor(DWORD base, int dpl, int busy, int size, TssDescriptor* descriptor);
+void makeTssDescriptor(DWORD base, int dpl,  int size, TssDescriptor* descriptor);
 
 void makeLDTDescriptor(DWORD base, int dpl, int size, TssDescriptor* descriptor);
 
