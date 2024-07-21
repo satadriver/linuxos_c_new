@@ -2,20 +2,21 @@
 
 #pragma once
 
-#define DWORD unsigned long
-#define USHORT unsigned short
-#define LPSTR char *
+#define NULL		0
 #define TRUE		1
 #define FALSE		0
+
+#define UCHAR unsigned char
+#define CHAR char
+#define LPSTR char *
+#define WCHAR wchar_t
+#define USHORT unsigned short
+#define DWORD unsigned long
 #define WORD	unsigned short
 #define HINSTANCE unsigned long
 #define VOID void
 #define LPVOID void *
-#define UCHAR unsigned char
-#define CHAR char
 #define HMODULE HINSTANCE
-#define WCHAR wchar_t
-#define NULL 0
 #define UINT16 unsigned short
 #define LONG long
 #define BYTE unsigned char
@@ -33,7 +34,7 @@
 #define PDWORD32 unsigned int*
 #define ULONG_PTR unsigned long* 
 
-#define __sizeof(T) ( (size_t)(&T + 1) - (size_t)(&T) )
+
 
 #define LIUNUX_DEBUG_LOG_ON
 
@@ -311,6 +312,8 @@ typedef struct {
 
 #pragma pack(pop)
 
+
+#define __sizeof(T) ( (size_t)(&T + 1) - (size_t)(&T) )
 
 #define OFFSETOF(type,n) (size_t)&(((type*)0)->n)
 
