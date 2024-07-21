@@ -73,13 +73,11 @@ int __kExplorer(unsigned int retaddr, int tid, char * filename, char * funcname,
 	getCpuInfo(cpuinfo);
 	__printf(szout, "CPU MODEL:%s,details:%s,video height:%d,width:%d,pixel:%d\n", cputype, cpuinfo, gVideoHeight, gVideoWidth, gBytesPerPixel);
 
-
 	showPciDevs();
 
-	//__kdBreakPoint();
+	__kdBreakPoint();
 
-	
-	//__kAddCmosAlarm(30, (DWORD)__doAlarmTask, 0);
+	__kAddCmosAlarm(30, (DWORD)__doAlarmTask, 0);
 
 	//initEfer();
 
@@ -89,7 +87,7 @@ int __kExplorer(unsigned int retaddr, int tid, char * filename, char * funcname,
 
 	//callgateEntry(0, 0);
 
-	//repeatDrawCCFontString();
+	repeatDrawCCFontString();
 
 	//runElfFunction("c:\\liunux\\test.so", "__testfunction");
 

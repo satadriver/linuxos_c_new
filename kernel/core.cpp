@@ -251,6 +251,12 @@ void initGdt() {
 		KERNEL_TASK_STACK_TOP, 0, PDE_ENTRY_VALUE, 0);
 	makeTssDescriptor(CURRENT_TASK_TSS_BASE, 3, sizeof(TSS) - 1, (TssDescriptor*)(GDT_BASE + kTssTaskSelector));
 
+	initKernelTss((TSS*)INVALID_TSS_BASE, TSSEXP_STACK0_TOP, TSSEXP_STACK_TOP, (DWORD)invalidTssException, PDE_ENTRY_VALUE, 0);
+	makeTssDescriptor((DWORD)INVALID_TSS_BASE, 3, sizeof(TSS) - 1, (TssDescriptor*)(GDT_BASE + kTssExceptSelector));
+
+	initKernelTss((TSS*)TIMER_TSS_BASE, TSSTIMER_STACK0_TOP, TSSTIMER_STACK_TOP, (DWORD)TimerInterrupt, PDE_ENTRY_VALUE, 0);
+	makeTssDescriptor((DWORD)TIMER_TSS_BASE, 3, sizeof(TSS) - 1, (TssDescriptor*)(GDT_BASE + kTssTimerSelector));
+
 	gdtbase.addr = GDT_BASE;
 	__asm {
 		//do not use lgdt lpgdt,why?
@@ -296,8 +302,7 @@ void initIDT() {
 
 	makeTrapGateDescriptor((DWORD)coprocCrossBorderException, KERNEL_MODE_CODE, 3, (descriptor + 9));
 
-	initKernelTss((TSS*)INVALID_TSS_BASE, TSSEXP_STACK0_TOP, TSSEXP_STACK_TOP, (DWORD)invalidTssException, PDE_ENTRY_VALUE, 0);
-	makeTssDescriptor((DWORD)INVALID_TSS_BASE, 3, sizeof(TSS) - 1, (TssDescriptor*)(GDT_BASE + kTssExceptSelector));
+
 	makeTaskGateDescriptor((DWORD)kTssExceptSelector, 3, (TaskGateDescriptor*)(descriptor + 10));
 
 	makeTrapGateDescriptor((DWORD)segmentInexistException, KERNEL_MODE_CODE, 3, descriptor + 11);
@@ -314,8 +319,6 @@ void initIDT() {
 #ifdef TASK_SINGLE_TSS
 	makeIntGateDescriptor((DWORD)TimerInterrupt, KERNEL_MODE_CODE, 3, descriptor + INTR_8259_MASTER + 0);
 #else
-	initKernelTss((TSS*)TIMER_TSS_BASE, TSSTIMER_STACK0_TOP, TSSTIMER_STACK_TOP, (DWORD)TimerInterrupt, PDE_ENTRY_VALUE, 0);
-	makeTssDescriptor((DWORD)TIMER_TSS_BASE, 3,  sizeof(TSS) - 1, (TssDescriptor*)(GDT_BASE + kTssTimerSelector));
 	makeTaskGateDescriptor((DWORD)kTssTimerSelector, 3, (TaskGateDescriptor*)(descriptor + INTR_8259_MASTER + 0));
 #endif
 
