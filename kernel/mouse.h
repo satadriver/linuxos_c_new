@@ -41,6 +41,7 @@ typedef struct {
 
 #pragma pack()
 
+extern "C" __declspec(dllexport) DWORD gMouseID;
 
 void mousetest();
 

@@ -24,6 +24,10 @@
 #include "machine.h"
 #include "pci.h"
 
+
+__declspec(dllimport) DWORD gMouseID;
+__declspec(dllimport) WORD gKeyboardID;
+
 int __cmd(char* cmd, WINDOWCLASS* window, char* pidname, int pid) {
 
 	//cmd size is always less than 256 bytes
@@ -104,6 +108,18 @@ int __cmd(char* cmd, WINDOWCLASS* window, char* pidname, int pid) {
 			return playWavFile(filename);
 		}
 	}
+	else if(__strcmp(params[0], "keyboardID") == 0)
+	{
+		*szout = 0;
+		__sprintf(szout, "keyboard id:%x", gKeyboardID);
+		ret = __outputConsole((unsigned char*)&szout, CONSOLE_FONT_COLOR, window);
+	}
+	else if (__strcmp(params[0], "keyboardID") == 0) {
+		*szout = 0;
+		__sprintf(szout, "mouse id:%x", gMouseID);
+		ret = __outputConsole((unsigned char*)&szout, CONSOLE_FONT_COLOR, window);
+	}
+
 	else if (__strcmp(params[0], "reg") == 0 && paramcnt >= 2)
 	{
 		if (__strcmp(params[1], "idt") == 0)

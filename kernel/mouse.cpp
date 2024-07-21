@@ -5,13 +5,16 @@
 #include "video.h"
 #include "Utils.h"
 #include "servicesProc.h"
+#include "keyboard.h"
+#include "hardware.h"
 
-DWORD gMouseTest = FALSE;
+ DWORD gMouseTest = 0;
 
-DWORD gMousePackSize = 0;
+ extern "C" __declspec(dllexport) DWORD gMouseID = 0;
 
-DWORD gMouseColor = MOUSE_SHOW_COLOR;
-#define MOUSE_FACTOR_SIZE 40
+DWORD gMouseColor =	MOUSE_SHOW_COLOR;
+
+#define MOUSE_FACTOR_SIZE	40
 
 
 void mousetest() {
@@ -83,7 +86,7 @@ void __kMouseProc() {
 		pos++;
 
 		counter++;
-		if (gMousePackSize )
+		if (gMouseID)
 		{
 			if (counter >= 4)
 			{
@@ -98,7 +101,7 @@ void __kMouseProc() {
 		}
 	}
 
-	if (gMousePackSize == 3 || gMousePackSize == 4)
+	if (gMouseID == 3 || gMouseID == 4)
 	{
 		if (counter != 4)
 		{
@@ -277,29 +280,7 @@ void __kRefreshMouseBackup() {
 }
 
 
-void waitPs2Out() {
-	__asm {
-		__waitPs2Out:
-		in al, 64h
-		test al, 1
-		jz __waitPs2Out
-		ret
-	}
-}
 
-
-
-
-
-void waitPs2In() {
-	__asm {
-		__waitPs2In:
-		in al, 64h
-		test al, 2
-		jnz __waitPs2In
-		ret
-	}
-}
 
 void __initMouse(int x,int y) {
 
@@ -320,12 +301,11 @@ void __initMouse(int x,int y) {
 
 		in al,60h
 		movzx eax,al
-		mov gMousePackSize,eax
+		mov gMouseID,eax
 	}
 
 	char szout[1024];
-	__printf(szout, "mouse packet size:%d\n", gMousePackSize);
-
+	__printf(szout, "keyboard id:%x, mouse id:%d\n", gKeyboardID,gMouseID);
 
 	LPMOUSEDATA data = (LPMOUSEDATA)MOUSE_BUFFER;
 	data->mouseX = x/2;
@@ -345,6 +325,7 @@ void __initMouse(int x,int y) {
 	__kDrawMouse();
 }
 
+
 void insertMouse(MOUSEINFO * info) {
 	LPMOUSEDATA data = (LPMOUSEDATA)MOUSE_BUFFER;
 	data->mouseBuf[data->mouseBufHdr].status = info->status;
@@ -363,7 +344,6 @@ void insertMouse(MOUSEINFO * info) {
 __declspec(naked) void mouseProc() {
 
 	__asm {
-
 		pushad
 		push ds
 		push es
@@ -381,11 +361,9 @@ __declspec(naked) void mouseProc() {
 		mov es, ax
 		MOV FS, ax
 		MOV GS, AX
-
 	}
 	{
 		__kMouseProc();
-
 		outportb(0x20, 0x20);
 		outportb(0xa0, 0xa0);
 	}
@@ -404,5 +382,4 @@ __declspec(naked) void mouseProc() {
 
 		iretd
 	}
-
 }

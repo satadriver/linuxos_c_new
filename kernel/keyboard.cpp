@@ -5,10 +5,11 @@
 #include "screenUtils.h"
 #include "process.h"
 #include "task.h"
+#include "device.h"
 
 DWORD gKbdTest = FALSE;
 
-
+extern "C" __declspec(dllexport) WORD gKeyboardID = 0;
 
 //ctrl alt shift 等已经被过滤，肯定不会出现在当前的字母表中
 unsigned char ScanCodesBuf[96] =
@@ -462,8 +463,6 @@ void __kKeyboardProc() {
 
 // 	char szout[1024];
 // 	__printf(szout, "input key:%x,status:%x\n", c, data->kbdStatus);
-// 	__drawGraphChars((unsigned char*)szout, 0);
-
 
 	data->kbdBuf[data->kbdBufHdr] = c;
 	data->kbdStatusBuf[data->kbdBufHdr] = data->kbdStatus;
@@ -480,23 +479,7 @@ void __kKeyboardProc() {
 	}
 }
 
-void __waitPs2Out() {
-	unsigned char status = 0;
-	do
-	{
-		status = inportb(0x64);
-	} while ( (status & 1) == 0);
-}
 
-
-
-void __waitPs2In() {
-	unsigned char status = 0;
-	do
-	{
-		status = inportb(0x64);
-	} while (status & 2);
-}
 
 void __kKbdLed(unsigned char cmd) {
 	__asm {
@@ -564,7 +547,6 @@ void kbdtest() {
 
 __declspec(naked) void keyboardProc() {
 	__asm {
-
 		pushad
 		push ds
 		push es
@@ -585,13 +567,10 @@ __declspec(naked) void keyboardProc() {
 	}
 
 	{
-
 		__kKeyboardProc();
-
 		outportb(0x20, 0x20);
 		//outportb(0xa0, 0xa0);
 	}
-
 
 	__asm {
 		mov esp, ebp

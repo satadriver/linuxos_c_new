@@ -3,6 +3,7 @@
 #include "device.h"
 #include "hardware.h"
 #include "Utils.h"
+#include "keyboard.h"
 
 #define PS2_COMMAND_PORT	0x64
 #define PS2_DATA_PORT		0x60
@@ -12,11 +13,44 @@
 #define CMOS_NUM_PORT		0X70
 #define CMOS_DATA_PORT		0X71
 
-WORD gKeyboardID = 0;
-
 #define SYSTEM_TIMER0_FACTOR	11932
 
 
+void waitPs2Out() {
+	__asm {
+	__waitPs2Out:
+		in al, 64h
+			test al, 1
+			jz __waitPs2Out
+			ret
+	}
+}
+
+void waitPs2In() {
+	__asm {
+	__waitPs2In:
+		in al, 64h
+			test al, 2
+			jnz __waitPs2In
+			ret
+	}
+}
+
+void __waitPs2Out() {
+	unsigned char status = 0;
+	do
+	{
+		status = inportb(0x64);
+	} while ((status & 1) == 0);
+}
+
+void __waitPs2In() {
+	unsigned char status = 0;
+	do
+	{
+		status = inportb(0x64);
+	} while (status & 2);
+}
 
 void __wait8042Full() {
 	unsigned char status = 0;
@@ -26,8 +60,6 @@ void __wait8042Full() {
 	} while ((status & 1) == 0);
 }
 
-
-
 void __wait8042Empty() {
 	unsigned char status = 0;
 	do
@@ -35,6 +67,7 @@ void __wait8042Empty() {
 		status = inportb(0x64);
 	} while (status & 2);
 }
+
 
 void initDevices() {
 
@@ -132,17 +165,16 @@ void init8042() {
 void getKeyboardID() {
 
 	__wait8042Empty();
-
 	outportb(PS2_DATA_PORT, 0Xf2);
 
 	__wait8042Full();
 	unsigned char ack = inportw(PS2_DATA_PORT);
 
-	__wait8042Full();
-	unsigned char low = inportw(PS2_DATA_PORT);
+	__wait8042Empty();
+	outportb(PS2_DATA_PORT, 0x20);
 
 	__wait8042Full();
-	ack = inportw(PS2_DATA_PORT);
+	unsigned char low = inportw(PS2_DATA_PORT);
 
 	__wait8042Full();
 	unsigned char high = inportw(PS2_DATA_PORT);
@@ -179,8 +211,8 @@ void init8259() {
 	outportb(0x21, 0x1);
 	outportb(0xa1, 0x1);
 
-	outportb(0x20, 0x40);
-	outportb(0xa0, 0xc0);
+	outportb(0x20, 0x00);
+	outportb(0xa0, 0x00);
 
 	//0: level trigger,1: pulse trigger
 	outportb(0x4d0, 0);
