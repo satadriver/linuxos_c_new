@@ -41,7 +41,7 @@
 #define MAIN_DLL_MODULE_NAME	"main.dll"
 #define KERNEL_DLL_MODULE_NAME	"kernel.dll"
 
-//#define TASK_SINGLE_TSS
+#define TASK_SINGLE_TSS
 
 #define DISABLE_PAGE_REDIRECTION
 
@@ -78,6 +78,17 @@
 #define USER_MODE_STACK				32
 #define KERNEL_MODE_DATA			KERNEL_MODE_STACK
 #define USER_MODE_DATA				USER_MODE_STACK
+#define reCode32TempSeg				0x28
+#define callGateSelector			0X30
+#define kTssTaskSelector			0x38
+#define kTssExceptSelector			0x40
+#define kTssTimerSelector			0x48
+#define kTssV86Selector				0x50
+#define ldtSelector					0x58
+#define reCode16Seg					0x60
+#define rwData16Seg 				0x68
+#define eoCode32Seg					0x70
+#define roData32Seg					0x78
 
 //memory map above 1M
 #define RM_EMS_BASE		 			0X100000

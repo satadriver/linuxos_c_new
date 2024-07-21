@@ -142,7 +142,7 @@ extern "C" __declspec(dllexport) void callgateEntry(DWORD * params,DWORD paramLe
 		_emit 0
 		_emit 0
 		_emit 0
-		_emit 0x80
+		_emit callGateSelector
 		_emit 0
 
 		add esp,8
