@@ -42,7 +42,6 @@ unsigned char *gCursorBackup =(unsigned char*) CURSOR_GRAPH_BASE;
 
 int g_timeslip = 0;
 
-int SYSTEM_TIMER0_FACTOR = 0;
 
 #define SREENPROTECT_COLOR 0
 //0XBBFFFF 0X87CEEB
@@ -256,15 +255,15 @@ void setCursor(int enable,DWORD *x, DWORD *y,unsigned int color) {
 		gCursorBackup =(unsigned char*) CURSOR_GRAPH_BASE;
 	}
 
-	if (g_timeslip == 0 || SYSTEM_TIMER0_FACTOR == 0)
+	if (g_timeslip == 0 )
 	{
-		SYSTEM_TIMER0_FACTOR = *(DWORD*)TIMER0_FREQUENCY_ADDR;	//11931 23864 = 50hz,time slip is 1000/50 = 20ms
-		if (SYSTEM_TIMER0_FACTOR <= 0 || SYSTEM_TIMER0_FACTOR >= 0x10000)
+		int timer_tick = *(DWORD*)TIMER0_FREQUENCY_ADDR;	//11931 23864 = 50hz,time slip is 1000/50 = 20ms
+		if (timer_tick <= 0 || timer_tick >= 0x10000)
 		{
-			SYSTEM_TIMER0_FACTOR = TIMER0_FREQUENCY/100;
+			timer_tick = OSCILLATE_FREQUENCY /100;
 		}
 
-		int hz = (TIMER0_FREQUENCY / SYSTEM_TIMER0_FACTOR);
+		int hz = (OSCILLATE_FREQUENCY / timer_tick);
 		if (hz <= 0 || hz>= 1000)
 		{
 			hz = 100;

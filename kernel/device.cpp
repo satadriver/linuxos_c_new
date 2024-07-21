@@ -13,7 +13,7 @@
 #define CMOS_NUM_PORT		0X70
 #define CMOS_DATA_PORT		0X71
 
-#define SYSTEM_TIMER0_FACTOR	11932
+
 
 
 void waitPs2Out() {

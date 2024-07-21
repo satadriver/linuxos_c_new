@@ -49,7 +49,6 @@ DWORD __declspec(naked) servicesProc() {
 
 DWORD __declspec(dllexport) __kServicesProc(DWORD no, DWORD * params) {
 
-
 		switch (no)
 		{
 		case KBD_OUTPUT:
@@ -75,41 +74,28 @@ DWORD __declspec(dllexport) __kServicesProc(DWORD no, DWORD * params) {
 		}
 		case SLEEP:
 		{
-			DWORD times = params[0] / 10;
-			DWORD mod = params[0] % 10;
-			if (mod == 0 && times == 0)
-			{
-				times++;
-			}
-			else if (mod == 0 && times != 0)
-			{
-
-			}
-			else if (mod != 0 && times == 0)
-			{
-				times++;
-			}
-			else if (mod != 0 && times != 0)
+			int interval = 1000/(OSCILLATE_FREQUENCY / SYSTEM_TIMER0_FACTOR);
+			DWORD times = params[0] / interval;
+			DWORD mod = params[0] % interval;
+			if (mod != 0 )
 			{
 				times++;
 			}
 
-			if (times > 0)
+			LPPROCESS_INFO tss = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
+			tss->sleep += times;
+
+			for (int i = 0; i < times; i++)
 			{
-				LPPROCESS_INFO tss = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
-				tss->sleep = times - 1;
+			 	__asm {
+			 		hlt
+			 	}
 
+				if (tss->sleep)
+				{
+					tss->sleep --;
+				}
 			}
-			__asm {
-				hlt;
-			}
-
-			// 		for (int i = 0; i < times; i++)
-			// 		{
-			// 			__asm {
-			// 				hlt
-			// 			}
-			// 		}
 
 			break;
 		}
@@ -154,8 +140,6 @@ DWORD __declspec(dllexport) __kServicesProc(DWORD no, DWORD * params) {
 			break;
 		}
 		}
-
-
 }
 
 
