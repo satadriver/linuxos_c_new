@@ -18,6 +18,24 @@ WORD gKeyboardID = 0;
 
 
 
+void __wait8042Full() {
+	unsigned char status = 0;
+	do
+	{
+		status = inportb(0x64);
+	} while ((status & 1) == 0);
+}
+
+
+
+void __wait8042Empty() {
+	unsigned char status = 0;
+	do
+	{
+		status = inportb(0x64);
+	} while (status & 2);
+}
+
 void initDevices() {
 
 	init8259();

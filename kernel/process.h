@@ -16,48 +16,7 @@ typedef struct
 }JUMP32, *LPJUMP32;
 
 
-typedef struct __TSS{
-	DWORD link; // 保存前一个 TSS 段选择子，使用 call 指令切换寄存器的时候由CPU填写。
 
-	DWORD esp0; //4
-	DWORD ss0;  //8
-	DWORD esp1; //12
-	DWORD ss1;  //16
-	DWORD esp2; //20
-	DWORD ss2;  //24
-				
-	DWORD cr3;	//28
-
-				// 下面这些都是用来做切换寄存器值用的，切换寄存器的时候由CPU自动填写。
-	DWORD eip;	//32
-	DWORD eflags;
-	DWORD eax;	//40
-	DWORD ecx;
-	DWORD edx;	//48
-	DWORD ebx;
-	DWORD esp;	//56
-	DWORD ebp;
-	DWORD esi;	//64
-	DWORD edi;
-	DWORD es;	//72
-	DWORD cs;
-	DWORD ss;	//80
-	DWORD ds;
-	DWORD fs;	//88
-	DWORD gs;
-
-	//static
-	DWORD ldt;	//96
-	unsigned short	trap;				//100
-	unsigned short	iomapOffset;		//102
-	unsigned char	intMap[32];
-	unsigned char	iomap[8192];
-	unsigned char	iomapEnd;			//104 + 32 + 8192
-
-	unsigned char	fpu;
-	unsigned char	prior;
-	unsigned char	unused;
-} TSS,*LPTSS;
 
 #pragma pack(pop)
 
@@ -98,6 +57,8 @@ typedef struct
 	DWORD status;
 
 	LPWINDOWCLASS window;
+
+	char fpu;
 
 	char filename[256];
 

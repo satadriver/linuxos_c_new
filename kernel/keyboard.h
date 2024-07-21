@@ -152,6 +152,8 @@ typedef struct {
 
 void kbdtest();
 
+extern "C" void keyboardProc();
+
 void __kKbdLed(unsigned char cmd);
 
 int numsLockProc(unsigned int c);

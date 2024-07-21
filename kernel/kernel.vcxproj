@@ -172,8 +172,10 @@
     <ClCompile Include="cmosAlarm.cpp" />
     <ClCompile Include="cmosTimer.cpp" />
     <ClCompile Include="coprocessor.cpp" />
+    <ClCompile Include="core.cpp" />
     <ClCompile Include="debugger.cpp" />
     <ClCompile Include="descriptor.cpp" />
+    <ClCompile Include="device.cpp" />
     <ClCompile Include="processDOS.cpp" />
     <ClCompile Include="elf.cpp" />
     <ClCompile Include="exception.cpp" />
@@ -216,6 +218,7 @@
     <ClCompile Include="process.cpp" />
     <ClCompile Include="utils.cpp" />
     <ClCompile Include="v86.cpp" />
+    <ClCompile Include="vectorRoutine.cpp" />
     <ClCompile Include="video.cpp" />
     <ClCompile Include="window.cpp" />
   </ItemGroup>
@@ -226,9 +229,11 @@
     <ClInclude Include="cmosAlarm.h" />
     <ClInclude Include="cmosTimer.h" />
     <ClInclude Include="coprocessor.h" />
+    <ClInclude Include="core.h" />
     <ClInclude Include="debugger.h" />
     <ClInclude Include="def.h" />
     <ClInclude Include="descriptor.h" />
+    <ClInclude Include="device.h" />
     <ClInclude Include="processDOS.h" />
     <ClInclude Include="elf.h" />
     <ClInclude Include="exception.h" />
@@ -271,6 +276,7 @@
     <ClInclude Include="process.h" />
     <ClInclude Include="utils.h" />
     <ClInclude Include="v86.h" />
+    <ClInclude Include="vectorRoutine.h" />
     <ClInclude Include="video.h" />
     <ClInclude Include="window.h" />
   </ItemGroup>

@@ -10,7 +10,7 @@
 
 #define EXCEPTION_TIPS_COLOR 0X9F3F00
 
-int gExceptionCounter = 0;
+int gExceptionCounter2 = 0;
 
 void __kException(DWORD param) {
 
@@ -122,7 +122,7 @@ void __kException(DWORD param) {
 
 	__logShow((unsigned char*)showinfo, EXCEPTION_TIPS_COLOR);
 
-	gExceptionCounter++;
+	gExceptionCounter2++;
 	//if (gExceptionCounter < 3)
 	{
 		TASK_LIST_ENTRY * list = __findProcessByTid(tid);

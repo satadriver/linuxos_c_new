@@ -76,20 +76,20 @@ int __kExplorer(unsigned int retaddr, int tid, char * filename, char * funcname,
 
 	showPciDevs();
 
-	__kdBreakPoint();
+	//__kdBreakPoint();
 
 	
-	__kAddCmosAlarm(30, (DWORD)__doAlarmTask, 0);
+	//__kAddCmosAlarm(30, (DWORD)__doAlarmTask, 0);
 
 	//initEfer();
 
-	getRCBA();
+	//getRCBA();
 
-	sysenterEntry(0, 0);
+	//sysenterEntry(0, 0);
 
-	callgateEntry(0, 0);
+	//callgateEntry(0, 0);
 
-	repeatDrawCCFontString();
+	//repeatDrawCCFontString();
 
 	//runElfFunction("c:\\liunux\\test.so", "__testfunction");
 

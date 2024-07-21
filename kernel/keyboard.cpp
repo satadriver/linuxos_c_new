@@ -558,3 +558,54 @@ void kbdtest() {
 		}
 	}
 }
+
+
+
+
+__declspec(naked) void keyboardProc() {
+	__asm {
+
+		pushad
+		push ds
+		push es
+		push fs
+		push gs
+		push ss
+
+		push esp
+		sub esp, 4
+		push ebp
+		mov ebp, esp
+
+		mov ax, KERNEL_MODE_DATA
+		mov ds, ax
+		mov es, ax
+		MOV FS, ax
+		MOV GS, AX
+	}
+
+	{
+
+		__kKeyboardProc();
+
+		outportb(0x20, 0x20);
+		//outportb(0xa0, 0xa0);
+	}
+
+
+	__asm {
+		mov esp, ebp
+		pop ebp
+		add esp, 4
+		pop esp
+
+		pop ss
+		pop gs
+		pop fs
+		pop es
+		pop ds
+		popad
+
+		iretd
+	}
+}

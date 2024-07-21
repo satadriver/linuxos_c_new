@@ -119,10 +119,16 @@
 #define TASKS_LIST_BUF_SIZE		0x1000
 
 #define CURRENT_TASK_TSS_BASE	0X540000
-//#define V86_TSS_BASE			0X544000
-//#define CMOS_TSS_BASE			0X548000
-//#define INVALID_TSS_BASE		0X54c000
-//#define TIMER_TSS_BASE		0X550000
+
+#define V86_TSS_BASE			0X544000
+
+#define TIMER_TSS_BASE			0X548000
+
+#define INVALID_TSS_BASE		0X54c000
+
+#define GDT_BASE				0X550000
+
+#define IDT_BASE				0X560000
 
 #define FPU_STATUS_BUFFER		0X580000
 
@@ -263,4 +269,49 @@ typedef struct {
 	char _reserved[22];		//42
 }DATALOADERINFO;
 
+typedef struct {
+	DWORD link; // 保存前一个 TSS 段选择子，使用 call 指令切换寄存器的时候由CPU填写。
+
+	DWORD esp0; //4
+	DWORD ss0;  //8
+	DWORD esp1; //12
+	DWORD ss1;  //16
+	DWORD esp2; //20
+	DWORD ss2;  //24
+
+	DWORD cr3;	//28
+
+				// 下面这些都是用来做切换寄存器值用的，切换寄存器的时候由CPU自动填写。
+	DWORD eip;	//32
+	DWORD eflags;
+	DWORD eax;	//40
+	DWORD ecx;
+	DWORD edx;	//48
+	DWORD ebx;
+	DWORD esp;	//56
+	DWORD ebp;
+	DWORD esi;	//64
+	DWORD edi;
+	DWORD es;	//72
+	DWORD cs;
+	DWORD ss;	//80
+	DWORD ds;
+	DWORD fs;	//88
+	DWORD gs;
+
+	//static
+	DWORD ldt;	//96
+	unsigned short	trap;				//100
+	unsigned short	iomapOffset;		//102
+	unsigned char	intMap[32];
+	unsigned char	iomap[8192];
+	unsigned char	iomapEnd;			//104 + 32 + 8192
+
+} TSS, * LPTSS;
+
 #pragma pack(pop)
+
+
+#define OFFSETOF(type,n) (size_t)&(((type*)0)->n)
+
+#define SIZEOFMEMBER(type,n) sizeof(((type*)0)->n)

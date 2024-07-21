@@ -81,6 +81,18 @@ extern "C" __declspec(dllexport) void callgateEntry(DWORD * params, DWORD paramL
 
 int sysenterInit(DWORD entryAddr);
 
+void readmsr(DWORD no, DWORD* lowpart, DWORD* highpart);
+
+void writemsr(DWORD no, DWORD lowpart, DWORD highpart);
+
+extern "C" void __kCallGateProc();
+
+extern "C" __declspec(dllexport) void sysenterEntry(DWORD * params, DWORD paramslen);
+
+extern "C" __declspec(dllexport) void callgateEntry(DWORD * params, DWORD paramLen);
+
+int sysenterInit(DWORD entryAddr);
+
 void readmsr(DWORD no, DWORD * lowpart, DWORD *highpart);
 
 void writemsr(DWORD no, DWORD lowpart, DWORD highpart);

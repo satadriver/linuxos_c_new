@@ -23,26 +23,7 @@ typedef struct {
 	DWORD addr;
 }DescriptTableReg;
 
-typedef struct
-{
-	unsigned char jmpcode;		//0xea
-	unsigned short seg;
-	unsigned long offset;
-}JUMP_LONG;
 
-typedef struct
-{
-	unsigned char callcode;		//0x9a
-	unsigned short seg;
-	unsigned long offset;
-}CALL_LONG;
-
-typedef struct
-{
-	unsigned char jmpcode;
-	unsigned short seg;
-	unsigned short offset;
-}JUMP_SHORT;
 
 
 struct SegType { //conforming code: jump from low pr ivite code to high private code without changing CPL
@@ -143,17 +124,7 @@ struct TaskGateDescriptor {
 
 
 
-extern "C" __declspec(dllexport) void sysenterEntry(DWORD * params, DWORD paramslen);
 
-extern "C" __declspec(dllexport) void callgateEntry(DWORD * params, DWORD paramLen);
-
-int sysenterInit(DWORD entryAddr);
-
-void readmsr(DWORD no, DWORD* lowpart, DWORD* highpart);
-
-void writemsr(DWORD no, DWORD lowpart, DWORD highpart);
-
-void __kCallGateProc();
 
 
 void initGdt();

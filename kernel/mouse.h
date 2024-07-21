@@ -44,6 +44,8 @@ typedef struct {
 
 void mousetest();
 
+extern "C" void mouseProc();
+
 #ifdef DLL_EXPORT
 
 extern "C"  __declspec(dllexport) void __initMouse(int x, int y);

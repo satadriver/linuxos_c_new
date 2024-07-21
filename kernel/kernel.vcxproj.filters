@@ -201,6 +201,15 @@
     <ClCompile Include="ext\ext.cpp">
       <Filter>源文件\ext</Filter>
     </ClCompile>
+    <ClCompile Include="device.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="core.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="vectorRoutine.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="kernel.h">
@@ -361,6 +370,15 @@
     </ClInclude>
     <ClInclude Include="ext\ext.h">
       <Filter>头文件\ext</Filter>
+    </ClInclude>
+    <ClInclude Include="device.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="core.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="vectorRoutine.h">
+      <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -9,7 +9,13 @@
 #include "Utils.h"
 #include "Kernel.h"
 
+DWORD g_sysenterInitFlag = 0;
 
+DWORD* g_sysenterParams = 0;
+DWORD g_sysenterParamsLen = 0;
+
+DWORD g_sysenterStack3 = 0;
+DWORD g_sysenterEip3 = 0;
 
 void initLdt(LPSEGDESCRIPTOR lpldt) {
 	//return;
@@ -257,13 +263,7 @@ int sysenterInit(DWORD entryaddr) {
 
 
 
-DWORD g_sysenterInitFlag = 0;
 
-DWORD * g_sysenterParams = 0;
-DWORD g_sysenterParamsLen = 0;
-
-DWORD g_sysenterStack3 = 0;
-DWORD g_sysenterEip3 = 0;
 
 
 

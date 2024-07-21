@@ -31,6 +31,9 @@
 #include "descriptor.h"
 #include "elf.h"
 #include "page.h"
+#include "device.h"
+#include "core.h"
+
 
 //#pragma comment(linker, "/ENTRY:DllMain")
 //#pragma comment(linker, "/align:512")
@@ -99,7 +102,12 @@ int __kernelEntry(LPVESAINFORMATION vesa, DWORD fontbase,DWORD v86Proc,DWORD v86
 
 	char szout[1024];
 
-	getGdtIdt();
+	//getGdtIdt();
+
+	//initGdt();
+	//initIDT();
+
+	initDevices();
 
 	initMemory();
 

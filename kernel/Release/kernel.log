@@ -9,8 +9,14 @@ E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\NTFS\ntfsFile.cpp(434): warning C
 E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\cmosAlarm.cpp(171): warning C4018: “>=”: 有符号/无符号不匹配
   cmosTimer.cpp
   coprocessor.cpp
+  core.cpp
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\core.cpp(137): warning C4244: “=”: 从“unsigned long”转换到“unsigned short”，可能丢失数据
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\core.cpp(151): warning C4244: “=”: 从“unsigned long”转换到“unsigned short”，可能丢失数据
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\core.cpp(162): warning C4244: “=”: 从“unsigned long”转换到“unsigned short”，可能丢失数据
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\core.cpp(174): warning C4244: “=”: 从“unsigned long”转换到“unsigned short”，可能丢失数据
   debugger.cpp
   descriptor.cpp
+  device.cpp
   elf.cpp
   exception.cpp
   ext.cpp
@@ -28,11 +34,11 @@ E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\fat32\FAT32.cpp(308): warning C40
 E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\gdi.cpp(48): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
 E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\gdi.cpp(96): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
 E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\gdi.cpp(103): warning C4244: “参数”: 从“double”转换到“int”，可能丢失数据
+  正在生成代码...
+  正在编译...
   hpet.cpp
 E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\hpet.cpp(364): warning C4244: “参数”: 从“const unsigned __int64”转换到“unsigned short”，可能丢失数据
   ios9660.cpp
-  正在生成代码...
-  正在编译...
   kernel.cpp
   keyboard.cpp
   listEntry.cpp
@@ -70,20 +76,24 @@ E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\satadriver.cpp(474): warning C424
   screenUtils.cpp
   sectorReader.cpp
   servicesProc.cpp
+  正在生成代码...
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\servicesProc.cpp(159): warning C4715: “__kServicesProc”: 不是所有的控件路径都返回值
+  正在编译...
   sbPlay.cpp
 E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\soundBlaster\sbPlay.cpp(328): warning C4244: “参数”: 从“unsigned long”转换到“unsigned short”，可能丢失数据
 E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\soundBlaster\sbPlay.cpp(331): warning C4244: “参数”: 从“unsigned long”转换到“unsigned short”，可能丢失数据
 E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\soundBlaster\sbPlay.cpp(352): warning C4244: “参数”: 从“unsigned long”转换到“unsigned short”，可能丢失数据
 E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\soundBlaster\sbPlay.cpp(356): warning C4244: “参数”: 从“unsigned long”转换到“unsigned short”，可能丢失数据
   speaker.cpp
-  正在生成代码...
-  正在编译...
   system.cpp
   systemTimer.cpp
   task.cpp
   thread.cpp
 E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\thread.cpp(38): warning C4101: “szout”: 未引用的局部变量
   utils.cpp
+  vectorRoutine.cpp
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\vectorRoutine.cpp(892): warning C4102: “_TimerInterruptStart”: 未引用的标签
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\vectorRoutine.cpp(919): warning C4101: “szout”: 未引用的局部变量
   video.cpp
 E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\video.cpp(1180): warning C4244: “初始化”: 从“int”转换到“float”，可能丢失数据
 E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\video.cpp(1183): warning C4244: “=”: 从“int”转换到“float”，可能丢失数据

@@ -467,9 +467,9 @@ extern "C"  __declspec(dllexport) DWORD __kTaskSchedule(LIGHT_ENVIRONMENT* regs)
 		//fsave [fenv]
 		//FNCLEX
 	}
-	prev->process->tss.fpu = 1;
+	prev->process->fpu = 1;
 
-	if (gTasksListPtr->process->tss.fpu)
+	if (gTasksListPtr->process->fpu)
 	{
 		char * fenvnext = (char*)FPU_STATUS_BUFFER + (gTasksListPtr->process->tid << 9);
 		__asm {
@@ -626,9 +626,9 @@ extern "C"  __declspec(dllexport) DWORD __kTaskSchedule(LIGHT_ENVIRONMENT * env)
 		//fsave [fenv]
 		//FNCLEX
 	}
-	prev->process->tss.fpu = 1;
+	prev->process->fpu = 1;
 
-	if (gTasksListPtr->process->tss.fpu)
+	if (gTasksListPtr->process->fpu)
 	{
 		char* fenvnext = (char*)FPU_STATUS_BUFFER + (gTasksListPtr->process->tid << 9);
 		__asm {

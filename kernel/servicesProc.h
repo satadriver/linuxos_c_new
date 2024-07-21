@@ -17,8 +17,8 @@
 #define RESTORE_MOUSE		14
 #define SET_VIDEOMODE		15
 
-// #define DRAW_MOUSE					13
-// #define RESTORE_MOUSE				14
 
+
+DWORD servicesProc();
 
 extern "C"  __declspec(dllexport) DWORD __kServicesProc(DWORD no,DWORD * params);
