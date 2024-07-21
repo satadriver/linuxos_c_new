@@ -296,7 +296,7 @@ typedef struct {
 #ifdef DLL_EXPORT
 
 extern "C"  __declspec(dllexport) int __logShow(unsigned char * font, int color);
-extern "C"   int __getVideoParams(LPVESAINFORMATION vesa,DWORD fontbase);
+extern "C"   int __initVideo(LPVESAINFORMATION vesa,DWORD fontbase);
 
 extern "C"  __declspec(dllexport) int __drawWindow(LPWINDOWCLASS window,int active);
 
@@ -353,7 +353,7 @@ extern "C"  __declspec(dllexport) int __diamond(int startx, int starty, int radu
 #else
 extern "C"  __declspec(dllimport) int __logShow(unsigned char * font, int color);
 
-extern "C" int __getVideoParams(LPVESAINFORMATION vesa, DWORD fontbase);
+extern "C" int __initVideo(LPVESAINFORMATION vesa, DWORD fontbase);
 
 extern "C"  __declspec(dllimport) int __drawWindow(LPWINDOWCLASS window, int active);
 

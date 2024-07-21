@@ -49,9 +49,12 @@ typedef struct
 	unsigned int result;	//1e
 }V86VMIPARAMS, * LPV86VMIPARAMS;
 
+
+
+
 #pragma pack()
 
-int getHarddiskInfo(char* buf);
+int getHarddiskInfo();
 
 int readSectorLBA48(unsigned int secnoLow, unsigned int secnoHigh, unsigned char seccnt, char* buf, int device);
 
@@ -67,14 +70,15 @@ int readSectorLBA24Mimo(unsigned int secno, unsigned char seccnt, char* buf, int
 
 int readSectorLBA48Mimo(unsigned int secnoLow, unsigned int secnoHigh, unsigned char seccnt, char* buf, int device);
 
-int waitFree(WORD port);
+void waitFree(WORD port);
+
 int waitComplete(WORD port);
 
 int testHdPort(unsigned short port);
 
-int testHdPortMimo(unsigned short port);
+int testHdPortMimo(unsigned int addr);
 
-void __initStatusPort(unsigned char master_slave);
+int __initHardDisk();
 
 int getHdPort();
 

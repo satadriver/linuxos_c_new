@@ -4,13 +4,19 @@
 #include "Utils.h"
 #include "hardware.h"
 
+
+
+#define PCI_INDEX_PORT		0Xcf8
+
+#define PCI_VALUE_PORT		0XcfC
+
 //bit31:valid
 //bit 16-23:bus no		device=1 is pci bridge
 //bit 11-15:device no
 //bit 8-10:function no
 //bit 2-6: register no
 //bit0-2:0
-int getBasePort(DWORD* baseregs, WORD devClsVender, DWORD* dev, DWORD* irqpin) {
+int getPciDevBasePort(DWORD* baseregs, WORD devClsVender, DWORD* dev, DWORD* irqpin) {
 
 	for (int bdf = 0x80000008; bdf <= 0x80010008; bdf += 0x100)			//offset 8,read class type,vender type
 	{
@@ -41,7 +47,7 @@ int getBasePort(DWORD* baseregs, WORD devClsVender, DWORD* dev, DWORD* irqpin) {
 				v = inportd(0xcfc);
 				*irqpin = v;
 
-				return TRUE;
+				return 4;
 			}
 		}
 	}
@@ -81,23 +87,23 @@ int listpci(DWORD* dst) {
 
 
 int getNetcard(DWORD* regs, DWORD* dev, DWORD* irq) {
-	return getBasePort(regs, 0x0200, dev, irq);
+	return getPciDevBasePort(regs, 0x0200, dev, irq);
 }
 
 int getSvga(DWORD* regs, DWORD* dev, DWORD* irq) {
-	return getBasePort(regs, 0x0300, dev, irq);
+	return getPciDevBasePort(regs, 0x0300, dev, irq);
 }
 
 int getSoundcard(DWORD* regs, DWORD* dev, DWORD* irq) {
-	return getBasePort(regs, 0x0401, dev, irq);
+	return getPciDevBasePort(regs, 0x0401, dev, irq);
 }
 
 int getSmbus(DWORD* regs, DWORD* dev, DWORD* irq) {
-	return getBasePort(regs, 0x0c05, dev, irq);
+	return getPciDevBasePort(regs, 0x0c05, dev, irq);
 }
 
 int getUsb(DWORD* regs, DWORD* dev, DWORD* irq) {
-	return getBasePort(regs, 0x0c03, dev, irq);
+	return getPciDevBasePort(regs, 0x0c03, dev, irq);
 }
 
 

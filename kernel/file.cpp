@@ -45,7 +45,7 @@ int readFileTo(char * filename) {
 
 int initFileSystem() {
 	int ret = 0;
-	ret = getHdPort();
+	ret = __initHardDisk();
 	if (ret == FALSE)
 	{
 		return FALSE;

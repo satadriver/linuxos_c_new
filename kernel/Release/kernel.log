@@ -71,12 +71,19 @@ E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\page.cpp(99): warning C4018: “<
   processDOS.cpp
   rs232.cpp
   satadriver.cpp
-E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\satadriver.cpp(247): warning C4244: “参数”: 从“unsigned long”转换到“unsigned short”，可能丢失数据
-E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\satadriver.cpp(250): warning C4244: “=”: 从“unsigned long”转换到“unsigned short”，可能丢失数据
-E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\satadriver.cpp(255): warning C4244: “参数”: 从“unsigned long”转换到“unsigned short”，可能丢失数据
-E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\satadriver.cpp(258): warning C4244: “=”: 从“unsigned long”转换到“unsigned short”，可能丢失数据
-E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\satadriver.cpp(454): warning C4244: “参数”: 从“unsigned long”转换到“unsigned char”，可能丢失数据
-E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\satadriver.cpp(474): warning C4244: “参数”: 从“unsigned long”转换到“unsigned char”，可能丢失数据
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\satadriver.cpp(144): warning C4244: “=”: 从“unsigned long”转换到“unsigned short”，可能丢失数据
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\satadriver.cpp(151): warning C4244: “=”: 从“unsigned long”转换到“unsigned short”，可能丢失数据
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\satadriver.cpp(159): warning C4244: “参数”: 从“unsigned long”转换到“unsigned short”，可能丢失数据
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\satadriver.cpp(162): warning C4244: “=”: 从“unsigned long”转换到“unsigned short”，可能丢失数据
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\satadriver.cpp(166): warning C4244: “参数”: 从“unsigned long”转换到“unsigned short”，可能丢失数据
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\satadriver.cpp(169): warning C4244: “=”: 从“unsigned long”转换到“unsigned short”，可能丢失数据
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\satadriver.cpp(360): warning C4244: “参数”: 从“unsigned long”转换到“unsigned char”，可能丢失数据
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\satadriver.cpp(380): warning C4244: “参数”: 从“unsigned long”转换到“unsigned char”，可能丢失数据
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\satadriver.cpp(477): warning C4244: “参数”: 从“unsigned long”转换到“unsigned char”，可能丢失数据
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\satadriver.cpp(513): warning C4244: “参数”: 从“unsigned long”转换到“unsigned char”，可能丢失数据
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\satadriver.cpp(556): warning C4244: “参数”: 从“unsigned long”转换到“unsigned char”，可能丢失数据
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\satadriver.cpp(600): warning C4244: “参数”: 从“unsigned long”转换到“unsigned char”，可能丢失数据
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\satadriver.cpp(650): warning C4244: “参数”: 从“unsigned long”转换到“unsigned char”，可能丢失数据
   screenUtils.cpp
   sectorReader.cpp
   servicesProc.cpp

@@ -37,7 +37,7 @@ int gShowY = 0;
 #include "pci.h"
 
 
-int __getVideoParams(LPVESAINFORMATION vesaInfo, DWORD fontbase) {
+int __initVideo(LPVESAINFORMATION vesaInfo, DWORD fontbase) {
 	int result = 0;
 
 	gVesaInfo = (VESAINFORMATION*)VESA_INFO_BASE;

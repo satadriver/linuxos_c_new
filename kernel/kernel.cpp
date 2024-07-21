@@ -98,7 +98,7 @@ int __kernelEntry(LPVESAINFORMATION vesa, DWORD fontbase,DWORD v86Proc,DWORD v86
 	//gAsmTsses = lpasmTsses;
 
 	//must be first to prepare for showing
-	__getVideoParams(vesa, fontbase);
+	__initVideo(vesa, fontbase);
 
 	char szout[1024];
 

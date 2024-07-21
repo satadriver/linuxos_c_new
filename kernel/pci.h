@@ -50,7 +50,7 @@ int listpci(DWORD* dst);
 
 //void showAllPciDevs();
 
-int getBasePort(DWORD* baseregs, WORD devClsVender, DWORD* dev, DWORD* irqpin);
+int getPciDevBasePort(DWORD* baseregs, WORD devClsVender, DWORD* dev, DWORD* irqpin);
 
 int getNetcard(DWORD* regs, DWORD* dev, DWORD* irq);
 
