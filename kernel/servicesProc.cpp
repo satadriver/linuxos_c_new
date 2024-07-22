@@ -1,9 +1,11 @@
 #include "servicesProc.h"
 #include "task.h"
+#include "hardware.h"
+#include "task.h"
 
 
+DWORD __declspec(naked) servicesProc(LIGHT_ENVIRONMENT* stack) {
 
-DWORD __declspec(naked) servicesProc() {
 	__asm {
 		pushad
 		push ds
@@ -16,7 +18,9 @@ DWORD __declspec(naked) servicesProc() {
 		sub esp, 4
 		push ebp
 		mov ebp, esp
+	}
 
+	__asm {
 		push edi
 		push eax
 
@@ -25,9 +29,10 @@ DWORD __declspec(naked) servicesProc() {
 		mov es, ax
 		MOV FS, ax
 		MOV GS, AX
-
 		call __kServicesProc
-		add esp,8
+		add esp, 8
+
+		mov stack.eax, eax		//may be error?
 	}
 
 	__asm {
@@ -49,11 +54,11 @@ DWORD __declspec(naked) servicesProc() {
 
 DWORD __declspec(dllexport) __kServicesProc(DWORD no, DWORD * params) {
 
-		switch (no)
-		{
+	DWORD r = 0;
+	switch (no)
+	{
 		case KBD_OUTPUT:
 		{
-
 			break;
 		}
 		case KBD_INPUT:
@@ -70,57 +75,43 @@ DWORD __declspec(dllexport) __kServicesProc(DWORD no, DWORD * params) {
 		}
 		case RANDOM:
 		{
+			r = __random((unsigned long)params);
 			break;
 		}
 		case SLEEP:
 		{
-			int interval = 1000/(OSCILLATE_FREQUENCY / SYSTEM_TIMER0_FACTOR);
-			DWORD times = params[0] / interval;
-			DWORD mod = params[0] % interval;
-			if (mod != 0 )
-			{
-				times++;
-			}
-
-			LPPROCESS_INFO tss = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
-			tss->sleep += times;
-
-			for (int i = 0; i < times; i++)
-			{
-			 	__asm {
-			 		hlt
-			 	}
-
-				if (tss->sleep)
-				{
-					tss->sleep --;
-				}
-			}
+			sleep(params);
 
 			break;
 		}
 		case TURNON_SCREEN:
 		{
+			__turnonScreen();
 			break;
 		}
 		case TURNOFF_SCREEN:
 		{
+			__turnoffScreen();
 			break;
 		}
 		case CPU_MANUFACTORY:
 		{
+			r = __cputype(params);
 			break;
 		}
 		case TIMESTAMP:
 		{
+			r = __timestamp(params);
 			break;
 		}
 		case SWITCH_SCREEN:
 		{
+			__switchScreen();
 			break;
 		}
 		case CPUINFO:
 		{
+			r = __cpuinfo(params);
 			break;
 		}
 		case DRAW_MOUSE:
@@ -139,97 +130,82 @@ DWORD __declspec(dllexport) __kServicesProc(DWORD no, DWORD * params) {
 		default: {
 			break;
 		}
+	}
+	return r;
+}
+
+
+void sleep(DWORD * params) {
+	int interval = 1000 / (OSCILLATE_FREQUENCY / SYSTEM_TIMER0_FACTOR);
+	DWORD times = params[0] / interval;
+	DWORD mod = params[0] % interval;
+	if (mod != 0)
+	{
+		times++;
+	}
+
+	LPPROCESS_INFO tss = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
+	tss->sleep += times;
+
+	for (int i = 0; i < times; i++)
+	{
+		__asm {
+			hlt
 		}
+
+		if (tss->sleep)
+		{
+			tss->sleep--;
+		}
+	}
 }
 
 
 
-DWORD __getRandom() {
-	__asm {
-		mov eax, 0
-		mov al, 0
-		out 43h, al
-		in al, 40h
-		shl eax, 8
-		in al, 40h
-		shl eax, 8
-
-		mov al, 0
-		out 43h, al
-		in al, 40h
-		shl eax, 8
-		in al, 40h
-		ret
-	}
+DWORD __random(DWORD init) {
+	init = (init * 7 ^ 5) % 0xffffffff;
+	return init;
 }
 
 
 
 void __turnoffScreen() {
-	__asm {
-		push edx
-		mov dx, 3c4h
-		mov al, 1
-		out dx, al
-		mov dx, 3c5h
-		in al, dx
-		test al, 20h
-		jnz __turnoffScreenEnd
-		or al, 20h
-		out dx, al
-		__turnoffScreenEnd :
-		pop edx
-			ret
+
+	outportb(0x3c4, 1);
+	int r = inportb(0x3c5);
+	if ( (r & 0x20) == 0) {
+		outportb(0x3c5, r | 0x20);
 	}
 }
 
 
 void __turnonScreen() {
-	__asm {
-		push edx
-		mov dx, 3c4h
-		mov al, 1
-		out dx, al
-		mov dx, 3c5h
-		in al, dx
-		test al, 20h
-		jz __turnonScreenEnd
-		and al, 0
-		out dx, al
-		__turnonScreenEnd :
-		pop edx
-			ret
+
+	outportb(0x3c4, 1);
+	int r = inportb(0x3c5);
+	if (r & 0x20 ) {
+		outportb(0x3c5, 0);
 	}
 }
 
 
 void __switchScreen() {
-	__asm {
-		push edx
-		mov dx, 3c4h
-		mov al, 1
-		out dx, al
-		mov dx, 3c5h
-		in al, dx
-		test al, 20h
-		jz _shutdownscreen
-		mov al, 0
-		out dx, al
-		pop edx
-		ret
-
-		_shutdownscreen :
-		mov al, 20h
-			out dx, al
-			pop edx
-			ret
+	outportb(0x3c4, 1);
+	int r = inportb(0x3c5);
+	if (r & 0x20) {
+		outportb(0x3c5, 0);
+	}
+	else {
+		outportb(0x3c5, 0x20);
 	}
 }
 
 
 
-DWORD	_cpumanu() {
+DWORD	__cputype(unsigned long * params) {
+
 	__asm{
+		mov edi,params
 		mov eax, 0
 		; must use .586 or above
 		; dw 0a20fh
@@ -239,7 +215,6 @@ DWORD	_cpumanu() {
 		mov ds : [edi + 4] , edx
 		mov ds : [edi + 8] , ecx
 		mov dword ptr ds : [edi + 12] , 0
-		ret
 	}
 }
 
@@ -247,8 +222,10 @@ DWORD	_cpumanu() {
 
 
 
-DWORD __cpuinfo() {
+DWORD __cpuinfo(unsigned long* params) {
 	__asm {
+		mov edi,params
+
 		mov     eax, 80000000h
 		; dw 0a20fh
 		cpuid
@@ -282,8 +259,6 @@ DWORD __cpuinfo() {
 		mov     dword ptr[edi + 48], 0
 
 		__cpuinfoEnd:
-		ret
-
 	}
 }
 
@@ -292,14 +267,15 @@ DWORD __cpuinfo() {
 
 
 
-DWORD _cputimestamp() {
+DWORD __timestamp(unsigned long* params) {
+
 	__asm {
+		mov edi,params
 		; must use .586 or above
 		rdtsc
 		; edx:eax = time stamp
 		mov ds : [edi] , eax
 		mov ds : [edi + 4] , edx
 		mov dword ptr ds : [edi + 8] , 0
-		ret
 	}
 }

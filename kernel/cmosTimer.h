@@ -2,7 +2,7 @@
 #include "def.h"
 
 
-#define TIMER_PROC_MAX 16
+#define REALTIMER_CALLBACK_MAX	256
 
 #define SHUTDOWN_SCREEN_DELAY 360
 
@@ -19,15 +19,20 @@ typedef struct
 }TIMER_PROC_PARAM;
 #pragma pack()
 
-char * dw2str(int dw);
+
+unsigned char readCmosPort(unsigned char port);
+
+void writeCmosPort(unsigned char port, unsigned char value);
+
+char * dayOfWeek2str(int dw);
 
 unsigned short bcd2asc(char bcd);
 
 unsigned char bcd2binary(char bcd);
 
-int __kAddCmosTimer(DWORD addr, DWORD delay, DWORD param1, DWORD param2, DWORD param3, DWORD param4);
+int __kAddRealTimer(DWORD addr, DWORD delay, DWORD param1, DWORD param2, DWORD param3, DWORD param4);
 
-void __kRemoveCmosTimer(int no);
+void __kRemoveRealTimer(int no);
 
 void initDPC();
 

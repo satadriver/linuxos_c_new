@@ -12,36 +12,10 @@
 #include "process.h"
 #include "Thread.h"
 #include "memory.h"
+#include "cmosTimer.h"
 
 
 
-unsigned char readCmosPort(unsigned char port) {
-	__asm {
-		//in al,70h
-		//and al,80h
-		//or al,port
-
-		mov al,port
-		out 70h,al
-
-		in al,71h
-		movzx eax,al
-	}
-}
-
-void writeCmosPort(unsigned char port, unsigned char value) {
-	__asm {
-		//in al, 70h
-		//and al, 80h
-		//or al, port
-
-		mov al,port
-		out 70h, al
-
-		mov al, value
-		out 71h, al
-	}
-}
 
 int isLeapYear(int year) {
 	int ret = year % 100;
@@ -95,16 +69,6 @@ unsigned char b2bcd(unsigned char b) {
 unsigned short makehalf(unsigned char low, unsigned char high) {
 	return (high << 8) + low;
 }
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -211,6 +175,7 @@ void __kCmosAlarmProc() {
 
 	return ;
 
+	//can only exist one alarm
 	DWORD addr = gCmosAlarmProc.addr;
 	DWORD interval = gCmosAlarmProc.interval;
 	DWORD param = gCmosAlarmProc.param;

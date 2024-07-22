@@ -212,7 +212,7 @@
     <ClCompile Include="soundBlaster\sbPlay.cpp" />
     <ClCompile Include="speaker.cpp" />
     <ClCompile Include="system.cpp" />
-    <ClCompile Include="systemTimer.cpp" />
+    <ClCompile Include="timer8254.cpp" />
     <ClCompile Include="task.cpp" />
     <ClCompile Include="thread.cpp" />
     <ClCompile Include="process.cpp" />
@@ -270,7 +270,7 @@
     <ClInclude Include="soundBlaster\sbPlay.h" />
     <ClInclude Include="speaker.h" />
     <ClInclude Include="system.h" />
-    <ClInclude Include="systemTimer.h" />
+    <ClInclude Include="timer8254.h" />
     <ClInclude Include="task.h" />
     <ClInclude Include="thread.h" />
     <ClInclude Include="process.h" />

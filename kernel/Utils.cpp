@@ -2,6 +2,7 @@
 #include "Utils.h"
 #include "video.h"
 #include "cmosAlarm.h"
+#include "cmosTimer.h"
 
 int __memset(char * dst, int value, int len) {
 #ifdef _DEBUG

@@ -243,7 +243,7 @@ extern "C" __declspec(dllexport) void __kScreenProtect() {
 	return ;
 }
 
-#include "systemTimer.h"
+
 
 void setCursor(int enable,DWORD *x, DWORD *y,unsigned int color) {
 	gCursorEnable = enable;

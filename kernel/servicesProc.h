@@ -1,5 +1,6 @@
 #pragma once
 #include "def.h"
+#include "task.h"
 
 #define KBD_OUTPUT			1
 #define KBD_INPUT			2
@@ -19,6 +20,22 @@
 
 
 
-DWORD servicesProc();
+DWORD servicesProc(LIGHT_ENVIRONMENT* stack);
+
+void sleep(DWORD* params);
+
+DWORD __random(DWORD init);
+
+void __turnoffScreen();
+
+void __turnonScreen();
+
+void __switchScreen();
+
+DWORD __cputype(unsigned long* params);
+
+DWORD __cpuinfo(unsigned long* params);
+
+DWORD __timestamp(unsigned long* params);
 
 extern "C"  __declspec(dllexport) DWORD __kServicesProc(DWORD no,DWORD * params);

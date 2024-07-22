@@ -11,9 +11,7 @@ typedef struct
 }CMOSALARM_PROCESS_LIST;
 #pragma pack()
 
-unsigned char readCmosPort(unsigned char port);
 
-void writeCmosPort(unsigned char port, unsigned char value);
 
 unsigned char bcd2b(unsigned char bcd);
 unsigned char b2bcd(unsigned char b);

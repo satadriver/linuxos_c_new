@@ -10,6 +10,7 @@
 #include "hardware.h"
 #include "vectorRoutine.h"
 #include "cmosTimer.h"
+#include "cmosAlarm.h"
 
 #define EXCEPTION_TIPS_COLOR 0X9F3F00
 
@@ -981,10 +982,10 @@ extern "C" void __declspec(naked) CmosInterrupt(LIGHT_ENVIRONMENT * stack) {
 		int flag = inportb(0x71);
 		//IRQF = (PF * PIE) + (AF * AIE) + (UF * UFE), if double interruptions, will not be 1
 		if (flag & 0x20) {
-			//__kCmosAlarmProc();
+			__kCmosAlarmProc();
 		}
 		else if (flag & 0x40) {
-			//__kCmosExactTimerProc();
+			__kCmosExactTimerProc();
 		}
 		else if (flag & 0x10) {
 			__kCmosTimer();

@@ -6,7 +6,7 @@
 #include "Pe.h"
 #include "processDOS.h"
 #include "file.h"
-#include "systemTimer.h"
+#include "timer8254.h"
 #include "page.h"
 #include "def.h"
 #include "malloc.h"

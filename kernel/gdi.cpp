@@ -352,7 +352,7 @@ void drawCCFontChar(DWORD param1, DWORD param2, DWORD param3, DWORD param4) {
 		(*idx)++;
 	}
 	else {
-		__kRemoveCmosTimer(*timerno);
+		__kRemoveRealTimer(*timerno);
 	}
 }
 
@@ -367,7 +367,7 @@ int repeatDrawCCFontString() {
 	if (result)
 	{
 		__drawCCS((unsigned char*)"欢迎来到汉字的世界！\r\n", 0xff0000);
-		g_cc_timerno = __kAddCmosTimer((DWORD)drawCCFontChar, 300, (DWORD)&g_cc_poet, (DWORD)&g_cc_color, (DWORD)&g_cc_idx,
+		g_cc_timerno = __kAddRealTimer((DWORD)drawCCFontChar, 300, (DWORD)&g_cc_poet, (DWORD)&g_cc_color, (DWORD)&g_cc_idx,
 			(DWORD)&g_cc_timerno);
 	}
 

@@ -1,4 +1,4 @@
 #pragma once
 
 
-void V86Proc();
+extern "C" __declspec(dllexport) int V86Proc();

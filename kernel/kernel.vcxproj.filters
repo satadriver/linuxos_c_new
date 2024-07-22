@@ -159,7 +159,7 @@
     <ClCompile Include="peVirtual.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="systemTimer.cpp">
+    <ClCompile Include="timer8254.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="page.cpp">
@@ -332,7 +332,7 @@
     <ClInclude Include="peVirtual.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="systemTimer.h">
+    <ClInclude Include="timer8254.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="page.h">
