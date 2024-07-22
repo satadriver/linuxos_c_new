@@ -929,6 +929,10 @@ _TimerInterruptStart:
 	}
 
 	__asm {
+#ifdef SINGLE_TASK_TSS
+		mov eax, ds: [CURRENT_TASK_TSS_BASE + PROCESS_INFO.mCr3]
+		mov cr3, eax
+#endif
 
 		mov esp, ebp
 		pop ebp

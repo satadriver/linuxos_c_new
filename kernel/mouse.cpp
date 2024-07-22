@@ -7,6 +7,7 @@
 #include "servicesProc.h"
 #include "keyboard.h"
 #include "hardware.h"
+#include "servicesProc.h"
 
  DWORD gMouseTest = 0;
 
@@ -368,6 +369,10 @@ __declspec(naked) void mouseProc() {
 		outportb(0xa0, 0xa0);
 	}
 	__asm {
+		mov dword ptr ds : [CMOS_SECONDS_TOTAL] , 0
+		mov eax, TURNON_SCREEN
+		int 80h
+
 		mov esp, ebp
 		pop ebp
 		add esp, 4

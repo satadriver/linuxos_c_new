@@ -5,6 +5,7 @@
 #include "video.h"
 #include "ListEntry.h"
 #include "hardware.h"
+#include "servicesProc.h"
 
 
 unsigned char readCmosPort(unsigned char port) {
@@ -97,7 +98,7 @@ void __kCmosTimer() {
 	if (*lptickcnt >= SHUTDOWN_SCREEN_DELAY)
 	{
 		__asm {
-			mov eax, 8
+			mov eax, TURNOFF_SCREEN
 			int 80h
 		}
 		*lptickcnt = 0;

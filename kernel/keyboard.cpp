@@ -6,6 +6,7 @@
 #include "process.h"
 #include "task.h"
 #include "device.h"
+#include "servicesProc.h"
 
 DWORD gKbdTest = FALSE;
 
@@ -573,6 +574,10 @@ __declspec(naked) void keyboardProc() {
 	}
 
 	__asm {
+		mov dword ptr ds : [CMOS_SECONDS_TOTAL] , 0
+		mov eax, TURNON_SCREEN
+		int 80h
+
 		mov esp, ebp
 		pop ebp
 		add esp, 4
