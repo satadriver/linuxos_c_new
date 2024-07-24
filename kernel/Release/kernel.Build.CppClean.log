@@ -51,6 +51,10 @@ e:\virtualbox\vmshare\liunux\liunuxos_c\kernel\release\system.obj
 e:\virtualbox\vmshare\liunux\liunuxos_c\kernel\release\speaker.obj
 e:\virtualbox\vmshare\liunux\liunuxos_c\kernel\release\sbplay.obj
 e:\virtualbox\vmshare\liunux\liunuxos_c\kernel\release\malloc.obj
+e:\virtualbox\vmshare\liunux\liunuxos_c\kernel\release\device.obj
+e:\virtualbox\vmshare\liunux\liunuxos_c\kernel\release\vectorroutine.obj
+e:\virtualbox\vmshare\liunux\liunuxos_c\kernel\release\core.obj
+e:\virtualbox\vmshare\liunux\liunuxos_c\kernel\release\timer8254.obj
 e:\virtualbox\vmshare\liunux\liunuxos_c\release\kernel.lib
 e:\virtualbox\vmshare\liunux\liunuxos_c\release\kernel.exp
 e:\virtualbox\vmshare\liunux\liunuxos_c\release\kernel.dll
@@ -60,5 +64,6 @@ e:\virtualbox\vmshare\liunux\liunuxos_c\kernel\release\kernel.tlog\cl.read.1.tlo
 e:\virtualbox\vmshare\liunux\liunuxos_c\kernel\release\kernel.tlog\cl.write.1.tlog
 e:\virtualbox\vmshare\liunux\liunuxos_c\kernel\release\kernel.tlog\kernel.write.1u.tlog
 e:\virtualbox\vmshare\liunux\liunuxos_c\kernel\release\kernel.tlog\link.command.1.tlog
+e:\virtualbox\vmshare\liunux\liunuxos_c\kernel\release\kernel.tlog\link.delete.1.tlog
 e:\virtualbox\vmshare\liunux\liunuxos_c\kernel\release\kernel.tlog\link.read.1.tlog
 e:\virtualbox\vmshare\liunux\liunuxos_c\kernel\release\kernel.tlog\link.write.1.tlog

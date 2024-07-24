@@ -163,6 +163,9 @@ void sleep(DWORD * params) {
 
 
 DWORD __random(DWORD init) {
+	if (init == 0) {
+		init = *(DWORD*)TIMER0_TICK_COUNT;
+	}
 	init = (init * 7 ^ 5) % 0xffffffff;
 	return init;
 }

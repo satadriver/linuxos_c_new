@@ -18,12 +18,12 @@ extern "C" __declspec(dllexport)  LPSYSDESCRIPTOR glpIdt;
 
 extern "C" __declspec(dllexport)  DWORD gV86VMIEntry;
 
-extern "C" __declspec(dllexport)  DWORD gV86VMLeave;
+extern "C" __declspec(dllexport)  DWORD gV86Process;
 
 extern "C" __declspec(dllexport)  DWORD gKernel16;
 extern "C" __declspec(dllexport)  DWORD gKernel32;
 extern "C" __declspec(dllexport)  DWORD gKernelData;
-extern "C" __declspec(dllexport)  DWORD gAsmTsses;
+
 
 extern "C" __declspec(dllexport) void __kKernelMain(DWORD retaddr, int pid, char * pname,char * funcname,DWORD param);
 

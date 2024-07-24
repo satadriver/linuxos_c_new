@@ -1012,7 +1012,7 @@ extern "C" void __declspec(naked) CmosInterrupt(LIGHT_ENVIRONMENT * stack) {
 
 
 
-void __declspec(naked) V86Entry(ExceptionStackV86* stack) {
+void __declspec(naked) V86TrapProc(LIGHT_ENVIRONMENT* stack) {
 
 	__asm {
 
@@ -1023,6 +1023,8 @@ void __declspec(naked) V86Entry(ExceptionStackV86* stack) {
 		push gs
 		push ss
 
+		push esp
+		sub esp,4
 		push ebp
 		mov ebp, esp
 
@@ -1031,7 +1033,6 @@ void __declspec(naked) V86Entry(ExceptionStackV86* stack) {
 		mov es, ax
 		MOV FS, ax
 		MOV GS, AX
-
 	}
 
 	{
@@ -1039,9 +1040,10 @@ void __declspec(naked) V86Entry(ExceptionStackV86* stack) {
 	}
 
 	__asm {
-
 		mov esp, ebp
 		pop ebp
+		add esp,4
+		pop esp
 
 		pop ss
 		pop gs

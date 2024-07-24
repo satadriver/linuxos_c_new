@@ -45,7 +45,7 @@ LPSEGDESCRIPTOR glpLdt = 0;
 LPSEGDESCRIPTOR glpGdt = 0;
 LPSYSDESCRIPTOR glpIdt = 0;
 DWORD gV86VMIEntry = 0;
-DWORD gV86VMLeave = 0;
+DWORD gV86Process = 0;
 DWORD gKernel16;
 DWORD gKernel32;
 DWORD gKernelData;
@@ -86,12 +86,12 @@ void getGdtIdt() {
 
 
 //c++函数的导出函数对应函数声明的顺序，而不是函数体，函数体的参数一一对应于声明中的顺序
-int __kernelEntry(LPVESAINFORMATION vesa, DWORD fontbase,DWORD v86Proc,DWORD v86Leave ,DWORD kerneldata,DWORD kernel16,DWORD kernel32) {
+int __kernelEntry(LPVESAINFORMATION vesa, DWORD fontbase,DWORD v86Proc,DWORD v86Addr ,DWORD kerneldata,DWORD kernel16,DWORD kernel32) {
 
 	int ret = 0;
 	
 	gV86VMIEntry = v86Proc;
-	gV86VMLeave = v86Leave;
+	gV86Process = v86Addr;
 	gKernelData = kerneldata;
 	gKernel16 = kernel16;
 	gKernel32 = kernel32;

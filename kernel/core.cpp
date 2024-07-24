@@ -19,16 +19,6 @@
 #include "vectorRoutine.h"
 #include "descriptor.h"
 
-//TSS32 gInvalidTss;
-
-//TSS32 gTimerTss;
-
-//TSS32 gV86Tss;
-
-
-
-
-
 
 void makeDataSegDescriptor(DWORD base, int dpl, int bit, int direction, int w, SegDescriptor* descriptor) {
 	descriptor->present = 1;
@@ -179,7 +169,32 @@ void makeTrapGateDescriptor(DWORD base, DWORD selector, int dpl, IntTrapGateDesc
 
 
 
+void initV86Tss(TSS* tss, DWORD esp0, DWORD ip,DWORD cs, DWORD cr3,DWORD ldt) {
 
+	__memset((char*)tss, 0, sizeof(TSS));
+
+	tss->iomapEnd = 0xff;
+	tss->iomapOffset = OFFSETOF(TSS, iomapOffset) + SIZEOFMEMBER(TSS, intMap);
+
+	tss->eflags = 0x223200;
+
+	tss->ds = cs;
+	tss->es = cs;
+	tss->fs = cs;
+	tss->gs = cs;
+
+	tss->ss = cs;
+	tss->esp = V86_STACK_SIZE - STACK_TOP_DUMMY;
+
+	tss->esp0 = esp0;
+	tss->ss0 = KERNEL_MODE_STACK;
+
+	tss->eip = ip;
+	tss->cs = cs;
+
+	tss->cr3 = cr3;
+	tss->ldt = ldt;
+}
 
 
 void initKernelTss(TSS* tss, DWORD esp0, DWORD reg_esp, DWORD eip, DWORD cr3, DWORD ldt) {
@@ -191,7 +206,7 @@ void initKernelTss(TSS* tss, DWORD esp0, DWORD reg_esp, DWORD eip, DWORD cr3, DW
 
 	__asm {
 		//pushfd
-		//pop tss.eflags
+		//pop tss.eflags		//error segmantic
 	}
 
 	tss->ds = KERNEL_MODE_DATA;
@@ -247,8 +262,7 @@ void initGdt() {
 	makeCodeSegDescriptor(0, 3, 32, 0, 1, ldt + 2);
 	makeDataSegDescriptor(0, 3, 32, 0, 1, ldt + 3);
 
-	initKernelTss((TSS*)CURRENT_TASK_TSS_BASE, TASKS_STACK0_BASE + TASK_STACK0_SIZE - STACK_TOP_DUMMY,
-		KERNEL_TASK_STACK_TOP, 0, PDE_ENTRY_VALUE, 0);
+	initKernelTss((TSS*)CURRENT_TASK_TSS_BASE,TASKS_STACK0_BASE + TASK_STACK0_SIZE - STACK_TOP_DUMMY,KERNEL_TASK_STACK_TOP, 0, PDE_ENTRY_VALUE, 0);
 	makeTssDescriptor(CURRENT_TASK_TSS_BASE, 3, sizeof(TSS) - 1, (TssDescriptor*)(GDT_BASE + kTssTaskSelector));
 
 	initKernelTss((TSS*)INVALID_TSS_BASE, TSSEXP_STACK0_TOP, TSSEXP_STACK_TOP, (DWORD)invalidTssException, PDE_ENTRY_VALUE, 0);
@@ -256,6 +270,10 @@ void initGdt() {
 
 	initKernelTss((TSS*)TIMER_TSS_BASE, TSSTIMER_STACK0_TOP, TSSTIMER_STACK_TOP, (DWORD)TimerInterrupt, PDE_ENTRY_VALUE, 0);
 	makeTssDescriptor((DWORD)TIMER_TSS_BASE, 3, sizeof(TSS) - 1, (TssDescriptor*)(GDT_BASE + kTssTimerSelector));
+
+	initV86Tss((TSS*)V86_TSS_BASE, TSSV86_STACK0_TOP, gV86Process,gKernel16 , PDE_ENTRY_VALUE, 0);
+	makeTssDescriptor((DWORD)V86_TSS_BASE, 3, sizeof(TSS) - 1, (TssDescriptor*)(GDT_BASE + kTssV86Selector));
+
 
 	gdtbase.addr = GDT_BASE;
 	__asm {
@@ -329,9 +347,7 @@ void initIDT() {
 
 	makeTrapGateDescriptor((DWORD)servicesProc, KERNEL_MODE_CODE, 3, descriptor + 0x80);
 
-	//initTss(&gV86Tss, TSSV86_STACK0_TOP, (DWORD)v86CallProc, PDE_ENTRY_VALUE, 0);
-	//makeTssDescriptor((DWORD)&gV86Tss, 3, 0, sizeof(gV86Tss), (SegDescriptor*)(gdt + 0X50));
-	//makeTaskGateDescriptor((DWORD)kTssV86Selector, 3, (TaskGateDescriptor*)(descriptor + 0xff));
+	makeTaskGateDescriptor((DWORD)kTssV86Selector, 3, (TaskGateDescriptor*)(descriptor + 0xff));
 
 	DescriptTableReg idtbase;
 	idtbase.size = 256 * sizeof(SegDescriptor) - 1;

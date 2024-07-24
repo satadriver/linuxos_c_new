@@ -106,15 +106,6 @@ int setGraphMode(int mode) {
 }
 
 
-int setVideoMode(int mode) {
-	DWORD params[2];
-	params[0] = 0x4f02;
-	params[1] = mode;
-	__asm {
-		lea edi, params
-		mov eax, 15
-		int 80h
-	}
-}
+
 
 

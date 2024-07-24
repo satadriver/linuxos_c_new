@@ -483,44 +483,23 @@ void __kKeyboardProc() {
 
 
 void __kKbdLed(unsigned char cmd) {
-	__asm {
-		//; disable keyboard
-		call __waitPs2In
-		mov al, 0adh
-		out 64h, al
+	__waitPs2In();
+	outportb(0x64, 0xad);	//; disable keyboard
 
-		//; send ED command to 8048, not 8042 in cpu bridge
-		call __waitPs2In
-		mov al, 0edh
-		out 60h, al
+	__waitPs2In();
+	outportb(0x60, 0xed);		//; send ED command to 8048, not 8042 in cpu bridge
 
-		//; 任何时候收到一个来自于60h端口的合法命令或合法数据之后，都回复一个FAh
-		call __waitPs2Out
-		in al, 60h
-		cmp al, 0fah
+	__waitPs2Out();
+	int ack = inportb(0x60);	
 
-		call __waitPs2In
-		//; send command data to 8048
-		mov al,byte ptr cmd
-		out 60h, al
-		call __waitPs2Out
-		//; here u get return byte 0fah, but why can't read it out ?
-		in al, 60h
-		cmp al, 0fah
+	__waitPs2In();
+	outportb(0x60, cmd);		//; send command data to 8048
 
-// 		; break the waiting
-// 		; call __waitPs2In
-// 		; mov al, 80h
-// 		; out 60h, al
-// 		; call __waitPs2Out
-// 		; in al, 60h
-// 		; cmp al, 0fah
+	__waitPs2Out();
+	ack = inportb(0x60);
 
-		//; enable keyboard
-		call __waitPs2In
-		mov al, 0aeh
-		out 64h, al
-	}
+	__waitPs2In();
+	outportb(0x64, 0xae);
 }
 
 

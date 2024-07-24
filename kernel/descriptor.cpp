@@ -100,12 +100,14 @@ extern "C" __declspec(naked) void __kCallGateProc(DWORD  params, DWORD count) {
 		mov ebp, esp
 	}
 
- 	char szout[1024];
- 	__printf(szout, "__kCallGateProc running,param1:%x,param2:%x\r\n", params, count);
-
+	{
+		char szout[1024];
+		__printf(szout, "__kCallGateProc running,param1:%x,param2:%x\r\n", params, count);
+	}
 
 	__asm {
 		mov esp, ebp
+
 		retf 0x08		//ca 08 00		在长调用中使用retf，这点需要注意.
 	}
 
@@ -133,6 +135,8 @@ extern "C" __declspec(dllexport) void callgateEntry(DWORD  params,DWORD count) {
 		push gs
 		push ss
 
+		cli
+
 		push dword ptr count
 		push params
 
@@ -147,6 +151,8 @@ extern "C" __declspec(dllexport) void callgateEntry(DWORD  params,DWORD count) {
 		_emit 0
 
 		add esp,8
+
+		sti
 
 		pop ss
 		pop gs

@@ -801,17 +801,7 @@ int __sprintf(char * buf, char * format,...) {
 
 
 
-unsigned int random() {
-	__asm {
-		mov al, 36h
-		out 0x43, al
-		in al, 40h
-		mov ah,al
-		in al, 0x40
-		xchg ah,al
-		movzx eax,ax
-	}
-}
+
 
 
 
@@ -885,34 +875,7 @@ int getCpuInfo(char * name) {
 	return 0;
 }
 
-int timer0Wait(unsigned short millisecs) {
-	unsigned short delay = millisecs / 10;
 
-	//unsigned short timer0 = 0;
-	//unsigned short timer1 = 0;
-	__asm {
-		mov al, 36h
-		out 0x43, al
-		in al, 40h
-		mov cl, al
-		in al, 0x40
-		mov ch, al
-		//mov timer0, cx
-
-		_waitTimer0Count :
-		mov al, 36h
-		out 0x43, al
-		in al, 40h
-		mov dl, al
-		in al, 0x40
-		mov dh, al
-		//mov timer1, dx
-
-		sub dx,cx
-		cmp dx,delay
-		jb _waitTimer0Count
-	}
-}
 
 
 int __shutdownSystem() {

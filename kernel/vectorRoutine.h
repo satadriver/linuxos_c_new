@@ -64,7 +64,7 @@ extern "C" __declspec(dllexport) void __kException(DWORD);
 extern "C" __declspec(dllimport) void __kException(DWORD);
 #endif
 
-
+extern "C" void V86TrapProc(LIGHT_ENVIRONMENT* stack);
 
 extern "C" void TimerInterrupt(LIGHT_ENVIRONMENT * stack);
 

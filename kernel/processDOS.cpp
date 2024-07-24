@@ -19,11 +19,12 @@
 //int 19h 会将MBR的512字节装载到内存0x7c00中，然后JUMP到0x7c00处，开始执行MBR的可执行程序（master booter）
 
 
-
+DOS_PE_CONTROL g_v86ControlBloack[LIMIT_V86_PROC_COUNT] = { 0 };
 
 
 int getDosPeAddr(DWORD filedata,int pid) {
-	LPDOS_PE_CONTROL info = (LPDOS_PE_CONTROL)V86_TASKCONTROL_ADDRESS;
+
+	LPDOS_PE_CONTROL info = (LPDOS_PE_CONTROL)g_v86ControlBloack;
 	for (int i = 0; i < LIMIT_V86_PROC_COUNT; i ++)
 	{
 		if (info[i].status == TASK_OVER)
@@ -44,6 +45,7 @@ int getDosPeAddr(DWORD filedata,int pid) {
 			return info[i].address;
 		}
 	}
+	
 
 	return 0;
 }
@@ -118,7 +120,7 @@ int __initDosTss(LPPROCESS_INFO tss, int pid, DWORD addr, char * filename, char 
 	__memset((char*)tss->tss.iomap, 0, sizeof(tss->tss.iomap));
 
 	//由于是单处理器，所以每个进程装入的时候必须打开中断位，否则一个进程一旦独占了唯一的一个cpu会导致无法中断
-	DWORD eflags = 0x23210;
+	DWORD eflags = 0x223200;
 	//eflags |= 0x4000;		//nt == 1
 
 	WORD seg = (unsigned short)(addr >> 4);
@@ -155,14 +157,14 @@ int __initDosTss(LPPROCESS_INFO tss, int pid, DWORD addr, char * filename, char 
 
 		tss->tss.esp = tss->tss.esp - sizeof(TASKDOSPARAMS);
 		LPTASKDOSPARAMS params = (LPTASKDOSPARAMS)(tss->tss.esp + (tss->tss.ss << 4));
-		params->terminate = (DWORD)gV86VMLeave;
+		params->terminate = (DWORD)0;
 		params->pid = pid;						//param1:pid
 		__strcpy(params->szFileName, filename);
 		params->filename = params->szFileName;		//param2:filename
 		__strcpy(params->szFuncName, funcname);
 		params->funcname = params->szFuncName;		//param2:filename
-		params->addr = ((seg - DOS_LOAD_FIRST_SEG) / 0x1000) * sizeof(DOS_PE_CONTROL) + V86_TASKCONTROL_ADDRESS;
-		params->param = runparam;
+		//params->addr = ((seg - DOS_LOAD_FIRST_SEG) / 0x1000) * sizeof(DOS_PE_CONTROL) + V86_TASKCONTROL_ADDRESS;
+		//params->param = runparam;
 
 		//__printf(szout, "__kCreateTask in file dos file:%s\r\n", filename);
 		//__drawGraphChars((unsigned char*)szout, 0);

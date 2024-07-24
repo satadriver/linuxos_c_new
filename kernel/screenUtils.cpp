@@ -8,6 +8,7 @@
 #include "gdi.h"
 #include "malloc.h"
 #include "page.h"
+#include "servicesProc.h"
 
 int gCircleX = 0;
 int gCircleY = 0;
@@ -91,7 +92,7 @@ extern "C" __declspec(dllexport) int __kPrintScreen() {
 int initScreenProtect() {
 	int ret = 0;
 
-	unsigned int r = random();
+	unsigned int r = __random(0);
 
 	gCircleX = r % gVideoWidth;
 	if (gCircleX + gRadius >= gVideoWidth)

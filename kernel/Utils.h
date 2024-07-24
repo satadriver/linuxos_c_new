@@ -72,7 +72,7 @@ extern "C" __declspec(dllexport) int __strupr(char * str);
 
 extern "C" __declspec(dllexport) int __strlwr(char * str);
 
-extern "C" __declspec(dllexport) int timer0Wait(unsigned short);
+
 
 
 extern "C" __declspec(dllexport) int __shutdownSystem();
@@ -84,7 +84,7 @@ extern "C" __declspec(dllexport) int getCpuType(char * name);
 
 extern "C" __declspec(dllexport) int getCpuInfo(char * name);
 
-extern "C" __declspec(dllexport) unsigned int random();
+
 
 extern "C" __declspec(dllexport) int lower2upper(char *data, int len);
 

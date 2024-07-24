@@ -170,7 +170,7 @@ int __initProcess(LPPROCESS_INFO tss, int pid, DWORD filedata, char * filename, 
 	DWORD syslevel = level & 3;
 	tss->level = syslevel;
 
-	DWORD eflags = 0x210;	//if = 1,et = 1
+	DWORD eflags = 0x200200;	//if = 1,et = 1
 	if (syslevel)
 	{
 		eflags |= (syslevel<<12);	//iopl = 3

@@ -121,19 +121,11 @@ struct TaskGateDescriptor {
 #pragma pack()
 
 
-
-
-
-
-
-
 void initGdt();
 
 void initIDT();
 
-void enableGDT();
-
-void enableIDT();
+void initV86Tss(TSS* tss, DWORD esp0,  DWORD ip,DWORD cs, DWORD cr3, DWORD ldt);
 
 void initKernelTss(TSS* tss, DWORD esp0, DWORD esp, DWORD eip, DWORD cr3, DWORD ldt);
 

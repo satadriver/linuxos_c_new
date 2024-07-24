@@ -17,23 +17,19 @@
 
 
 void waitPs2Out() {
-	__asm {
-	__waitPs2Out:
-		in al, 64h
-			test al, 1
-			jz __waitPs2Out
-			ret
-	}
+	unsigned char status = 0;
+	do
+	{
+		status = inportb(0x64);
+	} while ((status & 1) == 0);
 }
 
 void waitPs2In() {
-	__asm {
-	__waitPs2In:
-		in al, 64h
-			test al, 2
-			jnz __waitPs2In
-			ret
-	}
+	unsigned char status = 0;
+	do
+	{
+		status = inportb(0x64);
+	} while (status & 2);
 }
 
 void __waitPs2Out() {

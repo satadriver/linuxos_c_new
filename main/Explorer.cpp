@@ -36,6 +36,7 @@
 #include "hept.h"
 #include "cmosAlarm.h"
 #include "elf.h"
+#include "v86.h"
 
 int __kExplorer(unsigned int retaddr, int tid, char * filename, char * funcname, DWORD param) {
 	int ret = 0;
@@ -78,13 +79,15 @@ int __kExplorer(unsigned int retaddr, int tid, char * filename, char * funcname,
 
 	__kAddCmosAlarm(30, (DWORD)__doAlarmTask, 0);
 
+	v86Process(0x4f02,0,0,3,0,0,0x10);
+
 	//initEfer();
 
 	//getRCBA();
 
 	sysEntryProc(0, 0);
 
-	callgateEntry(0, 0);
+	//callgateEntry(0, 0);
 
 	repeatDrawCCFontString();
 

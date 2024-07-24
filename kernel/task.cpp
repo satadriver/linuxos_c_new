@@ -159,7 +159,7 @@ int __initTask() {
 	gTasksListPtr->process = (LPPROCESS_INFO)TASKS_TSS_BASE;
 	gTasksListPtr->valid = 1;
 
-	__memset((char*)V86_TASKCONTROL_ADDRESS, 0, LIMIT_V86_PROC_COUNT*12);
+	//__memset((char*)V86_TASKCONTROL_ADDRESS, 0, LIMIT_V86_PROC_COUNT*12);
 	return 0;
 }
 
