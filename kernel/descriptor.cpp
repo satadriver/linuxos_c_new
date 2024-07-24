@@ -9,13 +9,34 @@
 #include "Utils.h"
 #include "Kernel.h"
 
-DWORD g_sysenterInitFlag = 0;
+//Extended Feature Enable Register(EFER) is a model - specific register added in the AMD K6 processor, 
+//to allow enabling the SYSCALL / SYSRET instruction, and later for entering and exiting long mode.
+//This register becomes architectural in AMD64 and has been adopted by Intel.Its MSR number is 0xC0000080.
+void initEfer() {
+	DWORD highpart, lowpart;
+	readmsr(0xC0000080, &lowpart, &highpart);
 
-DWORD* g_sysenterParams = 0;
-DWORD g_sysenterParamsLen = 0;
+	//readmsr(0x1f80, &highpart, &lowpart);
 
-DWORD g_sysenterStack3 = 0;
-DWORD g_sysenterEip3 = 0;
+	__asm {
+		mov eax, [lowpart]
+		or eax, 0x4001
+		mov[lowpart], eax
+	}
+
+	//writemsr(0xC0000080, lowpart, highpart);
+}
+
+
+void initCallGate(LPSYSDESCRIPTOR lpcg) {
+	lpcg->attr = 0xec;
+	lpcg->paramCnt = 2;
+	lpcg->selector = KERNEL_MODE_CODE;
+
+	lpcg->addrHigh = (DWORD)__kCallGateProc >> 16;
+	lpcg->addrLow = (DWORD)__kCallGateProc & 0xffff;
+}
+
 
 void initLdt(LPSEGDESCRIPTOR lpldt) {
 	//return;
@@ -43,7 +64,6 @@ void initLdt(LPSEGDESCRIPTOR lpldt) {
 	selectors[1].gd0a_lh = 0xcf;
 	selectors[1].limitLow = 0xffff;
 
-
 	selectors[2].baseHigh = 0;
 	selectors[2].baseMid = 0;
 	selectors[2].baseLow = 0;
@@ -70,128 +90,93 @@ void initLdt(LPSEGDESCRIPTOR lpldt) {
 		movzx eax, ldtno
 		lldt ax
 	}
-
-	// 	char szout[1024];
-	// 	int len = __printf(szout, "ldt selector:%d,base:%x\r\n", ldtno, lpldt);
-	// 	__drawGraphChars((unsigned char*)szout, 0);
 }
 
-extern "C" __declspec(naked) void __kCallGateProc() {
-	DWORD *params;
-	DWORD paramLen;
 
-	//ebp
-	//eip3
-	//cs3
-	//param1
-	//param2
-	//esp3
-	//ss3
+//长调用最终调用在哪里.是由调用门(段描述符)来指定的.而不是EIP.EIP是废弃的
+extern "C" __declspec(naked) void __kCallGateProc(DWORD  params, DWORD count) {
 
-	//思考编译器对局部变量的定义过程
 	__asm {
-		pushad
-		pushfd
-		mov ebp,esp
-		sub esp,0x1000
-
-		mov eax,[ebp + 36 + 8]
-		mov params,eax
-		mov eax,[ebp + 36 + 12]
-		mov paramLen,eax
+		mov ebp, esp
 	}
 
-// 	char szout[1024];
-// 	__printf(szout, "__kCallGateProc running,param1:%x,param2:%x\r\n", params,paramLen);
-// 	__drawGraphChars((unsigned char*)szout, 0xff0000);
+ 	char szout[1024];
+ 	__printf(szout, "__kCallGateProc running,param1:%x,param2:%x\r\n", params, count);
 
-	//[bits 16] iret ;编译后的机器码为CF 
-	//iretd ;编译后的机器码为66 CF
-	//C2 RET immed16
-	//C3 RET
-	//cb retf
-	//cf iret
+
 	__asm {
 		mov esp, ebp
-		popfd
-		popad
-
-		retf 0x08		//ca 08 00
+		retf 0x08		//ca 08 00		在长调用中使用retf，这点需要注意.
 	}
+
+	//RET immed16:	C2 
+	//RET :		C3 
+	//RETF immed16: //CA 
+	//RETF :	CB 
+	//IRET :	CF 
+	//IRET [bits 16]:	CF 
+	//IRETD :	66 CF
+
 	//机器码对应表：
 	//https://defuse.ca/online-x86-assembler.htm#disassembly
 }
 
-void initCallGate(LPSYSDESCRIPTOR lpcg) {
-	lpcg->attr = 0xec;
-	lpcg->paramCnt = 2;
-	lpcg->selector = KERNEL_MODE_CODE;
-
-	lpcg->addrHigh = (DWORD)__kCallGateProc >> 16;
-	lpcg->addrLow = (DWORD)__kCallGateProc &0xffff;
-}
 
 
+extern "C" __declspec(dllexport) void callgateEntry(DWORD  params,DWORD count) {
 
-extern "C" __declspec(dllexport) void callgateEntry(DWORD * params,DWORD paramLen) {
-
-	//__drawGraphChars((unsigned char*)"callgateEntry entry\r\n", 0);
-
-	DWORD seg = (DWORD)glpCallGate - (DWORD)glpGdt;
 	__asm {
-		
-		push paramLen
+		pushad
+		push ds
+		push es
+		push fs
+		push gs
+		push ss
+
+		push dword ptr count
 		push params
 
 		_emit 0x9a
+
 		_emit 0
 		_emit 0
 		_emit 0
 		_emit 0
+
 		_emit callGateSelector
 		_emit 0
 
 		add esp,8
+
+		pop ss
+		pop gs
+		pop fs
+		pop es
+		pop ds
+		popad
 	}
 
-	//__drawGraphChars((unsigned char*)"callgateEntry leave\r\n", 0);
+	char szout[1024];
+	__printf(szout, "callgateEntry leave\r\n");
 
-// 	CALL_LONG calllong;
-// 	calllong.callcode = 0x9a;
-// 	calllong.seg = seg;
-// 	calllong.offset = (DWORD)__kCallGateProc;
-// 	__asm {
-// 		lea eax, calllong
-// 		jmp eax
-// 	}
+#if 0
+ 	CALL_LONG calllong;
+ 	calllong.callcode = 0x9a;
+ 	calllong.seg = seg;
+ 	calllong.offset = (DWORD)__kCallGateProc;
+ 	__asm {
+ 		lea eax, calllong
+ 		jmp eax
+ 	}
+#endif
 }
 
-void initDescriptor() {
-
-}
 
 
 
 
 
 
-//Extended Feature Enable Register(EFER) is a model - specific register added in the AMD K6 processor, 
-//to allow enabling the SYSCALL / SYSRET instruction, and later for entering and exiting long mode.
-//This register becomes architectural in AMD64 and has been adopted by Intel.Its MSR number is 0xC0000080.
-void initEfer() {
-	DWORD highpart,lowpart;
-	readmsr(0xC0000080, &lowpart, &highpart);
-
-	//readmsr(0x1f80, &highpart, &lowpart);
-
-	__asm {
-		mov eax,[lowpart]
-		or eax,0x4001
-		mov [lowpart],eax
-	}
-
-	//writemsr(0xC0000080, lowpart, highpart);
-}
 
 
 
@@ -216,9 +201,9 @@ void readmsr(DWORD no, DWORD *lowpart, DWORD * highpart) {
 
 }
 
-void writemsr(DWORD no, DWORD lowpart, DWORD highpart) {
+void writemsr(DWORD reg, DWORD lowpart, DWORD highpart) {
 	__asm {
-		mov ecx, no
+		mov ecx, reg
 
 		mov eax, lowpart
 
@@ -236,7 +221,15 @@ void sysleave() {
 
 }
 
-int sysenterInit(DWORD entryaddr) {
+
+
+DWORD g_sysEntryInit = 0;
+
+DWORD g_sysEntryStack3 = 0;
+
+
+
+int sysEntryInit(DWORD entryaddr) {
 	LPTSS tss = (LPTSS)CURRENT_TASK_TSS_BASE;
 	if (tss->cs & 3)
 	{
@@ -262,13 +255,7 @@ int sysenterInit(DWORD entryaddr) {
 
 
 
-
-
-
-
-
-
-void sysenterProc(DWORD * params, DWORD paramslen) {
+void sysEntry(DWORD  params, DWORD size) {
 	LPTSS tss = (LPTSS)CURRENT_TASK_TSS_BASE;
 
 	WORD rcs = 0;
@@ -284,65 +271,46 @@ void sysenterProc(DWORD * params, DWORD paramslen) {
 		mov resp, esp
 	}
 	char szout[1024];
-	__printf(szout, "sysenterProc current cs:%x,tss cs:%x,ss:%x,esp:%x\r\n", rcs, tss->cs, rss, resp);
+	__printf(szout, "sysEntry current cs:%x,tss cs:%x,ss:%x,esp:%x\r\n", rcs, tss->cs, rss, resp);
 
 }
 
 //only be invoked in ring3,in ring0 will cause exception 0dh
-extern "C" __declspec(dllexport) void sysenterEntry(DWORD * params, DWORD paramslen) {
+extern "C" __declspec(dllexport) void sysEntryProc(DWORD  params, DWORD size) {
 
-	//__drawGraphChars((unsigned char*)"sysenterProc entry\r\n", 0);
-
-	g_sysenterParams = params;
-	g_sysenterParamsLen = paramslen;
-
-	__asm {
-
-		cmp dword ptr ds : [g_sysenterInitFlag], 0
-		jnz __sysenterInitFlagOK
-
-		lea eax, __sysenterEntry
-		push eax
-		call sysenterInit
-		add esp, 4
-		cmp eax, 0
-		jnz __sysenterExit
-		mov dword ptr ds : [g_sysenterInitFlag], 1
-		jmp __sysenterExit
-
-		__sysenterInitFlagOK :
-
-		mov ax, cs
-			test ax, 3
-			jz __sysenterExit
-
-			mov ds : [g_sysenterStack3], esp
-			lea eax, __sysenterExit
-			mov ds : [g_sysenterEip3], eax
-
-
-			_emit 0x0f
-			_emit 0x34
-
-			__sysenterEntry :
-
-			mov eax, ds : [g_sysenterParamsLen]
-			push eax
-			mov eax, ds : [g_sysenterParams]
-			push eax
-			call sysenterProc
-			add esp, 8
-
-			sti
-
-			mov edx, ds:[g_sysenterEip3]
-			mov ecx, ds : [g_sysenterStack3]
-			_emit 0x0f
-			_emit 0x35
-
-			__sysenterExit :
+	if (g_sysEntryInit == 0) {
+		DWORD addr = 0;
+		__asm {
+			lea eax, __sysEntry
+			mov addr, eax
+		}
+		sysEntryInit((DWORD)addr);
+		g_sysEntryInit = TRUE;
 	}
 
-	//__drawGraphChars((unsigned char*)"sysenterProc leave\r\n", 0);
+	__asm {
+		mov ax, cs
+		test ax, 3
+		jz __sysEntryExit
+
+		mov ds : [g_sysEntryStack3] , esp
+
+		_emit 0x0f
+		_emit 0x34
+	}
+
+	__sysEntry:
+	sysEntry(params, size);
+
+	__asm {
+		lea edx, __sysEntryExit
+		mov ecx, ds : [g_sysEntryStack3]
+		_emit 0x0f
+		_emit 0x35
+
+		__sysEntryExit :
+	}	
+
+
 }
 

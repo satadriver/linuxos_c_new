@@ -1,7 +1,7 @@
 #include "debugger.h"
 #include "Utils.h"
 #include "video.h"
-
+#include "task.h"
 
 //VME bit0
 //虚拟8086模式扩展（CR4中的位0）置1时则在虚拟8086模式下，启用中断和异常处理扩展。置0时禁用扩展功能。
@@ -16,12 +16,8 @@
 // PVI enhancements are also supported in long mode.See“Virtual Interrupts” on page 251 for more
 // information on using PVI.
 
-
 //tsd stamp disable bit
-
 //de debugging extensions bit 
-
-
 
 // PSE bit4
 // 页尺寸扩展(CR4中的位4)置1时页大小为4M字节，置0时页大小为4K字节
@@ -109,57 +105,123 @@ void initDebugger() {
 }
 
 
-void __kBreakPoint( unsigned int * regs) {
+
+void __declspec(naked) breakPoint(LIGHT_ENVIRONMENT* stack) {
+	__asm {
+		pushad
+		push ds
+		push es
+		push fs
+		push gs
+		push ss
+
+		push esp
+		sub esp, 4
+		push ebp
+		mov ebp, esp
+
+		mov eax, KERNEL_MODE_DATA
+		mov ds, ax
+		mov es, ax
+		MOV FS, ax
+		MOV GS, AX
+	}
+
+	{
+		__kBreakPoint(stack);
+	}
+
+	__asm {
+		mov esp, ebp
+		pop ebp
+		add esp, 4
+		pop esp
+
+		pop ss
+		pop gs
+		pop fs
+		pop es
+		pop ds
+		popad
+
+		iretd
+	}
+}
+
+void __declspec(naked) debugger(LIGHT_ENVIRONMENT* stack) {
+	__asm {
+		pushad
+		push ds
+		push es
+		push fs
+		push gs
+		push ss
+
+		push esp
+		sub esp, 4
+		push ebp
+		mov ebp, esp
+
+		mov eax, KERNEL_MODE_DATA
+		mov ds, ax
+		mov es, ax
+		MOV FS, ax
+		MOV GS, AX
+	}
+
+	{
+		__kDebugger(stack);
+	}
+
+	__asm {
+		mov esp, ebp
+		pop ebp
+		add esp, 4
+		pop esp
+
+		pop ss
+		pop gs
+		pop fs
+		pop es
+		pop ds
+		popad
+
+		iretd
+	}
+}
+
+void __kBreakPoint(LIGHT_ENVIRONMENT* stack) {
 
 	char szout[1024];
 	int len = 0;
 
-	unsigned short segDs = 0;
-	unsigned short segEs = 0;
-	unsigned short segFs = 0;
-	unsigned short segGs = 0;
-	unsigned short segSs = 0;
 	DWORD eflags = 0;
 	__asm {
-		mov ax, ds
-		mov segDs, ax
-
-		mov ax, es
-		mov segEs, ax
-
-		mov ax, fs
-		mov segFs, ax
-
-		mov ax, gs
-		mov segGs, ax
-
-		mov ax, ss
-		mov segSs, ax
-
 		//cpu not clear IF when enter interruptions
 		pushfd
 		pop ss:[eflags]
 	}
 
-	if (regs[10] & 0x20000)
+	if (stack->eflags & 0x20000)
 	{
 		len = __printf(szout,
 			"eax:%x,ecx:%x,edx:%x,ebx:%x,kernel esp:%x,ebp:%x,esi:%x,edi:%x,eip:%x,v86 cs:%x,current eflags:%x,eflags:%x,v86 esp:%x,v86 ss:%x,v86 ds:%x,v86 es:%x,v86 fs:%x,v86 gs:%x\n",
-			regs[0], regs[1], regs[2], regs[3], regs[4], regs[5], regs[6], regs[7], regs[8], regs[9], eflags, regs[10], regs[11], regs[12],
-			regs[14], regs[13], regs[15], regs[16]);
+			stack->eax, stack->ecx, stack->edx, stack->ebx, stack->esp, stack->ebp, stack->esi, stack->edi, 
+			stack->eip, stack->cs, eflags, stack->eflags, stack->esp3, stack->ss3,stack->ds_v86, stack->es_v86, stack->fs_v86, stack->gs_v86);
 	}
-	else if (regs[9] & 3)
+	else if (stack->cs & 3)
 	{
 		len = __printf(szout,
 			"eax:%x,ecx:%x,edx:%x,ebx:%x,kernel esp:%x,ebp:%x,esi:%x,edi:%x,eip:%x,cs:%x,current eflags:%x,eflags:%x,user esp:%x,user ss:%x,ds:%x,es:%x,fs:%x,gs:%x,kernel ss:%x\n",
-			regs[0], regs[1], regs[2], regs[3], regs[4], regs[5], regs[6], regs[7], regs[8], regs[9], eflags, regs[10], regs[11], regs[12],
-			segDs, segEs, segFs, segGs, segSs);
+			stack->eax, stack->ecx, stack->edx, stack->ebx, stack->esp, stack->ebp, stack->esi, stack->edi, 
+			stack->eip, stack->cs, eflags, stack->eflags, stack->esp3, stack->ss3,
+			stack->ds, stack->es, stack->fs, stack->gs,stack->ss);
 	}
 	else {
 		len = __printf(szout,
 			"eax:%x,ecx:%x,edx:%x,ebx:%x,esp:%x,ebp:%x,esi:%x,edi:%x,eip:%x,cs:%x,current eflags:%x,eflags:%x,ds:%x,es:%x,fs:%x,gs:%x,kernel ss:%x\n",
-			regs[0], regs[1], regs[2], regs[3], regs[4], regs[5], regs[6], regs[7], regs[8], regs[9],eflags, regs[10],
-			segDs, segEs, segFs, segGs, segSs);
+			stack->eax, stack->ecx, stack->edx, stack->ebx, stack->esp, stack->ebp, stack->esi, stack->edi,stack->eip, stack->cs, eflags, stack->eflags,
+			stack->ds, stack->es, stack->fs, stack->gs, stack->ss);
 	}
 
 	__drawGraphChars((unsigned char*)szout, 0);
@@ -168,7 +230,7 @@ void __kBreakPoint( unsigned int * regs) {
 
 
 
-void __kDebugger(unsigned int * regs) {
+void __kDebugger(LIGHT_ENVIRONMENT* stack) {
 
 	char szout[1024];
 	int len = 0;
@@ -194,7 +256,7 @@ void __kDebugger(unsigned int * regs) {
 	{
 		len = __printf(szout, "BS debugger\r\n");
 
-		__kBreakPoint(regs);
+		__kBreakPoint(stack);
 	}
 	
 	if (reg_dr6 & 0x8000)	//BT
@@ -286,11 +348,11 @@ void __kDebugger(unsigned int * regs) {
 		mov[reg_dr6], eax
 	}
 
-	DWORD eflags = regs[10];
+	DWORD eflags = stack->eflags;
 	if (eflags & 0x10000)
 	{
 		eflags = eflags & 0xfffeffff;
-		regs[10] = eflags;
+		stack->eflags = eflags;
 	}
 }
 
@@ -563,13 +625,13 @@ int codeBreakPoint(unsigned int * addr,int len) {
 
 
 
-void __kdBreakPoint() {
+void __enableBreakPoint() {
 	__asm {
 		int 3
 	}
 }
 
-int enterSingleStep() {
+int enableSingleStep() {
 	//single step
 	__asm {
 		pushfd
@@ -579,7 +641,7 @@ int enterSingleStep() {
 }
 
 
-int clearSingleStep() {
+int disableSingleStep() {
 	//single step
 	__asm {
 		pushfd
@@ -589,7 +651,7 @@ int clearSingleStep() {
 }
 
 
-int enterGdDebugger() {
+int enableGdDebugger() {
 
 	__asm {
 		mov eax, dr7
@@ -598,7 +660,7 @@ int enterGdDebugger() {
 	}
 }
 
-int clearGdDebugger() {
+int disableGdDebugger() {
 
 	__asm {
 		mov eax, dr7

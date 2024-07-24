@@ -131,7 +131,7 @@ int __kAddRealTimer(DWORD addr,DWORD delay,DWORD param1,DWORD param2,DWORD param
 
 	DWORD * lptickcnt = (DWORD*)CMOS_TICK_COUNT;
 
-	DWORD ticks = delay / 15;		//15ms
+	DWORD ticks = delay / 15;		//15.625 ms
 
 	int i = 0;
 	for ( i = 0;i < REALTIMER_CALLBACK_MAX;i ++)

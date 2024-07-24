@@ -288,11 +288,11 @@ void initIDT() {
 	}
 
 	makeTrapGateDescriptor((DWORD)div0Exception, KERNEL_MODE_CODE, 3, descriptor + 0);
-	makeTrapGateDescriptor((DWORD)__kDebugger, KERNEL_MODE_CODE, 3, descriptor + 1);
+	makeTrapGateDescriptor((DWORD)debugger, KERNEL_MODE_CODE, 3, descriptor + 1);
 
 	makeTrapGateDescriptor((DWORD)NmiException, KERNEL_MODE_CODE, 3, descriptor + 2);
 
-	makeTrapGateDescriptor((DWORD)__kBreakPoint, KERNEL_MODE_CODE, 3, descriptor + 3);
+	makeTrapGateDescriptor((DWORD)breakPoint, KERNEL_MODE_CODE, 3, descriptor + 3);
 
 	makeTrapGateDescriptor((DWORD)overflowException, KERNEL_MODE_CODE, 3, descriptor + 4);
 	makeTrapGateDescriptor((DWORD)boundCheckException, KERNEL_MODE_CODE, 3, descriptor + 5);
@@ -301,7 +301,6 @@ void initIDT() {
 	makeTrapGateDescriptor((DWORD)doubleFaultException, KERNEL_MODE_CODE, 3, descriptor + 8);
 
 	makeTrapGateDescriptor((DWORD)coprocCrossBorderException, KERNEL_MODE_CODE, 3, (descriptor + 9));
-
 
 	makeTaskGateDescriptor((DWORD)kTssExceptSelector, 3, (TaskGateDescriptor*)(descriptor + 10));
 
@@ -323,20 +322,10 @@ void initIDT() {
 #endif
 
 	makeIntGateDescriptor((DWORD)keyboardProc, KERNEL_MODE_CODE, 3, descriptor + INTR_8259_MASTER + 1);
-	makeIntGateDescriptor((DWORD)overflowException, KERNEL_MODE_CODE, 3, descriptor + INTR_8259_MASTER + 2);
-	makeIntGateDescriptor((DWORD)overflowException, KERNEL_MODE_CODE, 3, descriptor + INTR_8259_MASTER + 3);
-	makeIntGateDescriptor((DWORD)overflowException, KERNEL_MODE_CODE, 3, descriptor + INTR_8259_MASTER + 4);
-	makeIntGateDescriptor((DWORD)overflowException, KERNEL_MODE_CODE, 3, descriptor + INTR_8259_MASTER + 5);
-	makeIntGateDescriptor((DWORD)overflowException, KERNEL_MODE_CODE, 3, descriptor + INTR_8259_MASTER + 6);
-	makeIntGateDescriptor((DWORD)overflowException, KERNEL_MODE_CODE, 3, descriptor + INTR_8259_MASTER + 7);
+
 	makeIntGateDescriptor((DWORD)CmosInterrupt, KERNEL_MODE_CODE, 3, descriptor + INTR_8259_SLAVE + 0);
-	makeIntGateDescriptor((DWORD)overflowException, KERNEL_MODE_CODE, 3, descriptor + INTR_8259_SLAVE + 1);
-	makeIntGateDescriptor((DWORD)overflowException, KERNEL_MODE_CODE, 3, descriptor + INTR_8259_SLAVE + 2);
-	makeIntGateDescriptor((DWORD)overflowException, KERNEL_MODE_CODE, 3, descriptor + INTR_8259_SLAVE + 3);
+
 	makeIntGateDescriptor((DWORD)mouseProc, KERNEL_MODE_CODE, 3, descriptor + INTR_8259_SLAVE + 4);
-	makeIntGateDescriptor((DWORD)overflowException, KERNEL_MODE_CODE, 3, descriptor + INTR_8259_SLAVE + 5);
-	makeIntGateDescriptor((DWORD)overflowException, KERNEL_MODE_CODE, 3, descriptor + INTR_8259_SLAVE + 6);
-	makeIntGateDescriptor((DWORD)overflowException, KERNEL_MODE_CODE, 3, descriptor + INTR_8259_SLAVE + 7);
 
 	makeTrapGateDescriptor((DWORD)servicesProc, KERNEL_MODE_CODE, 3, descriptor + 0x80);
 

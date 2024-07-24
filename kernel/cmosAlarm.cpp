@@ -149,7 +149,7 @@ void addCmosAlarmTimer(DWORD interval) {
 		}
 	}
 
-	//writeCmosPort(0x0d, b2bcd(dstday));
+	writeCmosPort(0x0d, b2bcd(dstday));		//check if invalid?
 	writeCmosPort(0x05, b2bcd(dsthour));
 	writeCmosPort(0x03, b2bcd(dstmin));
 	writeCmosPort(0x01, b2bcd(dstsecond));

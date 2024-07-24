@@ -889,12 +889,7 @@ __declspec(naked) void virtualException(LIGHT_ENVIRONMENT* stack) {
 
 
 extern "C" void __declspec(naked) TimerInterrupt(LIGHT_ENVIRONMENT * stack) {
-
-_TimerInterruptStart:
 	__asm {
-		//clts
-		//iretd
-
 		pushad
 		push ds
 		push es
@@ -912,7 +907,6 @@ _TimerInterruptStart:
 		mov es, ax
 		MOV FS, ax
 		MOV GS, AX
-
 	}
 
 	{

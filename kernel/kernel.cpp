@@ -104,8 +104,8 @@ int __kernelEntry(LPVESAINFORMATION vesa, DWORD fontbase,DWORD v86Proc,DWORD v86
 
 	//getGdtIdt();
 
-	//initGdt();
-	//initIDT();
+	initGdt();
+	initIDT();
 
 	initDevices();
 
@@ -119,7 +119,7 @@ int __kernelEntry(LPVESAINFORMATION vesa, DWORD fontbase,DWORD v86Proc,DWORD v86
 
 	initDll();
 
-	sysenterEntry(0,0);
+	sysEntryProc(0,0);
 
 	initRS232Com1();
 	initRS232Com2();

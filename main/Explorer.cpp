@@ -41,10 +41,9 @@ int __kExplorer(unsigned int retaddr, int tid, char * filename, char * funcname,
 	int ret = 0;
 
 	char szout[1024];
-	__printf(szout, "__kExplorer task retaddr:%x,pid:%x,name:%s,funcname:%s,param:%x\n", retaddr, tid, filename, funcname, param);
-
-
 	initWindowList();
+
+	__printf(szout, "__kExplorer task retaddr:%x,pid:%x,name:%s,funcname:%s,param:%x\n", retaddr, tid, filename, funcname, param);
 
 	WINDOWCLASS window;
 	initDesktopWindow(&window, "__deskTop", tid);
@@ -75,7 +74,7 @@ int __kExplorer(unsigned int retaddr, int tid, char * filename, char * funcname,
 
 	showPciDevs();
 
-	__kdBreakPoint();
+	__enableBreakPoint();
 
 	__kAddCmosAlarm(30, (DWORD)__doAlarmTask, 0);
 
@@ -83,9 +82,9 @@ int __kExplorer(unsigned int retaddr, int tid, char * filename, char * funcname,
 
 	//getRCBA();
 
-	//sysenterEntry(0, 0);
+	sysEntryProc(0, 0);
 
-	//callgateEntry(0, 0);
+	callgateEntry(0, 0);
 
 	repeatDrawCCFontString();
 

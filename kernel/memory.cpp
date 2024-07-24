@@ -261,6 +261,7 @@ DWORD linear2phy(DWORD linearAddr,int pid) {
 
 
 DWORD linear2phy(DWORD linearAddr) {
+	return linearAddr;
 
 	LPPROCESS_INFO process = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
 	int pid = process->pid;

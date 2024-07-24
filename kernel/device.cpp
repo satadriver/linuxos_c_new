@@ -1,4 +1,4 @@
-
+﻿
 #include "def.h"
 #include "device.h"
 #include "hardware.h"
@@ -186,6 +186,23 @@ void getKeyboardID() {
 }
 
 
+/*
+0001 = 3.90625 ms
+0010 = 7.8125 ms
+0011 = 122.070 µs
+0100 = 244.141 µs
+0101 = 488.281 µs
+0110 = 976.5625 µs
+0111 = 1.953125 ms
+1000 = 3.90625 ms
+1001 = 7.8125 ms
+1010 = 15.625 ms
+1011 = 31.25 ms
+1100 = 62.5 ms
+1101 = 125 ms
+1110 = 250 ms
+1111= 500 ms
+*/
 void initCMOS() {
 
 	outportb(CMOS_NUM_PORT, 0X0A);
