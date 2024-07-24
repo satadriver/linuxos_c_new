@@ -14,7 +14,7 @@
 #include "memory.h"
 #include "cmosTimer.h"
 
-
+CMOSALARM_PROCESS_LIST gCmosAlarmProc;
 
 
 int isLeapYear(int year) {
@@ -73,7 +73,7 @@ unsigned short makehalf(unsigned char low, unsigned char high) {
 
 
 
-void addCmosAlarmTimer(DWORD interval) {
+void addAlarmTimer(DWORD interval) {
 	__asm {
 		cli
 	}
@@ -164,11 +164,11 @@ void addCmosAlarmTimer(DWORD interval) {
 }
 
 
-CMOSALARM_PROCESS_LIST gCmosAlarmProc;
+
 
 
 //from assembly code
-void __kCmosAlarmProc() {
+void __kAlarmTimerProc() {
 
 	char szout[1024];
 	__printf(szout, "__kCmosAlarmProc entry from assemble code\n");
@@ -191,7 +191,7 @@ void __kCmosAlarmProc() {
 	}
 }
 
-int __kAddCmosAlarm( DWORD interval, DWORD linearaddr, DWORD param) {
+int __kAddAlarmTimer( DWORD interval, DWORD linearaddr, DWORD param) {
 
 	if (gCmosAlarmProc.addr == 0 && gCmosAlarmProc.interval == 0)
 	{
@@ -201,14 +201,14 @@ int __kAddCmosAlarm( DWORD interval, DWORD linearaddr, DWORD param) {
 		gCmosAlarmProc.interval = interval;
 		gCmosAlarmProc.param = param;
 
-		addCmosAlarmTimer(interval);
+		addAlarmTimer(interval);
 		return TRUE;
 	}
 
 	return 0;
 }
 
-void __kRemoveCmosAlarm() {
+void __kRemoveAlarmTimer() {
 	__asm {
 		cli
 	}

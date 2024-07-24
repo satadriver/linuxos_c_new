@@ -3,12 +3,14 @@
 #include "def.h"
 
 #pragma pack(1)
+
 typedef struct
 {
 	DWORD addr;
 	DWORD interval;
 	DWORD param;
 }CMOSALARM_PROCESS_LIST;
+
 #pragma pack()
 
 
@@ -18,11 +20,11 @@ unsigned char b2bcd(unsigned char b);
 
 unsigned short makehalf(unsigned char low, unsigned char high);
 
-extern "C" __declspec(dllexport) void __kCmosAlarmProc();
+extern "C" __declspec(dllexport) void __kAlarmTimerProc();
 
-extern "C" __declspec(dllexport) int __kAddCmosAlarm(DWORD interval, DWORD addr, DWORD param);
+extern "C" __declspec(dllexport) int __kAddAlarmTimer(DWORD interval, DWORD addr, DWORD param);
 
-extern "C" __declspec(dllexport) void __kRemoveCmosAlarm();
+extern "C" __declspec(dllexport) void __kRemoveAlarmTimer();
 
 int isLeapYear(int year);
 

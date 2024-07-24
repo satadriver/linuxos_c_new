@@ -553,7 +553,7 @@ __declspec(naked) void keyboardProc() {
 	}
 
 	__asm {
-		mov dword ptr ds : [CMOS_SECONDS_TOTAL] , 0
+		mov dword ptr ds : [SLEEP_TIMER_RECORD] , 0
 		mov eax, TURNON_SCREEN
 		int 80h
 

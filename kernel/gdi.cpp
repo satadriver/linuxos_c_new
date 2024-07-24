@@ -6,6 +6,7 @@
 #include "malloc.h"
 #include "cmosTimer.h"
 #include "video.h"
+#include "cmosExactTimer.h"
 
 float f(float x, float y, float z) {
 	return x*x + y*y + z*z - 1;
@@ -352,7 +353,7 @@ void drawCCFontChar(DWORD param1, DWORD param2, DWORD param3, DWORD param4) {
 		(*idx)++;
 	}
 	else {
-		__kRemoveRealTimer(*timerno);
+		__kRemoveExactTimer(*timerno);
 	}
 }
 
@@ -367,7 +368,7 @@ int repeatDrawCCFontString() {
 	if (result)
 	{
 		__drawCCS((unsigned char*)"欢迎来到汉字的世界！\r\n", 0xff0000);
-		g_cc_timerno = __kAddRealTimer((DWORD)drawCCFontChar, 300, (DWORD)&g_cc_poet, (DWORD)&g_cc_color, (DWORD)&g_cc_idx,
+		g_cc_timerno = __kAddExactTimer((DWORD)drawCCFontChar, 300, (DWORD)&g_cc_poet, (DWORD)&g_cc_color, (DWORD)&g_cc_idx,
 			(DWORD)&g_cc_timerno);
 	}
 

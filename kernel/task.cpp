@@ -404,7 +404,7 @@ int __resumePid(int pid) {
 #ifndef TASK_SINGLE_TSS
 extern "C"  __declspec(dllexport) DWORD __kTaskSchedule(LIGHT_ENVIRONMENT* regs) {
 
-	systimerProc();
+	__k8254TimerProc();
 
 // 	LPDOS_PE_CONTROL dos_status = (LPDOS_PE_CONTROL)V86_TASKCONTROL_ADDRESS;
 // 	for (int i = 0; i < LIMIT_V86_PROC_COUNT; i++)
@@ -511,7 +511,7 @@ extern "C"  __declspec(dllexport) DWORD __kTaskSchedule(LIGHT_ENVIRONMENT* regs)
 #else
 extern "C"  __declspec(dllexport) DWORD __kTaskSchedule(LIGHT_ENVIRONMENT * env) {
 
-	systimerProc();
+	__k8254TimerProc();
 
 	// 	LPDOS_PE_CONTROL dos_status = (LPDOS_PE_CONTROL)V86_TASKCONTROL_ADDRESS;
 	// 	for (int i = 0; i < LIMIT_V86_PROC_COUNT; i++)

@@ -6,6 +6,7 @@
 #include "ListEntry.h"
 #include "hardware.h"
 #include "servicesProc.h"
+#include "cmosExactTimer.h"
 
 
 unsigned char readCmosPort(unsigned char port) {
@@ -45,7 +46,7 @@ unsigned short bcd2asc(char bcd) {
 	return (low << 8) + high;
 }
 
-void __kCmosTimer() {
+void __kPeriodTimer() {
 	char c = readCmosPort(0x32);
 	char y = readCmosPort(9);
 	char m = readCmosPort(8);
@@ -93,7 +94,10 @@ void __kCmosTimer() {
 	__sprintf(szout,fmt , &strc, &stry, &strm, &strd, strdw, &strhour, &strminute, &strsecond);
 	__strcpy((char*)CMOS_DATETIME_STRING, szout);
 
-	DWORD * lptickcnt = (DWORD*)CMOS_SECONDS_TOTAL;
+	DWORD* lptickcnt = (DWORD*)CMOS_PERIOD_TICK_COUNT;
+	(*lptickcnt)++;
+
+	lptickcnt = (DWORD*)SLEEP_TIMER_RECORD;
 	(*lptickcnt)++;
 	if (*lptickcnt >= SHUTDOWN_SCREEN_DELAY)
 	{
@@ -106,45 +110,57 @@ void __kCmosTimer() {
 
 	DWORD pos = (gVideoHeight - GRAPHCHAR_HEIGHT) * gVideoWidth * gBytesPerPixel;
 	__drawGraphChar((unsigned char*)szout, fontcolor, pos, TASKBARCOLOR);
+
+	__kPeriodTimerProc();
 }
 
 
 
 
-TIMER_PROC_PARAM gCmosTimerDPC[REALTIMER_CALLBACK_MAX] = { 0 };
+char* dayOfWeek2str(int n) {
 
+	char* dayweek[8] = { {"Sunday"},{"Monday"},"Tuesday","Wednesday","Thursday","Friday","Saturday","Other" };
 
-void initDPC() {
-	__memset((char*)gCmosTimerDPC, 0, REALTIMER_CALLBACK_MAX * sizeof(TIMER_PROC_PARAM));
+	return dayweek[n];
 }
 
 
-int __kAddRealTimer(DWORD addr,DWORD delay,DWORD param1,DWORD param2,DWORD param3,DWORD param4) {
+
+
+TIMER_PROC_PARAM gPeriodTimer[REALTIMER_CALLBACK_MAX] = { 0 };
+
+
+void initPeriodTimer() {
+	__memset((char*)gPeriodTimer, 0, REALTIMER_CALLBACK_MAX * sizeof(TIMER_PROC_PARAM));
+}
+
+
+int __kAddPeriodTimer(DWORD addr, DWORD delay, DWORD param1, DWORD param2, DWORD param3, DWORD param4) {
 	if (addr == 0 || delay == 0)
 	{
 		return -1;
 	}
 
-//char szout[1024];
-//__printf(szout, "__kAddCmosTimer addr:%x,delay:%d,param1:%x,param2:%x,param3:%x,param4:%x\r\n", 
-// addr,delay,param1,param2,param3,param4);
+	//char szout[1024];
+	//__printf(szout, "__kAddCmosTimer addr:%x,delay:%d,param1:%x,param2:%x,param3:%x,param4:%x\r\n", 
+	// addr,delay,param1,param2,param3,param4);
 
-	DWORD * lptickcnt = (DWORD*)CMOS_TICK_COUNT;
+	DWORD* lptickcnt = (DWORD*)CMOS_PERIOD_TICK_COUNT;
 
 	DWORD ticks = delay / 15;		//15.625 ms
 
 	int i = 0;
-	for ( i = 0;i < REALTIMER_CALLBACK_MAX;i ++)
+	for (i = 0; i < REALTIMER_CALLBACK_MAX; i++)
 	{
-		if (gCmosTimerDPC[i].func == 0 && gCmosTimerDPC[i].tickcnt == 0)
+		if (gPeriodTimer[i].func == 0 && gPeriodTimer[i].tickcnt == 0)
 		{
-			gCmosTimerDPC[i].func = addr;
-			gCmosTimerDPC[i].ticks = ticks;
-			gCmosTimerDPC[i].tickcnt = *lptickcnt + ticks;
-			gCmosTimerDPC[i].param1 = param1;
-			gCmosTimerDPC[i].param2 = param2;
-			gCmosTimerDPC[i].param3 = param3;
-			gCmosTimerDPC[i].param4 = param4;
+			gPeriodTimer[i].func = addr;
+			gPeriodTimer[i].ticks = ticks;
+			gPeriodTimer[i].tickcnt = *lptickcnt + ticks;
+			gPeriodTimer[i].param1 = param1;
+			gPeriodTimer[i].param2 = param2;
+			gPeriodTimer[i].param3 = param3;
+			gPeriodTimer[i].param4 = param4;
 			break;
 		}
 	}
@@ -154,48 +170,37 @@ int __kAddRealTimer(DWORD addr,DWORD delay,DWORD param1,DWORD param2,DWORD param
 
 
 
-void __kRemoveRealTimer(int no) {
+void __kRemovePeriodTimer(int no) {
 	if (no >= 0 && no < REALTIMER_CALLBACK_MAX)
 	{
-		gCmosTimerDPC[no].func = 0;
-		gCmosTimerDPC[no].tickcnt = 0;
+		gPeriodTimer[no].func = 0;
+		gPeriodTimer[no].tickcnt = 0;
 	}
 }
 
 
 
-void __kCmosExactTimerProc() {
+void __kPeriodTimerProc() {
 
 	int result = 0;
-	DWORD * lptickcnt = (DWORD*)CMOS_TICK_COUNT;
+	DWORD* lptickcnt = (DWORD*)CMOS_PERIOD_TICK_COUNT;
 	DWORD tickcnt = *lptickcnt;
 	//in both c and c++ language,the * priority is lower than ++
 	(*lptickcnt)++;
 
-	for (int i = 0;i < REALTIMER_CALLBACK_MAX;i ++)
+	for (int i = 0; i < REALTIMER_CALLBACK_MAX; i++)
 	{
-		if (gCmosTimerDPC[i].func)
+		if (gPeriodTimer[i].func)
 		{
-			if (gCmosTimerDPC[i].tickcnt < *lptickcnt)
+			if (gPeriodTimer[i].tickcnt < *lptickcnt)
 			{
-// 				char szout[1024];
-// 				__printf(szout,"__kCmosExactTimerProc\r\n");
 
-				gCmosTimerDPC[i].tickcnt = *lptickcnt + gCmosTimerDPC[i].ticks;
+				gPeriodTimer[i].tickcnt = *lptickcnt + gPeriodTimer[i].ticks;
 
-				typedef int(*ptrfunction)(DWORD param1,DWORD param2,DWORD param3,DWORD param4);
-				ptrfunction lpfunction = (ptrfunction)gCmosTimerDPC[i].func;
-				result = lpfunction(gCmosTimerDPC[i].param1, gCmosTimerDPC[i].param2,gCmosTimerDPC[i].param3, gCmosTimerDPC[i].param4 );
+				typedef int(*ptrfunction)(DWORD param1, DWORD param2, DWORD param3, DWORD param4);
+				ptrfunction lpfunction = (ptrfunction)gPeriodTimer[i].func;
+				result = lpfunction(gPeriodTimer[i].param1, gPeriodTimer[i].param2, gPeriodTimer[i].param3, gPeriodTimer[i].param4);
 			}
 		}
 	}
-}
-
-
-
-char* dayOfWeek2str(int n) {
-
-	char* dayweek[8] = { {"Sunday"},{"Monday"},"Tuesday","Wednesday","Thursday","Friday","Saturday","Other" };
-
-	return dayweek[n];
 }

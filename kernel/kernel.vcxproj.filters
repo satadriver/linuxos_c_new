@@ -210,6 +210,9 @@
     <ClCompile Include="vectorRoutine.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="cmosExactTimer.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="kernel.h">
@@ -378,6 +381,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="vectorRoutine.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="cmosExactTimer.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

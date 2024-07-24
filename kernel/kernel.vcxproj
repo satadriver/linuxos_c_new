@@ -170,6 +170,7 @@
     <ClCompile Include="apic.cpp" />
     <ClCompile Include="atapi.cpp" />
     <ClCompile Include="cmosAlarm.cpp" />
+    <ClCompile Include="cmosExactTimer.cpp" />
     <ClCompile Include="cmosTimer.cpp" />
     <ClCompile Include="coprocessor.cpp" />
     <ClCompile Include="core.cpp" />
@@ -227,6 +228,7 @@
     <ClInclude Include="apic.h" />
     <ClInclude Include="atapi.h" />
     <ClInclude Include="cmosAlarm.h" />
+    <ClInclude Include="cmosExactTimer.h" />
     <ClInclude Include="cmosTimer.h" />
     <ClInclude Include="coprocessor.h" />
     <ClInclude Include="core.h" />
