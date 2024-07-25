@@ -2,7 +2,8 @@
 #include "Utils.h"
 #include "video.h"
 #include "cmosAlarm.h"
-#include "cmosTimer.h"
+#include "cmosPeriodTimer.h"
+
 
 int __memset(char * dst, int value, int len) {
 #ifdef _DEBUG
@@ -21,7 +22,6 @@ int __memset(char * dst, int value, int len) {
 		mov eax, len
 	}
 #endif
-
 }
 
 int __memset4(char * dst, int value, int len) {
@@ -58,20 +58,19 @@ int __memset4(char * dst, int value, int len) {
 }
 
 int __strlen(char * s) {
-
-		__asm {
-			push esi
-			mov esi, s
-			cld
-			_checkZero :
-			lodsb
-				cmp al, 0
-				jnz _checkZero
-				dec esi
-				sub esi, s
-				mov eax, esi
-				pop esi
-		}
+	__asm {
+		push esi
+		mov esi, s
+		cld
+		_checkZero :
+		lodsb
+		cmp al, 0
+		jnz _checkZero
+		dec esi
+		sub esi, s
+		mov eax, esi
+		pop esi
+	}
 }
 
 
@@ -153,21 +152,20 @@ int __strncpy(char * dst, char * src,int limit) {
 		*(dst + l) = 0;
 		return l;
 	}
-	else {
-		
+	else {	
 		__asm {
 			mov edi, dst
 			mov esi, src
 			cld
 			_copyBytes :
 			lodsb
-				stosb
-				cmp al, 0
-				jnz _copyBytes
+			stosb
+			cmp al, 0
+			jnz _copyBytes
 
-				dec edi
-				sub edi, dst
-				mov eax, edi
+			dec edi
+			sub edi, dst
+			mov eax, edi
 		}
 	}
 }
@@ -278,10 +276,6 @@ int __strcat(char * src, char * dst) {
 
 	return __strlen(src);
 }
-
-
-
-
 
 
 
@@ -559,8 +553,6 @@ int __strd2i(char * istr) {
 
 
 
-
-
 int __printf(char * buf, char * format, ...) {
 	int seq = 0;
 	int len = 0;
@@ -595,8 +587,8 @@ int __printf(char * buf, char * format, ...) {
 		jz _printfstr
 		cmp dword ptr[esi], 0x64343649		//I64d
 		jz _printfInt64
-			cmp dword ptr[esi], 0x75343649		//I64u
-			jz _printfInt64
+		cmp dword ptr[esi], 0x75343649		//I64u
+		jz _printfInt64
 		stosb
 		jmp _printfGetBytes
 
@@ -641,37 +633,37 @@ int __printf(char * buf, char * format, ...) {
 
 		_printfInt64 :
 		add esi, 4
-			mov eax,edi
-			add eax,8
-			push eax
-			//push edi+8
-			push 0
-			mov eax, seq
-			push[eax]
-			add eax, 4
-			mov seq, eax
-			call __h2strh
-			add esp, 12
-			//add edi, 8
+		mov eax,edi
+		add eax,8
+		push eax
+		//push edi+8
+		push 0
+		mov eax, seq
+		push[eax]
+		add eax, 4
+		mov seq, eax
+		call __h2strh
+		add esp, 12
+		//add edi, 8
 
-			push edi
-			push 0
-			mov eax, seq
-			push[eax]
-			add eax, 4
-			mov seq, eax
-			call __h2strh
-			add esp, 12
+		push edi
+		push 0
+		mov eax, seq
+		push[eax]
+		add eax, 4
+		mov seq, eax
+		call __h2strh
+		add esp, 12
 
-			add edi, 16
-			jmp _printfGetBytes
+		add edi, 16
+		jmp _printfGetBytes
 
-			_printfEnd :
-			stosb
-			mov eax, edi
-			sub eax, buf
-			dec eax
-			mov len,eax
+		_printfEnd :
+		stosb
+		mov eax, edi
+		sub eax, buf
+		dec eax
+		mov len,eax
 	}
 
 	int showlen = __drawGraphChars((unsigned char*)buf, 0);
@@ -714,8 +706,8 @@ int __sprintf(char * buf, char * format,...) {
 		jz _printfstr
 		cmp dword ptr [esi], 0x64343649		//I64d
 		jz _printfInt64
-			cmp dword ptr[esi], 0x75343649		//I64u
-			jz _printfInt64
+		cmp dword ptr[esi], 0x75343649		//I64u
+		jz _printfInt64
 		stosb
 		jmp _printfGetBytes
 
@@ -762,9 +754,9 @@ int __sprintf(char * buf, char * format,...) {
 		//__int64高位4字节在前，低位4字节在后一个参数中
 		_printfInt64:
 		add esi,4
-			mov eax, edi
-			add eax, 8
-			push eax
+		mov eax, edi
+		add eax, 8
+		push eax
 		//push edi
 		push 0
 		mov eax, seq
@@ -881,6 +873,10 @@ int getCpuInfo(char * name) {
 int __shutdownSystem() {
 
 	__asm {
+		mov ax, 2001h;
+		mov dx, 1004h;
+		out dx, ax;    //写入 2001h  到端口 1004h    实现暴力关机
+
 		push edx
 
 		mov dx, 0cf8h
@@ -901,7 +897,6 @@ int __shutdownSystem() {
 
 		_notSupportICH :
 		pop edx
-
 
 // 		mov dx, 0cf8h
 // 		mov eax, 8000f840h
@@ -927,18 +922,26 @@ int __shutdownSystem() {
 	}
 }
 
-
+//pu寻址位在第一位开始ffff:0000,当寻址位在第一位的时候及0，
+//会检测到当前地址0040:0072位是否为1234h,如果是1234h时，就不需要检测内存，如果不是1234h，就需要检测内存，就会重启
 int __reset() {
+
+#if 0
+	outportb(0x92, 0x01);
+	outportb(0x64, 0xFE);
+	outportb(0xcf9, 0x04);
+	outportb(0xcf9, 0x06);
+#endif
 	__asm {
-// 		mov al, 4
-// 		mov dx, 0cf9h
-// 		out dx, al
+
+ 		mov al, 4
+ 		mov dx, 0cf9h
+ 		out dx, al
 
 		mov al,1
 		out 92h,al
 	}
 }
-
 
 
 
@@ -1012,13 +1015,13 @@ DWORD __sqrtInteger(DWORD i) {
 		MOV ECX, 1
 		_S_LOOP:
 		SUB EAX, EBX
-			JC _END		; 有借位为止
-			INC EBX		; 修改为3、5、7...
-			INC EBX
-			INC ECX		; n加1
-			JMP _S_LOOP
-			_END :
-			MOV root,ECX
+		JC _END		; 有借位为止
+		INC EBX		; 修改为3、5、7...
+		INC EBX
+		INC ECX		; n加1
+		JMP _S_LOOP
+		_END :
+		MOV root,ECX
 	}
 	return root;
 }

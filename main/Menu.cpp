@@ -3,7 +3,7 @@
 #include "mouse.h"
 #include "video.h"
 #include "Utils.h"
-#include "screenUtils.h"
+#include "screenProtect.h"
 #include "console.h"
 #include "paint.h"
 #include "malloc.h"

@@ -7,7 +7,11 @@
 
 
 
+void setCursor( int*  x, int * y, unsigned int color);
 
+int drawCursor(int p1, int p2, int p3, int p4);
+
+int removeCursor();
 
 int __clearChar(WINDOWCLASS * window);
 

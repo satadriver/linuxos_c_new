@@ -2,7 +2,7 @@
 #include "task.h"
 #include "video.h"
 #include "Utils.h"
-#include "screenUtils.h"
+
 #include "malloc.h"
 #include "ListEntry.h"
 #include "memory.h"
@@ -128,10 +128,10 @@ int addWindow(int active, DWORD *x, DWORD *y, int color,char * wname) {
 	if (active)
 	{
 		window->valid |= 0x80000000;
-		setCursor(TRUE, window->cursorX, window->cursorY, window->cursorColor);
+		
 	}
 	else {
-		setCursor(FALSE, window->cursorX, window->cursorY, window->cursorColor);
+		
 	}
 
 	addlistTail(&gWindowsList->list, &window->list);
@@ -158,10 +158,10 @@ int removeWindow(int id) {
 		gWindowLast = (LPWINDOWSINFO)window->list.prev;
 		if (gWindowLast->valid & 0x80000000)
 		{
-			setCursor(TRUE, gWindowLast->cursorX, gWindowLast->cursorY, gWindowLast->cursorColor);
+
 		}
 		else {
-			setCursor(FALSE, gWindowLast->cursorX, gWindowLast->cursorY, gWindowLast->cursorColor);
+
 		}
 	}
 

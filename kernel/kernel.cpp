@@ -8,7 +8,7 @@
 #include "task.h"
 #include "Pe.h"
 #include "satadriver.h"
-#include "sectorReader.h"
+
 #include "fat32/FAT32.h"
 #include "fat32/fat32file.h" 
 #include "file.h"
@@ -16,8 +16,7 @@
 #include "NTFS/ntfsFile.h"
 #include "pci.h"
 #include "speaker.h"
-#include "system.h"
-#include "screenUtils.h"
+
 #include "cmosAlarm.h"
 #include "rs232.h"
 #include "floppy.h"
@@ -33,6 +32,7 @@
 #include "page.h"
 #include "device.h"
 #include "core.h"
+#include "cmosPeriodTimer.h"
 
 
 //#pragma comment(linker, "/ENTRY:DllMain")
@@ -120,7 +120,7 @@ int __kernelEntry(LPVESAINFORMATION vesa, DWORD fontbase,DWORD v86Proc,DWORD v86
 
 	initDll();
 
-	sysEntryProc(0,0);
+	//sysEntryProc(0,0);
 
 	initRS232Com1();
 	initRS232Com2();
@@ -128,6 +128,8 @@ int __kernelEntry(LPVESAINFORMATION vesa, DWORD fontbase,DWORD v86Proc,DWORD v86
 	initEfer();
 
 	initCoprocessor();
+
+	initTimer();
 
 	__asm {
 		sti

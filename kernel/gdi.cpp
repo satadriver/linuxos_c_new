@@ -4,7 +4,7 @@
 #include "math.h"
 #include "file.h"
 #include "malloc.h"
-#include "cmosTimer.h"
+#include "cmosPeriodTimer.h"
 #include "video.h"
 #include "cmosExactTimer.h"
 

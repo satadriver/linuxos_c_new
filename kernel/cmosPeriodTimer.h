@@ -7,7 +7,7 @@
 #define SHUTDOWN_SCREEN_DELAY	360
 
 
-
+void initTimer();
 
 
 unsigned char readCmosPort(unsigned char port);

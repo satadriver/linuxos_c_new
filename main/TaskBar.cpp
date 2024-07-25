@@ -8,13 +8,13 @@
 #include "task.h"
 #include "graph.h"
 #include "soundBlaster/sbPlay.h"
-#include "screenUtils.h"
+
 #include "Utils.h"
 #include "menu.h"
 #include "windowclass.h"
 #include "Pe.h"
 #include "window.h"
-#include "system.h"
+
 #include "satadriver.h"
 #include "UserUtils.h"
 #include "Kernel.h"

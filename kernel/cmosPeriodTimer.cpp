@@ -1,5 +1,5 @@
 
-#include "cmosTimer.h"
+#include "cmosPeriodTimer.h"
 #include "cmosAlarm.h"
 #include "Utils.h"
 #include "video.h"
@@ -7,6 +7,7 @@
 #include "hardware.h"
 #include "servicesProc.h"
 #include "cmosExactTimer.h"
+#include "timer8254.h"
 
 
 unsigned char readCmosPort(unsigned char port) {
@@ -125,6 +126,11 @@ char* dayOfWeek2str(int n) {
 }
 
 
+void initTimer() {
+	initPeriodTimer();
+	initExactTimer();
+	init8254Timer();
+}
 
 
 TIMER_PROC_PARAM gPeriodTimer[REALTIMER_CALLBACK_MAX] = { 0 };
@@ -147,7 +153,7 @@ int __kAddPeriodTimer(DWORD addr, DWORD delay, DWORD param1, DWORD param2, DWORD
 
 	DWORD* lptickcnt = (DWORD*)CMOS_PERIOD_TICK_COUNT;
 
-	DWORD ticks = delay / 15;		//15.625 ms
+	DWORD ticks = delay;		
 
 	int i = 0;
 	for (i = 0; i < REALTIMER_CALLBACK_MAX; i++)

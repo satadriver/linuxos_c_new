@@ -9,7 +9,7 @@
 #include "Thread.h"
 #include "hardware.h"
 #include "vectorRoutine.h"
-#include "cmosTimer.h"
+#include "cmosPeriodTimer.h"
 #include "cmosAlarm.h"
 #include "cmosExactTimer.h"
 

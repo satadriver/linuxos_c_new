@@ -5,13 +5,13 @@
 #include "task.h"
 #include "graph.h"
 #include "soundBlaster/sbPlay.h"
-#include "screenUtils.h"
+
 #include "Utils.h"
 #include "menu.h"
 #include "windowclass.h"
 #include "Pe.h"
 #include "window.h"
-#include "system.h"
+#include "cmosExactTimer.h"
 #include "satadriver.h"
 #include "UserUtils.h"
 #include "Kernel.h"
@@ -24,6 +24,9 @@
 #include "machine.h"
 #include "pci.h"
 
+
+
+#define CURSOR_REFRESH_MILLISECONDS		300
 
 __declspec(dllimport) DWORD gMouseID;
 __declspec(dllimport) WORD gKeyboardID;
@@ -381,6 +384,10 @@ int __kConsole(unsigned int retaddr, int tid, char* filename, char* funcname, DW
 	TASKCMDPARAMS taskcmd;
 	__memset((char*)&taskcmd, 0, sizeof(TASKCMDPARAMS));
 
+	setCursor( &window.showX, &window.showY, ~window.color);
+
+	
+
 	while (1)
 	{
 		unsigned int ck = __kGetKbd(window.id);
@@ -426,6 +433,7 @@ int __kConsole(unsigned int retaddr, int tid, char* filename, char* funcname, DW
 		}
 		else if (asc == 0x1b)
 		{
+			removeCursor();
 			__restoreWindow(&window);
 			return 0;
 		}
@@ -452,6 +460,7 @@ int __kConsole(unsigned int retaddr, int tid, char* filename, char* funcname, DW
 			{
 				if (mouseinfo.y >= window.shutdowny && mouseinfo.y <= window.shutdowny + window.capHeight)
 				{
+					removeCursor();
 					__restoreWindow(&window);
 					return 0;
 
@@ -475,26 +484,18 @@ int __kConsole(unsigned int retaddr, int tid, char* filename, char* funcname, DW
 
 
 int __outputConsole(unsigned char* font, int color, WINDOWCLASS* window) {
-	__asm {
-		//cli
-	}
+
 
 	int resultpos = __outputConsoleStr(font, color, DEFAULT_FONT_COLOR, window);
 
 	window->showX = (resultpos % gBytesPerLine) / gBytesPerPixel;
 	window->showY = (resultpos / gBytesPerLine);
 
-	__asm {
-		//sti
-	}
 	return 0;
 }
 
 
 int __clearChar(WINDOWCLASS* window) {
-	__asm {
-		//cli
-	}
 
 	window->showX -= GRAPHCHAR_WIDTH * window->zoomin;
 	if ((window->showX < window->pos.x + (window->frameSize >> 1)) &&
@@ -515,9 +516,6 @@ int __clearChar(WINDOWCLASS* window) {
 		window->showY = window->pos.y + (window->frameSize >> 1) + window->capHeight;
 	}
 
-	__asm {
-		//sti
-	}
 	int showpos = __outputConsoleStr((unsigned char*)" ", DEFAULT_FONT_COLOR, DEFAULT_FONT_COLOR, window);
 
 	return showpos;
@@ -621,4 +619,88 @@ int __outputConsoleStr(unsigned char* font, int color, int bgcolor, WINDOWCLASS*
 		showpos = keepy;
 	}
 	return (int)(showpos - gGraphBase);
+}
+
+
+
+
+
+
+
+
+int gPrevX = 0;
+int gPrevY = 0;
+
+int * gCursorX = 0;
+
+int * gCursorY = 0;
+
+int gCursorColor = 0;
+
+unsigned char *gCursorBackup = 0;
+
+int g_cursorID = 0;
+
+int gTag = 0;
+
+
+void setCursor( int* x, int* y, unsigned int color) {
+
+	gCursorX = x;
+	gCursorY = y;
+	gCursorColor = color;
+	gCursorBackup = (unsigned char*)CURSOR_GRAPH_BASE;
+
+	int ch = GRAPHCHAR_HEIGHT / 2;
+	int cw = GRAPHCHAR_WIDTH;
+
+	POINT p;
+	p.x = *gCursorX + GRAPHCHAR_WIDTH;
+	p.y = *gCursorY + GRAPHCHAR_HEIGHT - ch;
+	int ret = __drawRectangle(&p, cw, ch, gCursorColor, (unsigned char*)gCursorBackup);
+	gPrevX = p.x;
+	gPrevY = p.y;
+
+	gTag = TRUE;
+
+	g_cursorID = __kAddExactTimer((DWORD)drawCursor, CURSOR_REFRESH_MILLISECONDS, 0, 0, 0, 0);
+}
+
+
+int removeCursor() {
+	if (g_cursorID) {
+		__kRemoveExactTimer(g_cursorID);
+	}
+	return 0;
+}
+
+int drawCursor(int p1, int p2, int p3, int p4) {
+
+	int ch = GRAPHCHAR_HEIGHT / 2;
+	int cw = GRAPHCHAR_WIDTH;
+
+	POINT p;
+	p.x = *gCursorX + GRAPHCHAR_WIDTH;
+	p.y = *gCursorY + GRAPHCHAR_HEIGHT - ch;
+
+	int ret = 0;
+	if (gTag) {
+		if (gPrevX != *gCursorX || gPrevY != *gCursorY) {
+			p.x = gPrevX;
+			p.y = gPrevY;
+			ret = __restoreRectangle(&p, cw, ch, (unsigned char*)gCursorBackup);
+		}
+		else {
+			ret = __restoreRectangle(&p, cw, ch, (unsigned char*)gCursorBackup);
+		}
+		
+		gTag = FALSE;
+	}
+	else {
+		ret = __drawRectangle(&p, cw, ch, gCursorColor, (unsigned char*)gCursorBackup);
+		gTag = TRUE;
+		gPrevX = p.x;
+		gPrevY = p.y;
+	}
+	return 0;
 }

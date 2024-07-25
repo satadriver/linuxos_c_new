@@ -10,6 +10,7 @@
 #include "gdi.h"
 #include "PEresource.h"
 #include "file.h"
+#include "pci.h"
 
 
 VESAINFORMATION* gVesaInfo;
@@ -34,7 +35,7 @@ int gShowX = 0;
 int gShowY = 0;
 
 
-#include "pci.h"
+
 
 
 int __initVideo(LPVESAINFORMATION vesaInfo, DWORD fontbase) {
@@ -1173,16 +1174,13 @@ int __drawLine(int x1, int y1, int x2, int y2, DWORD color) {
 		deltay = y2 - y1;
 	}
 
-
 	int direction = deltax > deltay ? deltax : deltay;
-
 
 	float rate = (x2 - x1) / (y2 - y1);
 	if (deltax > deltay)
 	{
 		rate = (y2 - y1) / (x2 - x1);
 	}
-
 
 	float x = lowx;
 	float y = y1;

@@ -48,9 +48,6 @@
     <ClCompile Include="kernel.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="system.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="descriptor.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -67,9 +64,6 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="pe.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="sectorReader.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="task.cpp">
@@ -108,7 +102,7 @@
     <ClCompile Include="keyboard.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="screenUtils.cpp">
+    <ClCompile Include="screenProtect.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="floppy.cpp">
@@ -144,7 +138,7 @@
     <ClCompile Include="exception.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="cmosTimer.cpp">
+    <ClCompile Include="cmosPeriodTimer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="servicesProc.cpp">
@@ -242,9 +236,6 @@
     <ClInclude Include="Pe.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="sectorReader.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="satadriver.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -275,13 +266,10 @@
     <ClInclude Include="debugger.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="system.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="keyboard.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="screenUtils.h">
+    <ClInclude Include="screenProtect.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="floppy.h">
@@ -320,7 +308,7 @@
     <ClInclude Include="exception.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="cmosTimer.h">
+    <ClInclude Include="cmosPeriodTimer.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="servicesProc.h">

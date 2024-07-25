@@ -1,5 +1,5 @@
 
-#include "cmosTimer.h"
+#include "cmosPeriodTimer.h"
 #include "cmosAlarm.h"
 #include "Utils.h"
 #include "video.h"
@@ -28,7 +28,7 @@ int __kAddExactTimer(DWORD addr, DWORD delay, DWORD param1, DWORD param2, DWORD 
 
 	DWORD* lptickcnt = (DWORD*)CMOS_EXACT_TICK_COUNT;
 
-	DWORD ticks = delay / 15;		//15.625 ms
+	DWORD ticks = delay / CMOS_EXACT_INTERVAL;		
 
 	int i = 0;
 	for (i = 0; i < REALTIMER_CALLBACK_MAX; i++)
@@ -73,7 +73,7 @@ void __kExactTimerProc() {
 	{
 		if (gExactTimer[i].func)
 		{
-			if (gExactTimer[i].tickcnt < *lptickcnt)
+			if (gExactTimer[i].tickcnt <= *lptickcnt)
 			{
 
 				gExactTimer[i].tickcnt = *lptickcnt + gExactTimer[i].ticks;

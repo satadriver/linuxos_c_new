@@ -12,7 +12,7 @@
 #include "process.h"
 #include "Thread.h"
 #include "memory.h"
-#include "cmosTimer.h"
+#include "cmosPeriodTimer.h"
 
 CMOSALARM_PROCESS_LIST gCmosAlarmProc;
 

@@ -7,6 +7,14 @@
 TIMER_PROC_PARAM g8254Timer[REALTIMER_CALLBACK_MAX] = { 0 };
 
 
+int getTimer8254Delay(){
+
+	int n = OSCILLATE_FREQUENCY / SYSTEM_TIMER0_FACTOR;
+	return 1000 / n;
+
+}
+
+
 void init8254Timer() {
 	__memset((char*)g8254Timer, 0, REALTIMER_CALLBACK_MAX * sizeof(TIMER_PROC_PARAM));
 }
@@ -24,7 +32,9 @@ int __kAdd8254Timer(DWORD addr, DWORD delay, DWORD param1, DWORD param2, DWORD p
 
 	DWORD* lptickcnt = (DWORD*)TIMER0_TICK_COUNT;
 
-	DWORD ticks = delay / 15;		//15.625 ms
+	int dt = getTimer8254Delay();
+
+	DWORD ticks = delay / dt;
 
 	int i = 0;
 	for (i = 0; i < REALTIMER_CALLBACK_MAX; i++)
