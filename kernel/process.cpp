@@ -224,7 +224,7 @@ int __initProcess(LPPROCESS_INFO tss, int pid, DWORD filedata, char * filename, 
 #endif
 		params = (LPTASKPARAMS)(tss->espbase + KTASK_STACK_SIZE  - STACK_TOP_DUMMY - sizeof(TASKPARAMS));
 
-#ifdef TASK_SINGLE_TSS
+#ifdef SINGLE_TASK_TSS
 		RETUTN_ADDRESS_0* ret0 = (RETUTN_ADDRESS_0*)((char*)params - sizeof(RETUTN_ADDRESS_0));
 		ret0->cs = tss->tss.cs;
 		ret0->eip = tss->tss.eip;
@@ -270,7 +270,7 @@ int __initProcess(LPPROCESS_INFO tss, int pid, DWORD filedata, char * filename, 
 #endif
 		params = (LPTASKPARAMS)(tss->espbase + UTASK_STACK_SIZE - STACK_TOP_DUMMY - sizeof(TASKPARAMS));
 
-#ifdef TASK_SINGLE_TSS
+#ifdef SINGLE_TASK_TSS
 		tss->tss.esp = (DWORD)tss->espbase + UTASK_STACK_SIZE - STACK_TOP_DUMMY - sizeof(TASKPARAMS);
 		tss->tss.ebp = (DWORD)tss->espbase + UTASK_STACK_SIZE - STACK_TOP_DUMMY - sizeof(TASKPARAMS);
 

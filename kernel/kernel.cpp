@@ -137,8 +137,8 @@ int __kernelEntry(LPVESAINFORMATION vesa, DWORD fontbase,DWORD v86Proc,DWORD v86
 
 	__printf(szout, "Hello world of Liunux!\r\n");
 
-#ifndef TASK_SINGLE_TSS
-	//__createDosInFileTask(gV86VMIEntry, "V86VMIEntry");
+#ifndef SINGLE_TASK_TSS
+	__createDosInFileTask(gV86VMIEntry, "V86VMIEntry");
 #endif
 
 // 	TASKCMDPARAMS cmd;
@@ -167,9 +167,7 @@ int __kernelEntry(LPVESAINFORMATION vesa, DWORD fontbase,DWORD v86Proc,DWORD v86
 
 // 	ret = loadLibRunFun("c:\\liunux\\main.dll", "__kMainProcess");
  	
-
 	int imagesize = getSizeOfImage((char*)MAIN_DLL_SOURCE_BASE);
-
 	__printf(szout, "__kMainProcess size:%x\n", imagesize);
 	__kCreateProcessFromAddrFunc(MAIN_DLL_SOURCE_BASE, imagesize,  "__kExplorer", 3, 0);
 

@@ -913,11 +913,8 @@ extern "C" void __declspec(naked) TimerInterrupt(LIGHT_ENVIRONMENT * stack) {
 	{
 		LPPROCESS_INFO process = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
 		char szout[1024];
-		//__printf(szout, "TimerInterrupt end! pid:%d\r\n", process->pid);
 
 		__kTaskSchedule((LIGHT_ENVIRONMENT*)stack);
-
-		//__kScreenProtect();
 
 		outportb(0x20, 0x20);
 		outportb(0xa0, 0xa0);
@@ -925,7 +922,7 @@ extern "C" void __declspec(naked) TimerInterrupt(LIGHT_ENVIRONMENT * stack) {
 
 	__asm {
 #ifdef SINGLE_TASK_TSS
-		mov eax, ds: [CURRENT_TASK_TSS_BASE + PROCESS_INFO.mCr3]
+		mov eax, dword ptr ds: [CURRENT_TASK_TSS_BASE + PROCESS_INFO.tss.cr3]
 		mov cr3, eax
 #endif
 
@@ -940,7 +937,7 @@ extern "C" void __declspec(naked) TimerInterrupt(LIGHT_ENVIRONMENT * stack) {
 		pop ds
 		popad
 #ifdef SINGLE_TASK_TSS
-		mov esp, ss: [esp - 20]
+		mov esp, dword ptr ss: [esp - 20]
 #endif	
 
 		clts
