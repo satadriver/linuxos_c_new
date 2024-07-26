@@ -6,7 +6,7 @@
 
 
 
-extern int g_timeslip;
+
 
 
 

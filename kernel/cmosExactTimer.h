@@ -35,8 +35,4 @@ extern "C" __declspec(dllimport) void __kRemoveExactTimer(int no);
 
 
 
-
-
-
-
 void initExactTimer();

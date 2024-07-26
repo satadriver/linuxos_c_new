@@ -1,10 +1,4 @@
 ﻿d:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Microsoft\VC\v150\Platforms\Win32\PlatformToolsets\v141_xp\Toolset.targets(39,5): warning MSB8051: 面向 Windows XP 的支持已被弃用，将来的 Visual Studio 版本不再提供该支持。请访问 https://go.microsoft.com/fwlink/?linkid=2023588，获取详细信息。
-cl : 命令行 warning D9025: 正在重写“/sdl”(用“/GS-”)
-  console.cpp
-E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(31): warning C4273: “gMouseID”: dll 链接不一致
-  E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\mouse.h(44): note: 参见“gMouseID”的前一个定义
-E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(32): warning C4273: “gKeyboardID”: dll 链接不一致
-  E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\keyboard.h(149): note: 参见“gKeyboardID”的前一个定义
     正在创建库 E:\virtualbox\vmshare\liunux\liunuxos_c\Release\main.lib 和对象 E:\virtualbox\vmshare\liunux\liunuxos_c\Release\main.exp
   LINK : 已指定 /LTCG，但不需要生成代码；从链接命令行中移除 /LTCG 以提高链接器性能
   main.vcxproj -> E:\virtualbox\vmshare\liunux\liunuxos_c\Release\main.dll

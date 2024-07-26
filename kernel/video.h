@@ -192,6 +192,15 @@ typedef struct{
 	int y;
 }POINT,*LPPOINT;
 
+typedef struct {
+
+	int left;
+	int top;
+	int right;
+	int bottom;
+
+}RECT,*LPRECT;
+
 typedef struct  
 {
 	 POINT pos;
@@ -257,8 +266,9 @@ typedef struct __WINDOWCLASS {
 
 	unsigned int backGround;
 	unsigned int backsize;
+	int focus;
 	__WINDOWCLASS * next;
-	__WINDOWCLASS * prev;
+	__WINDOWCLASS* prev;
 }WINDOWCLASS,*LPWINDOWCLASS;
 
 

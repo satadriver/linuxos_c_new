@@ -8,6 +8,7 @@
 #include "keyboard.h"
 #include "hardware.h"
 #include "servicesProc.h"
+#include "screenProtect.h"
 
  DWORD gMouseTest = 0;
 
@@ -120,7 +121,10 @@ void __kMouseProc() {
 
 	if (data->mintrData.x || data->mintrData.y)
 	{
-		__kRestoreMouse();
+		//if (gScreenProtectWindowID == 0)
+		{
+			__kRestoreMouse();
+		}
 
 		data->mouseX += data->mintrData.x;
 		if (data->mouseX > gVideoWidth)
@@ -142,8 +146,12 @@ void __kMouseProc() {
 			data->mouseY = 0;
 		}
 
-		__kDrawMouse();
+		//if (gScreenProtectWindowID == 0) 
+		{
+			__kDrawMouse();
+		}
 	}
+	
 
 	if (data->mintrData.status & 7)
 	{

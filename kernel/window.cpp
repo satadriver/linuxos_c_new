@@ -9,8 +9,20 @@
 
 
 
+
 LPWINDOWSINFO gWindowsList = 0;
 LPWINDOWSINFO gWindowLast = 0;
+
+
+
+void initWindowList() {
+	gWindowsList = (LPWINDOWSINFO)__kMalloc(WINDOW_LIST_BUF_SIZE);
+	__memset((char*)gWindowsList, 0, WINDOW_LIST_BUF_SIZE);
+
+	initListEntry((LPLIST_ENTRY)&gWindowsList->list);
+
+	gWindowLast = gWindowsList;
+}
 
 LPWINDOWSINFO checkWindowExist(char * wname) {
 	LPWINDOWSINFO info = (LPWINDOWSINFO)gWindowsList;
@@ -60,7 +72,6 @@ LPWINDOWSINFO getFreeWindow() {
 	{
 		if (info[i].valid == 0)
 		{
-			//info[i].valid = TRUE;
 			return &info[i];
 		}
 	}
@@ -68,14 +79,6 @@ LPWINDOWSINFO getFreeWindow() {
 }
 
 
-void initWindowList() {
-	gWindowsList = (LPWINDOWSINFO)__kMalloc(WINDOW_LIST_BUF_SIZE);
-	__memset((char*)gWindowsList, 0, WINDOW_LIST_BUF_SIZE);
-
-	initListEntry((LPLIST_ENTRY)&gWindowsList->list);
-
-	gWindowLast = gWindowsList;
-}
 
 DWORD isTopWindow(int wid) {
 	LPWINDOWSINFO window = wid + gWindowsList;
@@ -115,20 +118,15 @@ int addWindow(int active, DWORD *x, DWORD *y, int color,char * wname) {
 
 	window->cursorColor = color;
 
-	//exchange to physical address from linear address
-	DWORD *addrx = (DWORD *)linear2phy((DWORD)x);
-	DWORD *addry = (DWORD *)linear2phy((DWORD)y);
-
-	window->cursorX = addrx;
-	window->cursorY = addry;
+	window->cursorX = x;
+	window->cursorY = y;
 
 	__strncpy(window->windowname, wname, WINDOW_NAME_LIMIT);
 	window->windowname[WINDOW_NAME_LIMIT - 1] = 0;
 
 	if (active)
 	{
-		window->valid |= 0x80000000;
-		
+		window->valid |= 0x80000000;		
 	}
 	else {
 		
@@ -169,67 +167,6 @@ int removeWindow(int id) {
 }
 
 
-LPWINDOWCLASS addWindowList(LPWINDOWCLASS window) {
-	LPPROCESS_INFO p = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
-	if (p->window)
-	{
-		LPWINDOWCLASS w = p->window;
-		while (w->next)
-		{
-			w = w->next;
-		}
-
-		w->next = window;
-		window->prev = w;
-	}
-	else {
-		window->prev = 0;
-		window->next = 0;
-		p->window = window;
-	}
-
-	return window;
-}
-
-
-LPWINDOWCLASS removeWindowList() {
-	LPPROCESS_INFO p = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
-	LPWINDOWCLASS lpw = p->window;
-	while (lpw)
-	{
-		if (lpw->prev && lpw->next)
-		{
-			lpw->prev->next = lpw->next;
-			lpw->next->prev = lpw->prev;
-			break;
-		}
-		else if (lpw->prev)
-		{
-			lpw->prev->next = 0;
-			break;
-		}
-		else if (lpw->next)
-		{
-			p->window = lpw->next;
-			lpw->next->prev = 0;
-			break;
-		}
-		else {
-			p->window = 0;
-			break;
-		}
-		
-		lpw = lpw->next;
-		if (lpw == 0)
-		{
-			break;
-		}
-	}
-
-	return lpw;
-}
-
-
 int destroyWindows() {
 	int cnt = 0;
 
@@ -258,9 +195,6 @@ int destroyWindows() {
 }
 
 
-
-
-
 LPWINDOWCLASS getWindowFromName(char * winname) {
 
 	TASK_LIST_ENTRY * list = (TASK_LIST_ENTRY*)TASKS_LIST_BASE;
@@ -287,3 +221,128 @@ LPWINDOWCLASS getWindowFromName(char * winname) {
 
 	return 0;
 }
+
+
+
+
+
+
+
+
+
+LPWINDOWCLASS insertProcWindow(LPWINDOWCLASS window) {
+
+	LPPROCESS_INFO p = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
+	LPWINDOWCLASS w = p->window;
+	if (w)
+	{
+		while (w->next)
+		{
+			w = w->next;
+		}
+		w->next = window;
+
+		window->prev = w;
+	}
+	else {
+		p->window = window;
+
+		window->prev = 0;
+	}
+	window->next = 0;
+	return window;
+}
+
+
+
+LPWINDOWCLASS removeProcWindow() {
+	LPPROCESS_INFO p = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
+	LPWINDOWCLASS lpw = p->window;
+	while (lpw)
+	{
+		LPWINDOWCLASS t = lpw;
+		lpw = lpw->next;
+		__kFree((DWORD)t);
+	}
+
+	return lpw;
+}
+
+
+
+int getOverlapRect(LPRECT r1, LPRECT r2, LPRECT res) {
+	if ((r1->right > r2->left && r1->bottom > r2->top) || (r2->right > r1->left && r2->bottom > r1->top)) {
+
+	}
+	else {
+		res->bottom = 0;
+		res->left = 0;
+		res->top = 0;
+		res->right = 0;
+		return FALSE;
+	}
+
+	int l, t, r, b;
+
+	if (r1->left > r2->left) {
+		l = r1->left;
+	}
+	else {
+		l = r2->left;
+	}
+
+	if (r1->top > r2->top) {
+		t = r1->top;
+	}
+	else {
+		t = r2->top;
+	}
+
+	if (r1->right > r2->right) {
+		l = r2->right;
+	}
+	else {
+		l = r1->right;
+	}
+
+	if (r1->bottom > r2->bottom) {
+		l = r2->bottom;
+	}
+	else {
+		l = r1->bottom;
+	}
+	res->bottom = b;
+	res->left = l;
+	res->right = r;
+	res->top = t;
+	return TRUE;
+}
+
+
+int placeFocus(int x,int y) {
+	LPPROCESS_INFO p = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
+	LPWINDOWCLASS w = p->window;
+	while (w)
+	{
+		if ((w->left <= x && w->right >= x) && (w->top <= y && w->bottom >= y)) {
+
+			if (w->prev) {
+				w->prev->next = w->next;
+			}
+			
+			if (w->next) {
+				w->next->prev = w->prev;
+			}
+			
+			w->prev = 0;
+			w->next = p->window;
+			p->window = w;
+		}
+		else {
+			w = w->next;
+		}
+	}
+
+	return 0;
+}
+

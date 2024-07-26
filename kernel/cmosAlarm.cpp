@@ -195,9 +195,7 @@ int __kAddAlarmTimer( DWORD interval, DWORD linearaddr, DWORD param) {
 
 	if (gCmosAlarmProc.addr == 0 && gCmosAlarmProc.interval == 0)
 	{
-		DWORD addr = linear2phy((DWORD)linearaddr);
-
-		gCmosAlarmProc.addr = addr;
+		gCmosAlarmProc.addr = linearaddr;
 		gCmosAlarmProc.interval = interval;
 		gCmosAlarmProc.param = param;
 

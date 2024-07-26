@@ -38,6 +38,8 @@
 #include "elf.h"
 #include "v86.h"
 
+#define EXPLORER_TASKNAME	"Explorer.exe"
+
 int __kExplorer(unsigned int retaddr, int tid, char * filename, char * funcname, DWORD param) {
 	int ret = 0;
 
@@ -47,7 +49,7 @@ int __kExplorer(unsigned int retaddr, int tid, char * filename, char * funcname,
 	__printf(szout, "__kExplorer task retaddr:%x,pid:%x,name:%s,funcname:%s,param:%x\n", retaddr, tid, filename, funcname, param);
 
 	WINDOWCLASS window;
-	initDesktopWindow(&window, "__deskTop", tid);
+	initDesktopWindow(&window, EXPLORER_TASKNAME, tid);
 
 	WINDOWCLASS taskbar;
 	initTaskbarWindow(&taskbar, filename, tid);
@@ -247,7 +249,7 @@ int __kExplorer(unsigned int retaddr, int tid, char * filename, char * funcname,
 
 DWORD isDesktop() {
 	LPPROCESS_INFO tss = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
-	if (__strcmp(tss->filename,"Explorer.exe") == 0)
+	if (__strcmp(tss->filename, EXPLORER_TASKNAME) == 0)
 	{
 		return TRUE;
 	}

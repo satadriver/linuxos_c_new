@@ -3,6 +3,9 @@
 
 void pauseBreak();
 
+
+extern int gScreenProtectWindowID ;
+
 #ifdef DLL_EXPORT
 
 extern "C" __declspec(dllexport) int initScreenProtect();

@@ -5,6 +5,7 @@
 #include "video.h"
 #include "satadriver.h"
 #include "task.h"
+#include "atapi.h"
 
 #pragma pack(1)
 
@@ -147,3 +148,90 @@ int setGraphMode(int mode) {
 
 
 
+int getAtapiDev(int disk, int maxno) {
+
+	LPV86VMIPARAMS params = (LPV86VMIPARAMS)V86VMIPARAMS_ADDRESS;
+
+	for (int dev = disk; dev <= maxno; dev++)
+	{
+		while (params->bwork == 1)
+		{
+			__sleep(0);
+		}
+
+		params->intno = 0x13;
+		params->reax = 0x4100;
+		params->recx = 0;
+		params->redx = dev;
+		params->rebx = 0x55aa;
+		params->resi = 0;
+		params->redi = 0;
+		params->res = 0;
+		params->rds = 0;
+		params->result = 0;
+
+		params->bwork = 1;
+
+		while (params->bwork == 1)
+		{
+			__sleep(0);
+		}
+
+		if (params->result)
+		{
+			return dev;
+		}
+	}
+
+	return -1;
+}
+
+/*
+AH = 46h
+AL = 0 保留
+DL = 驱动器号
+
+返回:
+CF = 0, AH = 0 成功
+CF = 1, AH = 错误码
+*/
+int rejectCDROM(int dev) {
+	if (dev <= 0)
+	{
+		dev = getAtapiDev(0x81, 0xff);
+		if (dev <= 0)
+		{
+			return FALSE;
+		}
+	}
+
+	LPV86VMIPARAMS params = (LPV86VMIPARAMS)V86VMIPARAMS_ADDRESS;
+	while (params->bwork == 1)
+	{
+		__sleep(0);
+	}
+
+	params->intno = 0x13;
+	params->reax = 0x4600;
+	params->recx = 0;
+	params->redx = dev;
+	params->rebx = 0;
+	params->resi = 0;
+	params->redi = 0;
+	params->res = 0;
+	params->rds = 0;
+	params->result = 0;
+
+	params->bwork = 1;
+
+	while (params->bwork == 1)
+	{
+		__sleep(0);
+	}
+	if (params->result)
+	{
+		return dev;
+	}
+
+	return FALSE;
+}

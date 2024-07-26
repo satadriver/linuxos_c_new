@@ -100,7 +100,7 @@ void __kPeriodTimer() {
 
 	lptickcnt = (DWORD*)SLEEP_TIMER_RECORD;
 	(*lptickcnt)++;
-	if (*lptickcnt >= SHUTDOWN_SCREEN_DELAY)
+	if (*lptickcnt >= SHUTDOWN_SCREEN_SECONDS)
 	{
 		__asm {
 			mov eax, TURNOFF_SCREEN

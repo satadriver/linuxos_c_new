@@ -159,7 +159,8 @@ int __cmd(char* cmd, WINDOWCLASS* window, char* pidname, int pid) {
 	else if (__strcmp(params[0], "loadfiles") == 0)
 	{
 		DATALOADERINFO* info = (DATALOADERINFO*)(gKernelData<<4);
-		__printf(szout, "flag:%s,mbr:%d,mbrbak:%d,loaderSec:%d,loaderSecCnt:%d,kSec:%d,kSecCnt:%d,kdllSec:%d,kdllSecCnt:%d,mdllSec:%d,mdllSecCnt:%d,fontSec:%d,fontSecCnt:%d\r\n",
+		__printf(szout, 
+			"flag:%s,mbr:%d,mbrbak:%d,loaderSec:%d,loaderSecCnt:%d,kSec:%d,kSecCnt:%d,kdllSec:%d,kdllSecCnt:%d,mdllSec:%d,mdllSecCnt:%d,fontSec:%d,fontSecCnt:%d\r\n",
 			&info->_flags, info->_bakMbrSecOff, info->_bakMbr2SecOff, info->_loaderSecOff, info->_loaderSecCnt,
 			info->_kernelSecOff, info->_kernelSecCnt, info->_kdllSecOff, info->_kdllSecCnt,
 			info->_maindllSecOff, info->_maindllSecCnt, info->_fontSecOff, info->_fontSecCnt);
@@ -386,8 +387,6 @@ int __kConsole(unsigned int retaddr, int tid, char* filename, char* funcname, DW
 
 	setCursor( &window.showX, &window.showY, ~window.color);
 
-	
-
 	while (1)
 	{
 		unsigned int ck = __kGetKbd(window.id);
@@ -410,20 +409,12 @@ int __kConsole(unsigned int retaddr, int tid, char* filename, char* funcname, DW
 		}
 		else if (asc == 0x0a)
 		{
-			__asm {
-				//cli
-			}
-
 			window.showX = (window.pos.x + (window.frameSize >> 1));
 
 			window.showY = (window.showY + GRAPHCHAR_HEIGHT * window.zoomin);
 			if (window.showY >= window.pos.y + window.height + window.capHeight + (window.frameSize >> 1))
 			{
 				window.showY = window.pos.y + window.capHeight + (window.frameSize >> 1);
-			}
-
-			__asm {
-				//sti
 			}
 
 			__cmd((char*)szcmd, &window, filename, tid);
@@ -655,8 +646,8 @@ void setCursor( int* x, int* y, unsigned int color) {
 	int cw = GRAPHCHAR_WIDTH;
 
 	POINT p;
-	p.x = *gCursorX + GRAPHCHAR_WIDTH;
-	p.y = *gCursorY + GRAPHCHAR_HEIGHT - ch;
+	p.x = *gCursorX ;
+	p.y = *gCursorY + GRAPHCHAR_HEIGHT ;
 	int ret = __drawRectangle(&p, cw, ch, gCursorColor, (unsigned char*)gCursorBackup);
 	gPrevX = p.x;
 	gPrevY = p.y;
@@ -668,39 +659,44 @@ void setCursor( int* x, int* y, unsigned int color) {
 
 
 int removeCursor() {
-	if (g_cursorID) {
-		__kRemoveExactTimer(g_cursorID);
-	}
+
+	__kRemoveExactTimer(g_cursorID);
+	
 	return 0;
 }
 
 int drawCursor(int p1, int p2, int p3, int p4) {
 
+	int ret = 0;
+
 	int ch = GRAPHCHAR_HEIGHT / 2;
 	int cw = GRAPHCHAR_WIDTH;
 
 	POINT p;
-	p.x = *gCursorX + GRAPHCHAR_WIDTH;
-	p.y = *gCursorY + GRAPHCHAR_HEIGHT - ch;
-
-	int ret = 0;
+	
 	if (gTag) {
 		if (gPrevX != *gCursorX || gPrevY != *gCursorY) {
 			p.x = gPrevX;
-			p.y = gPrevY;
-			ret = __restoreRectangle(&p, cw, ch, (unsigned char*)gCursorBackup);
+			p.y = gPrevY + GRAPHCHAR_HEIGHT;
 		}
 		else {
-			ret = __restoreRectangle(&p, cw, ch, (unsigned char*)gCursorBackup);
+			p.x = *gCursorX;
+			p.y = *gCursorY + GRAPHCHAR_HEIGHT;
 		}
 		
+		ret = __restoreRectangle(&p, cw, ch, (unsigned char*)gCursorBackup);
+
 		gTag = FALSE;
 	}
 	else {
+		p.x = *gCursorX;
+		p.y = *gCursorY + GRAPHCHAR_HEIGHT;
 		ret = __drawRectangle(&p, cw, ch, gCursorColor, (unsigned char*)gCursorBackup);
 		gTag = TRUE;
-		gPrevX = p.x;
-		gPrevY = p.y;
 	}
+
+	gPrevX = *gCursorX;
+	gPrevY = *gCursorY;
+
 	return 0;
 }

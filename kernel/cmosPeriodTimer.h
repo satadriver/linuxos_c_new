@@ -4,7 +4,7 @@
 
 
 
-#define SHUTDOWN_SCREEN_DELAY	360
+#define SHUTDOWN_SCREEN_SECONDS	360
 
 
 void initTimer();
