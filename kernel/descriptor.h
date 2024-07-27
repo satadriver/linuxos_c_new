@@ -75,6 +75,9 @@ typedef struct {
 
 #pragma pack()
 
+
+void getGdtIdt();
+
 extern "C" __declspec(dllexport) void sysEntry(DWORD  params, DWORD size);
 
 extern "C" __declspec(dllexport) void callgateEntry(DWORD  params, DWORD size);

@@ -10,13 +10,6 @@ E:\virtualbox\vmshare\liunux\liunuxos_c\main\hept.h(29): warning C4200: 使用�
   E:\virtualbox\vmshare\liunux\liunuxos_c\main\hept.h(29): note: 默认构造函数或 copy/move 赋值运算符将忽略此成员
 E:\virtualbox\vmshare\liunux\liunuxos_c\main\explorer.cpp(150): warning C4018: “<”: 有符号/无符号不匹配
 E:\virtualbox\vmshare\liunux\liunuxos_c\main\explorer.cpp(152): warning C4018: “<”: 有符号/无符号不匹配
-  fileManager.cpp
-E:\virtualbox\vmshare\liunux\liunuxos_c\main\fileManager.cpp(443): warning C4018: “<”: 有符号/无符号不匹配
-  fileManagerWindow.cpp
-  paint.cpp
-  sysregs.cpp
-  taskBar.cpp
-  windowClass.cpp
   正在生成代码...
     正在创建库 E:\virtualbox\vmshare\liunux\liunuxos_c\Release\main.lib 和对象 E:\virtualbox\vmshare\liunux\liunuxos_c\Release\main.exp
   LINK : 已指定 /LTCG，但不需要生成代码；从链接命令行中移除 /LTCG 以提高链接器性能

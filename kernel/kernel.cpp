@@ -38,7 +38,7 @@
 //#pragma comment(linker, "/ENTRY:DllMain")
 //#pragma comment(linker, "/align:512")
 //#pragma comment(linker, "/merge:.data=.text")
-//#pragma comment(linker, "/merge:.rdata=.text")
+
 
 LPSYSDESCRIPTOR glpCallGate = 0;
 LPSEGDESCRIPTOR glpLdt = 0;
@@ -53,37 +53,7 @@ DWORD gKernelData;
 
 
 
-void getGdtIdt() {
-	DESCRIPTOR_REG gdt;
-	DESCRIPTOR_REG idt;
-	__asm {
-		lea eax,gdt
-		sgdt [eax]
 
-		lea eax,idt
-		sidt [eax]
-	}
-
-	glpGdt = (LPSEGDESCRIPTOR)gdt.addr;
-
-	glpIdt = (LPSYSDESCRIPTOR)idt.addr;
-
-	int gdtcnt = (gdt.size + 1 ) >> 3;
-	for (int i = 1;i < gdtcnt;i ++)
-	{
-		if (glpGdt[i].attr == 0xe2 || glpGdt[i].attr == 0x82)
-		{
-			glpLdt = &glpGdt[i];
-			initLdt(glpLdt);
-			break;
-		}else if (glpGdt[i].attr == 0xec || glpGdt[i].attr == 0x8c)
-		{
-			glpCallGate = (LPSYSDESCRIPTOR)&glpGdt[i];
-			initCallGate((LPSYSDESCRIPTOR)&glpGdt[i]);
-			break;
-		}
-	}
-}
 
 
 //c++函数的导出函数对应函数声明的顺序，而不是函数体，函数体的参数一一对应于声明中的顺序
@@ -96,7 +66,6 @@ int __kernelEntry(LPVESAINFORMATION vesa, DWORD fontbase,DWORD v86Proc,DWORD v86
 	gKernelData = kerneldata;
 	gKernel16 = kernel16;
 	gKernel32 = kernel32;
-	//gAsmTsses = lpasmTsses;
 
 	//must be first to prepare for showing
 	__initVideo(vesa, fontbase);

@@ -9,6 +9,40 @@
 #include "Utils.h"
 #include "Kernel.h"
 
+
+void getGdtIdt() {
+	DESCRIPTOR_REG gdt;
+	DESCRIPTOR_REG idt;
+	__asm {
+		lea eax, gdt
+		sgdt[eax]
+
+		lea eax, idt
+		sidt[eax]
+	}
+
+	glpGdt = (LPSEGDESCRIPTOR)gdt.addr;
+
+	glpIdt = (LPSYSDESCRIPTOR)idt.addr;
+
+	int gdtcnt = (gdt.size + 1) >> 3;
+	for (int i = 1; i < gdtcnt; i++)
+	{
+		if (glpGdt[i].attr == 0xe2 || glpGdt[i].attr == 0x82)
+		{
+			glpLdt = &glpGdt[i];
+			initLdt(glpLdt);
+			break;
+		}
+		else if (glpGdt[i].attr == 0xec || glpGdt[i].attr == 0x8c)
+		{
+			glpCallGate = (LPSYSDESCRIPTOR)&glpGdt[i];
+			initCallGate((LPSYSDESCRIPTOR)&glpGdt[i]);
+			break;
+		}
+	}
+}
+
 //Extended Feature Enable Register(EFER) is a model - specific register added in the AMD K6 processor, 
 //to allow enabling the SYSCALL / SYSRET instruction, and later for entering and exiting long mode.
 //This register becomes architectural in AMD64 and has been adopted by Intel.Its MSR number is 0xC0000080.

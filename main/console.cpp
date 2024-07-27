@@ -60,7 +60,6 @@ int __cmd(char* cmd, WINDOWCLASS* window, char* pidname, int pid) {
 			//return __kCreateThread(addr, (DWORD)&taskcmd, "__kShowWindow");
 
 			int imagesize = getSizeOfImage((char*)MAIN_DLL_SOURCE_BASE);
-
 			return __kCreateProcess(MAIN_DLL_SOURCE_BASE, imagesize, "main.dll", "__kShowWindow", 3, (DWORD)&taskcmd);
 		}
 		else if (__memcmp(filename + fnlen - 4, ".jpg", 4) == 0 || __memcmp(filename + fnlen - 5, ".jpeg", 5) == 0)
@@ -117,12 +116,11 @@ int __cmd(char* cmd, WINDOWCLASS* window, char* pidname, int pid) {
 		__sprintf(szout, "keyboard id:%x", gKeyboardID);
 		ret = __outputConsole((unsigned char*)&szout, CONSOLE_FONT_COLOR, window);
 	}
-	else if (__strcmp(params[0], "keyboardID") == 0) {
+	else if (__strcmp(params[0], "mouseID") == 0) {
 		*szout = 0;
 		__sprintf(szout, "mouse id:%x", gMouseID);
 		ret = __outputConsole((unsigned char*)&szout, CONSOLE_FONT_COLOR, window);
 	}
-
 	else if (__strcmp(params[0], "reg") == 0 && paramcnt >= 2)
 	{
 		if (__strcmp(params[1], "idt") == 0)
@@ -169,7 +167,6 @@ int __cmd(char* cmd, WINDOWCLASS* window, char* pidname, int pid) {
 	else if (__strcmp(params[0], "segments") == 0)
 	{
 		__sprintf(szout, "Kernel:%x,Kernel16:%x,KernelData:%x\r\n", gKernel32, gKernel16, gKernelData);
-		//__drawGraphChars((unsigned char*)szout, 0);
 		ret = __outputConsole((unsigned char*)&szout, CONSOLE_FONT_COLOR, window);
 		return 0;
 	}
@@ -267,7 +264,6 @@ int __cmd(char* cmd, WINDOWCLASS* window, char* pidname, int pid) {
 	{
 		__strcpy(taskcmd.filename, params[0]);
 		taskcmd.cmd = SHOW_TEST_WINDOW;
-
 		int imagesize = getSizeOfImage((char*)MAIN_DLL_SOURCE_BASE);
 		return __kCreateProcess(MAIN_DLL_SOURCE_BASE, imagesize, "main.dll", "__kShowWindow", 3, (DWORD)&taskcmd);
 	}
@@ -379,7 +375,7 @@ int __kConsole(unsigned int retaddr, int tid, char* filename, char* funcname, DW
 	int cmdptr = 0;
 
 	WINDOWCLASS window;
-	initConsoleWindow(&window, "__Console", tid);
+	initConsoleWindow(&window, __FUNCTION__, tid);
 
 	TASKCMDPARAMS taskcmd;
 	__memset((char*)&taskcmd, 0, sizeof(TASKCMDPARAMS));
@@ -461,9 +457,9 @@ int __kConsole(unsigned int retaddr, int tid, char* filename, char* funcname, DW
 		}
 		else if (mouseinfo.status & 4)	//middle click
 		{
-			// 			menu.pos.x = mouseinfo.x;
-			// 			menu.pos.y = mouseinfo.y;
-			// 			menu.action = mouseinfo.status;
+ 			//menu.pos.x = mouseinfo.x;
+ 			//menu.pos.y = mouseinfo.y;
+ 			//menu.action = mouseinfo.status;
 		}
 
 		__sleep(0);

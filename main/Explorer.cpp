@@ -87,7 +87,7 @@ int __kExplorer(unsigned int retaddr, int tid, char * filename, char * funcname,
 
 	//getRCBA();
 
-	//sysEntryProc(0, 0);
+	sysEntryProc(0, 0);
 
 	//callgateEntry(0, 0);
 
