@@ -36,16 +36,10 @@ void mousetest() {
 
 int getmouse(LPMOUSEINFO lpinfo,int wid) {
 
-	if (isTopWindow(wid))
-	{
-		__asm {
-			mov edi, lpinfo
-			mov eax, 3
-			int 80h
-		}
-	}
-	else {
-		return FALSE;
+	__asm {
+		mov edi, lpinfo
+		mov eax, 3
+		int 80h
 	}
 }
 
@@ -176,27 +170,21 @@ void __kMouseProc() {
 
 int __kGetMouse(LPMOUSEINFO lpmouse, int wid) {
 
-	if (isTopWindow(wid) )
+	LPMOUSEDATA data = (LPMOUSEDATA)MOUSE_BUFFER;
+	if (data->mouseBufHdr == data->mouseBufTail)
 	{
-		LPMOUSEDATA data = (LPMOUSEDATA)MOUSE_BUFFER;
-		if (data->mouseBufHdr == data->mouseBufTail)
-		{
-			return FALSE;
-		}
-		
-		lpmouse->status = data->mouseBuf[data->mouseBufTail].status;
-		lpmouse->x = data->mouseBuf[data->mouseBufTail].x;
-		lpmouse->y = data->mouseBuf[data->mouseBufTail].y;
-		data->mouseBufTail++;
-		if (data->mouseBufTail >= MOUSE_POS_LIMIT)
-		{
-			data->mouseBufTail = 0;
-		}
-		return TRUE;
-	}
-	else {
 		return FALSE;
 	}
+		
+	lpmouse->status = data->mouseBuf[data->mouseBufTail].status;
+	lpmouse->x = data->mouseBuf[data->mouseBufTail].x;
+	lpmouse->y = data->mouseBuf[data->mouseBufTail].y;
+	data->mouseBufTail++;
+	if (data->mouseBufTail >= MOUSE_POS_LIMIT)
+	{
+		data->mouseBufTail = 0;
+	}
+	return TRUE;
 }
 
 void __kDrawMouse() {

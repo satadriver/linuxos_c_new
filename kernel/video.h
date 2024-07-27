@@ -255,7 +255,6 @@ typedef struct __WINDOWCLASS {
 	int tid;
 	int pid;
 	
-
 	int top;
 	int left;
 	int right;

@@ -38,7 +38,7 @@
 #include "elf.h"
 #include "v86.h"
 
-#define EXPLORER_TASKNAME	"Explorer.exe"
+#define EXPLORER_TASKNAME	"__kExplorer"
 
 int __kExplorer(unsigned int retaddr, int tid, char * filename, char * funcname, DWORD param) {
 	int ret = 0;
@@ -249,7 +249,7 @@ int __kExplorer(unsigned int retaddr, int tid, char * filename, char * funcname,
 
 DWORD isDesktop() {
 	LPPROCESS_INFO tss = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
-	if (__strcmp(tss->filename, EXPLORER_TASKNAME) == 0)
+	if (__strcmp(tss->funcname, EXPLORER_TASKNAME) == 0)
 	{
 		return TRUE;
 	}

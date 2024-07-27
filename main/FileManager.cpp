@@ -128,8 +128,7 @@ int readFileData(DWORD secno, int filesize, char* databuf, int readsize) {
 int doFileAction(LPFILEBROWSER files) {
 	int result = 0;
 	char szout[1024];
-	// 	__printf(szout, "doFileAction readFileData:%s size:%x\n", files->pathname, files->filesize);
-	// 	__drawGraphChars((unsigned char*)szout, 0);
+	__printf(szout, "doFileAction readFileData:%s size:%x\n", files->pathname, files->filesize);
 
 	if (files->filesize > 0x10000000)
 	{
@@ -213,7 +212,6 @@ int __kFileManager(unsigned int retaddr, int tid, char* filename, char* funcname
 	LPTASKCMDPARAMS cmd = (LPTASKCMDPARAMS)param;
 	__printf(szout, "__kFileManager task tid:%x,name:%s,cmd:%d\n", tid, filename, cmd->cmd);
 
-
 	if (cmd->cmd == UNKNOWN_FILE_SYSTEM)
 	{
 		ret = preparePartitionInfo();
@@ -294,10 +292,10 @@ int __kFileManager(unsigned int retaddr, int tid, char* filename, char* funcname
 
 	while (TRUE)
 	{
-		// 		__printf(szout, "filetotal:%x,first:%s sector:%x size:%x,second:%s sector:%x size:%x,third:%s sector:%x size:%x,fourth:%s sector:%x size:%x\n", 
-		// 			filetotal,files[0].pathname,files[0].secno,files[0].filesize, files[1].pathname, files[1].secno, files[1].filesize, 
-		// 			files[2].pathname, files[2].secno, files[2].filesize, files[3].pathname, files[3].secno, files[3].filesize);
-		// 		__drawGraphChars((unsigned char*)szout, 0);
+ 		//__printf(szout, "filetotal:%x,first:%s sector:%x size:%x,second:%s sector:%x size:%x,third:%s sector:%x size:%x,fourth:%s sector:%x size:%x\n", 
+ 		//	filetotal,files[0].pathname,files[0].secno,files[0].filesize, files[1].pathname, files[1].secno, files[1].filesize, 
+ 		//	files[2].pathname, files[2].secno, files[2].filesize, files[3].pathname, files[3].secno, files[3].filesize);
+ 		//__drawGraphChars((unsigned char*)szout, 0);
 
 		POINT p;
 		p.x = 0;
@@ -353,8 +351,6 @@ int __kFileManager(unsigned int retaddr, int tid, char* filename, char* funcname
 			if (asc)
 			{
 				// 				__printf(szout, "__getchar:%s", &asc);
-				// 				__drawGraphChars((unsigned char*)szout, 0);
-
 				if (asc == VK_NEXT || asc == VK_DOWN || asc == VK_RIGHT || asc == VK_END || asc == 's' || asc == 'd')
 				{
 					//check if is last page
@@ -402,7 +398,6 @@ int __kFileManager(unsigned int retaddr, int tid, char* filename, char* funcname
 				}
 			}
 
-
 			MOUSEINFO mouseinfo;
 			__memset((char*)&mouseinfo, 0, sizeof(MOUSEINFO));
 			ret = getmouse(&mouseinfo, window.window.id);
@@ -414,6 +409,8 @@ int __kFileManager(unsigned int retaddr, int tid, char* filename, char* funcname
 				//number positon in page
 				int targetno = (number / rowlimit) * rowlimit + y;
 				//ntfs dir is 0x10000000
+
+				__printf(szout, "__kFileManager filename:%s\n", files[targetno].pathname);
 
 				if (targetno < filetotal /*&& files[targetno].filesize == 0*/ && files[targetno].attrib & FILE_ATTRIBUTE_DIRECTORY)
 				{

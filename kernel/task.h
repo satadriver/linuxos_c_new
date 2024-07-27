@@ -17,23 +17,23 @@ typedef struct {
 }TASK_LIST_ENTRY;
 
 typedef struct {
-	DWORD ss;
-	DWORD gs;
-	DWORD fs;
-	DWORD es;
-	DWORD ds;
+	DWORD ss;	//0
+	DWORD gs;	//4
+	DWORD fs;	//8
+	DWORD es;	//12
+	DWORD ds;	//16
 	DWORD edi;
 	DWORD esi;
 	DWORD ebp;
-	DWORD esp;
+	DWORD esp;	//32
 	DWORD ebx;
 	DWORD edx;
 	DWORD ecx;
-	DWORD eax;
-	DWORD eip;
-	DWORD cs;
-	DWORD eflags;
-	DWORD esp3;
+	DWORD eax;	//48
+	DWORD eip;	
+	DWORD cs;	
+	DWORD eflags;	
+	DWORD esp3;	//64
 	DWORD ss3;
 	DWORD es_v86;
 	DWORD ds_v86;

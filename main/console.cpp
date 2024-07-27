@@ -373,7 +373,6 @@ int __kConsole(unsigned int retaddr, int tid, char* filename, char* funcname, DW
 
 	//	char szout[1024];
 	// 	__printf(szout, "__kConsole task retaddr:%x,pid:%x,name:%s,funcname:%s,param:%x\n",retaddr, pid, filename,funcname,param);
-	// 	__drawGraphChars((unsigned char*)szout, 0);
 
 	unsigned char szcmd[MAX_PATH_SIZE];
 	__memset((char*)szcmd, 0, MAX_PATH_SIZE);
@@ -475,7 +474,6 @@ int __kConsole(unsigned int retaddr, int tid, char* filename, char* funcname, DW
 
 
 int __outputConsole(unsigned char* font, int color, WINDOWCLASS* window) {
-
 
 	int resultpos = __outputConsoleStr(font, color, DEFAULT_FONT_COLOR, window);
 
@@ -642,17 +640,16 @@ void setCursor( int* x, int* y, unsigned int color) {
 	gCursorColor = color;
 	gCursorBackup = (unsigned char*)CURSOR_GRAPH_BASE;
 
-	int ch = GRAPHCHAR_HEIGHT / 2;
-	int cw = GRAPHCHAR_WIDTH;
+	//int ch = GRAPHCHAR_HEIGHT / 2;
+	//int cw = GRAPHCHAR_WIDTH;
+	//POINT p;
+	//p.x = *gCursorX ;
+	//p.y = *gCursorY + GRAPHCHAR_HEIGHT ;
+	//int ret = __drawRectangle(&p, cw, ch, gCursorColor, (unsigned char*)gCursorBackup);
+	//gTag = TRUE;
 
-	POINT p;
-	p.x = *gCursorX ;
-	p.y = *gCursorY + GRAPHCHAR_HEIGHT ;
-	int ret = __drawRectangle(&p, cw, ch, gCursorColor, (unsigned char*)gCursorBackup);
-	gPrevX = p.x;
-	gPrevY = p.y;
-
-	gTag = TRUE;
+	gPrevX = *gCursorX;
+	gPrevY = *gCursorY;
 
 	g_cursorID = __kAddExactTimer((DWORD)drawCursor, CURSOR_REFRESH_MILLISECONDS, 0, 0, 0, 0);
 }

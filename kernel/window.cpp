@@ -257,15 +257,15 @@ LPWINDOWCLASS insertProcWindow(LPWINDOWCLASS window) {
 
 LPWINDOWCLASS removeProcWindow() {
 	LPPROCESS_INFO p = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
-	LPWINDOWCLASS lpw = p->window;
-	while (lpw)
+	LPWINDOWCLASS w = p->window;
+	while (w)
 	{
-		LPWINDOWCLASS t = lpw;
-		lpw = lpw->next;
+		LPWINDOWCLASS t = w;
+		w = w->next;
 		__kFree((DWORD)t);
 	}
 
-	return lpw;
+	return w;
 }
 
 
@@ -319,9 +319,25 @@ int getOverlapRect(LPRECT r1, LPRECT r2, LPRECT res) {
 }
 
 
-int placeFocus(int x,int y) {
+LPWINDOWCLASS getLastWindow() {
 	LPPROCESS_INFO p = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
 	LPWINDOWCLASS w = p->window;
+	while (w&& w->next)
+	{
+		w = w->next;
+	}
+
+	return w;
+}
+
+
+
+
+int placeFocus(int x,int y) {
+	int res = 0;
+
+	LPPROCESS_INFO p = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
+	LPWINDOWCLASS w = getLastWindow();
 	while (w)
 	{
 		if ((w->left <= x && w->right >= x) && (w->top <= y && w->bottom >= y)) {
@@ -337,9 +353,44 @@ int placeFocus(int x,int y) {
 			w->prev = 0;
 			w->next = p->window;
 			p->window = w;
+
+			LPWINDOWCLASS surf = w;
+			if (surf && surf->next) {
+				do {
+					surf = surf->next;
+
+					RECT r;
+					RECT r1;
+					RECT r2;
+					r1.bottom = surf->bottom;
+					r1.top = surf->top;
+					r1.left = surf->left;
+					r1.right = surf->right;
+					r2.bottom = w->bottom;
+					r2.top = w->top;
+					r2.left = w->left;
+					r2.right = w->right;
+					res = getOverlapRect(&r1,&r2,&r);
+
+					char* ol_src = (char*)surf->backGround + ( (r.top - surf->top) * surf->width + r.left - surf->left)*gBytesPerPixel;
+					int olsize = (r.bottom - r.top) * (r.right - r.left) * gBytesPerPixel;
+
+					char * ol_dst = (char*)__getpos(w->pos.x,w->pos.y) + ((r.top - surf->top) * w->width + r.left - w->left) * gBytesPerPixel;
+			
+					__memcpy(ol_dst, ol_src, olsize);
+
+
+					char* src = (char*)w->backGround + ((r.top - w->top) * w->width + r.left - w->left) * gBytesPerPixel;
+
+					char* dst = ol_src;
+
+					__memcpy(dst, src, olsize);
+					
+				} while (surf && surf->next);
+			}
 		}
 		else {
-			w = w->next;
+			w = w->prev;
 		}
 	}
 

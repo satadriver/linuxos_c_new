@@ -2,6 +2,7 @@
 #include "task.h"
 #include "hardware.h"
 #include "task.h"
+#include "mouse.h"
 
 
 DWORD __declspec(naked) servicesProc(LIGHT_ENVIRONMENT* stack) {
@@ -32,7 +33,7 @@ DWORD __declspec(naked) servicesProc(LIGHT_ENVIRONMENT* stack) {
 		call __kServicesProc
 		add esp, 8
 
-		mov stack.eax, eax		//may be error?
+		mov stack.eax, eax		//may be error?  warning: "."应用于非 UDT 类型
 	}
 
 	__asm {
@@ -52,10 +53,10 @@ DWORD __declspec(naked) servicesProc(LIGHT_ENVIRONMENT* stack) {
 	}
 }
 
-DWORD __declspec(dllexport) __kServicesProc(DWORD no, DWORD * params) {
+DWORD __declspec(dllexport) __kServicesProc(DWORD num, DWORD * params) {
 
 	DWORD r = 0;
-	switch (no)
+	switch (num)
 	{
 		case KBD_OUTPUT:
 		{
@@ -67,6 +68,7 @@ DWORD __declspec(dllexport) __kServicesProc(DWORD no, DWORD * params) {
 		}
 		case MOUSE_OUTPUT:
 		{
+			r= __kGetMouse((LPMOUSEINFO)params,0);
 			break;
 		}
 		case GRAPH_CHAR_OUTPUT:
