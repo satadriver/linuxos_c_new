@@ -6,6 +6,7 @@
 ipch/
 *.ipch
 *.opendb
+*.tlog
 
 # Object files
 *.o
