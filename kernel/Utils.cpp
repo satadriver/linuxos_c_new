@@ -872,7 +872,7 @@ int getCpuInfo(char * name) {
 }
 
 
-
+#include "hardware.h"
 
 int __shutdownSystem() {
 
@@ -880,50 +880,24 @@ int __shutdownSystem() {
 		mov ax, 2001h;
 		mov dx, 1004h;
 		out dx, ax;    //写入 2001h  到端口 1004h    实现暴力关机
-
-		push edx
-
-		mov dx, 0cf8h
-		mov eax, 8000f840h
-		out dx, eax
-
-		mov dx, 0cfch
-		in eax, dx
-		cmp eax, 0ffffffffh
-		jz _notSupportICH
-
-		and ax, 0fffeh
-		add ax, 4
-		mov dx, ax
-		in ax, dx
-		or ax, 03c00h
-		out dx, ax
-
-		_notSupportICH :
-		pop edx
-
-// 		mov dx, 0cf8h
-// 		mov eax, 8000f840h
-// 		out dx, eax
-// 
-// 		mov dx, 0cfch
-// 		in eax, dx
-// 		and al, 0feh
-// 		mov dx, ax
-// 
-// 		push dx
-// 
-// 		add dx, 30h
-// 		in ax, dx
-// 		and ax, 0ffefh
-// 		out dx, ax
-// 
-// 		pop dx
-// 		add dx, 5
-// 		in al, dx
-// 		or al, 3ch
-// 		out dx, al
 	}
+
+	for (int bdf = 0x80000008; bdf <= 0x80ffff08; bdf += 0x100)			//offset 8,read class type,vender type
+	{
+		outportd(0xcf8, bdf);
+		DWORD v = inportd(0xcfc);
+		if (v && v != 0xffffffff)
+		{
+			int r = 4 + ( v & 0xfffe);
+			int d = inportw(r) | 0x3c00;
+			outportw(r, d);
+
+			int r2 = 30 + (v & 0xfffe);
+			int d2 = inportw(r2) & 0xffef;
+			outportw(r2, d2);	
+		}
+	}
+	return 0;
 }
 
 //pu寻址位在第一位开始ffff:0000,当寻址位在第一位的时候及0，

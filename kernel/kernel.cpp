@@ -8,7 +8,6 @@
 #include "task.h"
 #include "Pe.h"
 #include "satadriver.h"
-
 #include "fat32/FAT32.h"
 #include "fat32/fat32file.h" 
 #include "file.h"
@@ -16,7 +15,6 @@
 #include "NTFS/ntfsFile.h"
 #include "pci.h"
 #include "speaker.h"
-
 #include "cmosAlarm.h"
 #include "rs232.h"
 #include "floppy.h"
@@ -39,9 +37,6 @@
 //#pragma comment(linker, "/align:512")
 //#pragma comment(linker, "/merge:.data=.text")
 
-
-
-
 DWORD gV86VMIEntry = 0;
 DWORD gV86Process = 0;
 DWORD gKernel16;
@@ -49,11 +44,6 @@ DWORD gKernel32;
 DWORD gKernelData;
 
 
-
-
-
-
-//c++函数的导出函数对应函数声明的顺序，而不是函数体，函数体的参数一一对应于声明中的顺序
 int __kernelEntry(LPVESAINFORMATION vesa, DWORD fontbase,DWORD v86Proc,DWORD v86Addr ,DWORD kerneldata,DWORD kernel16,DWORD kernel32) {
 
 	int ret = 0;
@@ -64,12 +54,9 @@ int __kernelEntry(LPVESAINFORMATION vesa, DWORD fontbase,DWORD v86Proc,DWORD v86
 	gKernel16 = kernel16;
 	gKernel32 = kernel32;
 
-	//must be first to prepare for showing
 	__initVideo(vesa, fontbase);
 
 	char szout[1024];
-
-	//getGdtIdt();
 
 	initGdt();
 	initIDT();
@@ -85,8 +72,6 @@ int __kernelEntry(LPVESAINFORMATION vesa, DWORD fontbase,DWORD v86Proc,DWORD v86
 	__initTask();
 
 	initDll();
-
-	//sysEntryProc(0,0);
 
 	initRS232Com1();
 	initRS232Com2();
@@ -114,8 +99,6 @@ int __kernelEntry(LPVESAINFORMATION vesa, DWORD fontbase,DWORD v86Proc,DWORD v86
 // 	__kCreateThread((DWORD)__kSpeakerProc, (DWORD)&cmd, "__kSpeakerProc");
 
 	//logFile("__kernelEntry\n");
-
-	//__rmSectorReader(0, 1, szout, 1024);
 	
 // 	DWORD kernelMain = getAddrFromName(KERNEL_DLL_BASE, "__kKernelMain");
 // 	if (kernelMain)
@@ -125,7 +108,6 @@ int __kernelEntry(LPVESAINFORMATION vesa, DWORD fontbase,DWORD v86Proc,DWORD v86
 // 		__kCreateThread((unsigned int)kernelMain,(DWORD)&cmd, "__kKernelMain");
 // 	}
 
-	//must be after running V86VMIEntry and sti
 	initFileSystem();
 
 	initDebugger();
@@ -163,27 +145,18 @@ void __kKernelMain(DWORD retaddr,int pid,char * filename,char * funcname,DWORD p
  	char szout[1024];
 	__printf(szout, "__kKernelMain task pid:%x,filename:%s,function name:%s\n", pid, filename,funcname);
 
-// 	unsigned char sendbuf[1024];
-// 	//最大不能超过14字节
-// 	__strcpy((char*)sendbuf, "how are you?");
-// 	ret = sendCom2Data(sendbuf, __strlen("how are you?"));
-// 
-// 	unsigned char recvbuf[1024];
-// 	int recvlen = getCom2Data(recvbuf);
-// 	if (recvlen > 0)
-// 	{
-// 		*(recvbuf + recvlen) = 0;
-// 		
-// 		__printf(szout, "recvbuf data:%s\n", recvbuf);
-// 		__drawGraphChars((unsigned char*)szout, 0);
-// 	}
-
-	//setVideoMode(0x4112);
-
-	while (1)
-	{
-		__sleep(1000);
-	}
+ 	unsigned char sendbuf[1024];
+ 	//最大不能超过14字节
+ 	__strcpy((char*)sendbuf, "how are you?");
+ 	ret = sendCom2Data(sendbuf, __strlen("how are you?"));
+ 
+ 	unsigned char recvbuf[1024];
+ 	int recvlen = getCom2Data(recvbuf);
+ 	if (recvlen > 0)
+ 	{
+ 		*(recvbuf + recvlen) = 0;
+ 		__printf(szout, "recvbuf data:%s\n", recvbuf);
+ 	}
 
 	while (1)
 	{
@@ -197,9 +170,15 @@ void __kKernelMain(DWORD retaddr,int pid,char * filename,char * funcname,DWORD p
 
 //注意二位数组在内存中的排列和结构
 void mytest() {
-
-
 	char tmp[0x4000] = { 0 };
+
+	PCI_CONFIG_VALUE pci = { 0 };
+	PCI_CONFIG_VALUE* lppci = &pci;
+	pci.enable = 1;
+	pci.bus = 44;
+	pci.dev = 14;
+	pci.func = 5;
+	pci.reg = 22;
 
 	TssDescriptor d;
 

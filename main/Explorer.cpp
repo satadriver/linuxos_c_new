@@ -81,7 +81,7 @@ int __kExplorer(unsigned int retaddr, int tid, char * filename, char * funcname,
 
 	__kAddAlarmTimer(30, (DWORD)__doAlarmTask, 0);
 
-	//v86Process(0x4f02,0,0,3,0,0,0x10);
+	//v86Process(0x4f02,0,0,3,0,0,0,0,0x10);
 
 	//initEfer();
 

@@ -64,7 +64,24 @@ extern "C" __declspec(dllexport) void __kException(DWORD);
 extern "C" __declspec(dllimport) void __kException(DWORD);
 #endif
 
-extern "C" void V86TrapProc(LIGHT_ENVIRONMENT* stack);
+void  Com1IntProc(LIGHT_ENVIRONMENT* stack);
+void  Com2IntProc(LIGHT_ENVIRONMENT* stack);
+
+void  Parallel2IntProc(LIGHT_ENVIRONMENT* stack);
+void  Parallel1IntProc(LIGHT_ENVIRONMENT* stack);
+
+void  FloppyDiskIntProc(LIGHT_ENVIRONMENT* stack);
+void  SlaveIntProc(LIGHT_ENVIRONMENT* stack);
+
+void  NetcardIntProc(LIGHT_ENVIRONMENT* stack);
+void  USBIntProc(LIGHT_ENVIRONMENT* stack);
+
+void  CoprocessorIntProc(LIGHT_ENVIRONMENT* stack);
+void  IDEMasterIntProc(LIGHT_ENVIRONMENT* stack);
+
+void  IDESlaveIntProc(LIGHT_ENVIRONMENT* stack);
+
+void Slave1IntProc(LIGHT_ENVIRONMENT* stack);
 
 extern "C" void TimerInterrupt(LIGHT_ENVIRONMENT * stack);
 

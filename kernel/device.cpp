@@ -148,7 +148,7 @@ int readTimer(int num) {
 	return low + (high << 8);
 }
 
-//https://www.cnblogs.com/LinKArftc/p/5735627.html
+
 void init8042() {
 
 	__wait8042Empty();

@@ -43,12 +43,35 @@
 // bit2为1表示采用64位地址，为0表示采用32位地址
 // bit3表示是否支持可预取
 
-//1111 1111 1111 1111 1111 1111 1111 1111
+
 #include "def.h"
+
+
+
+#pragma pack(push,1)
+
+typedef struct
+{
+	char low:2;
+	char reg : 5;
+	char reserved:1;
+
+	char func : 3;
+	char dev : 5;
+	char bus;
+	char unused : 7;
+	char enable : 1;
+
+}PCI_CONFIG_VALUE;
+
+
+#pragma pack(pop)
+
+
 
 int listpci(DWORD* dst);
 
-//void showAllPciDevs();
+DWORD makePciAddr(int bus, int dev, int func, int reg);
 
 int getPciDevBasePort(DWORD* baseregs, WORD devClsVender, DWORD* dev, DWORD* irqpin);
 
