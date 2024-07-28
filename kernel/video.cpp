@@ -34,7 +34,7 @@ int gSmallFolderHeight = 0;
 int gShowX = 0;
 int gShowY = 0;
 
-
+int g_ScreenMode = 0;
 
 
 
@@ -46,15 +46,6 @@ int __initVideo(LPVESAINFORMATION vesaInfo, DWORD fontbase) {
 	__memcpy((char*)gVesaInfo, (char*)vesaInfo, sizeof(VESAINFORMATION));
 
 	__memcpy((char*)gVesaInfo + sizeof(VESAINFORMATION), (char*)vesaInfo + sizeof(VESAINFORMATION), sizeof(VESAINFOBLOCK));
-
-	// 	DWORD svgaregs[16];
-	// 	DWORD svgadev = 0;
-	// 	DWORD svgairq = 0;
-	// 	result = getBasePort(svgaregs, 0x0300, &svgadev, &svgairq);
-	// 	if ( (svgaregs) && (svgaregs[0] & 1) == 0 )		//memory address
-	// 	{
-	// 		gVesaInfo.PhyBasePtr = (svgaregs[0] & 0xfffffff0);
-	// 	}
 
 	gFontBase = fontbase;
 	gBytesPerPixel = vesaInfo->BitsPerPixel >> 3;
@@ -82,6 +73,8 @@ int __initVideo(LPVESAINFORMATION vesaInfo, DWORD fontbase) {
 	p.x = 0;
 	p.y = 0;
 	__drawRectangle(&p, gVideoWidth, gVideoHeight, BACKGROUND_COLOR, 0);
+
+	g_ScreenMode = TRUE;
 
 	return 0;
 }
@@ -485,6 +478,9 @@ int __backspaceChar() {
 
 
 int __drawGraphChars(unsigned char* font, int color) {
+	if (g_ScreenMode == 0) {
+		return FALSE;
+	}
 #ifdef LIUNUX_DEBUG_LOG_ON
 	unsigned int pos = __getpos(gShowX, gShowY);
 	int resultpos = __drawGraphChar(font, color, pos, 0);		//BACKGROUND_COLOR
@@ -527,6 +523,9 @@ int __drawGraphCharPos(unsigned char* font, int color, unsigned int pos) {
 
 
 int __drawGraphChar(unsigned char* font, int color, unsigned int pos, int bgcolor) {
+	if (g_ScreenMode == 0) {
+		return FALSE;
+	}
 	int len = __strlen((char*)font);
 
 	unsigned char* showpos = pos + (unsigned char*)gGraphBase;

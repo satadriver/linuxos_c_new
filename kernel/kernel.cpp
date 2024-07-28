@@ -40,10 +40,7 @@
 //#pragma comment(linker, "/merge:.data=.text")
 
 
-LPSYSDESCRIPTOR glpCallGate = 0;
-LPSEGDESCRIPTOR glpLdt = 0;
-LPSEGDESCRIPTOR glpGdt = 0;
-LPSYSDESCRIPTOR glpIdt = 0;
+
 
 DWORD gV86VMIEntry = 0;
 DWORD gV86Process = 0;
@@ -99,6 +96,8 @@ int __kernelEntry(LPVESAINFORMATION vesa, DWORD fontbase,DWORD v86Proc,DWORD v86
 	initCoprocessor();
 
 	initTimer();
+
+	sysEntryInit((DWORD)sysEntry);
 
 	__asm {
 		sti

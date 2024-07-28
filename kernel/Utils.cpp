@@ -665,8 +665,12 @@ int __printf(char * buf, char * format, ...) {
 		dec eax
 		mov len,eax
 	}
+	if (g_ScreenMode) {
+		int showlen = __drawGraphChars((unsigned char*)buf, 0);
+	}
+	else {
 
-	int showlen = __drawGraphChars((unsigned char*)buf, 0);
+	}
 	return len;
 }
 

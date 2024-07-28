@@ -130,7 +130,7 @@ int __initDosTss(LPPROCESS_INFO tss, int pid, DWORD addr, char * filename, char 
 	tss->tss.esp0 = TASKS_STACK0_BASE + (pid + 1) * TASK_STACK0_SIZE - STACK_TOP_DUMMY;
 	tss->tss.ss0 = KERNEL_MODE_STACK;
 
-	tss->tss.ldt = ((DWORD)glpLdt - (DWORD)glpGdt);
+	tss->tss.ldt = 0;
 
 	tss->tss.eflags = eflags;
 

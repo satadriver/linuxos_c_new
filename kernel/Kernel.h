@@ -10,11 +10,7 @@
 
 #ifdef DLL_EXPORT
 
-extern "C" __declspec(dllexport)  LPSYSDESCRIPTOR glpCallGate;
-extern "C" __declspec(dllexport)  LPSEGDESCRIPTOR glpLdt;
-extern "C" __declspec(dllexport)  LPSEGDESCRIPTOR glpGdt;
 
-extern "C" __declspec(dllexport)  LPSYSDESCRIPTOR glpIdt;
 
 extern "C" __declspec(dllexport)  DWORD gV86VMIEntry;
 
@@ -30,11 +26,7 @@ extern "C" __declspec(dllexport) void __kKernelMain(DWORD retaddr, int pid, char
 extern "C" __declspec(dllexport) int __kernelEntry( LPVESAINFORMATION vesa, DWORD fontbase, 
 	DWORD v86Proc, DWORD v86Leave,DWORD kerneldata, DWORD kernel16, DWORD kernel32);
 #else
-extern "C" __declspec(dllimport)  LPSYSDESCRIPTOR glpCallGate;
-extern "C" __declspec(dllimport)  LPSEGDESCRIPTOR glpLdt;
-extern "C" __declspec(dllimport)  LPSEGDESCRIPTOR glpGdt;
 
-extern "C" __declspec(dllimport)  LPSYSDESCRIPTOR glpIdt;
 
 extern "C" __declspec(dllimport)  DWORD gV86VMIEntry;
 

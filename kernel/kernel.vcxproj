@@ -211,6 +211,7 @@
     <ClCompile Include="malloc.cpp" />
     <ClCompile Include="soundBlaster\sbPlay.cpp" />
     <ClCompile Include="speaker.cpp" />
+    <ClCompile Include="textMode.cpp" />
     <ClCompile Include="timer8254.cpp" />
     <ClCompile Include="task.cpp" />
     <ClCompile Include="thread.cpp" />
@@ -268,6 +269,7 @@
     <ClInclude Include="malloc.h" />
     <ClInclude Include="soundBlaster\sbPlay.h" />
     <ClInclude Include="speaker.h" />
+    <ClInclude Include="textMode.h" />
     <ClInclude Include="timer8254.h" />
     <ClInclude Include="task.h" />
     <ClInclude Include="thread.h" />

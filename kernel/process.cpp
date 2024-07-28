@@ -93,7 +93,7 @@ int __initProcess(LPPROCESS_INFO tss, int pid, DWORD filedata, char * filename, 
 	char szout[1024];
 
 	tss->tss.trap = 1;
-	tss->tss.ldt = ((DWORD)glpLdt - (DWORD)glpGdt);
+	tss->tss.ldt = 0;
 
 	tss->tss.iomapOffset = 136;
 	tss->tss.iomapEnd = 0xff;

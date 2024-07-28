@@ -78,6 +78,19 @@ void initDevices() {
 }
 
 
+void initTextModeDevices() {
+
+	initTextMode8259();
+	init8254();
+	initCMOS();
+	enableMouse();
+	init8042();
+	enableSpeaker();
+	getKeyboardID();
+
+}
+
+
 void enableMouse() {
 	__wait8042Empty();
 
@@ -226,6 +239,26 @@ void init8259() {
 
 	outportb(0x20, 0x00);
 	outportb(0xa0, 0x00);
+
+	//0: level trigger,1: pulse trigger
+	outportb(0x4d0, 0);
+	outportb(0x4d1, 0);
+}
+
+
+void initTextMode8259() {
+
+	outportb(0x20, 0x11);
+	outportb(0xa0, 0x11);
+	outportb(0x21, INTR_8259_MASTER);
+	outportb(0xa1, INTR_8259_SLAVE);
+	outportb(0x21, 4);
+	outportb(0xa1, 2);
+	outportb(0x21, 0x1);
+	outportb(0xa1, 0x1);
+
+	outportb(0x20, 0x00);
+	outportb(0xa0, 0x10);
 
 	//0: level trigger,1: pulse trigger
 	outportb(0x4d0, 0);

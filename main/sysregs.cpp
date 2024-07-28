@@ -5,6 +5,7 @@
 #include "Kernel.h"
 #include "task.h"
 #include "malloc.h"
+#include "core.h"
 
 
 int getcrs(char * szout) {
@@ -192,9 +193,9 @@ int getldt(char * szout) {
 	//int ldtlen = *(WORD*)strldt + 1;
 	//DWORD ldtbase = *(DWORD*)(strldt + 2);
 
-	LPSEGDESCRIPTOR ldtbase = (LPSEGDESCRIPTOR)((DWORD)glpGdt + ldt);
+	TssDescriptor * ldtbase = (TssDescriptor*)(GDT_BASE + ldtSelector);
 
-	int ldtlen = ldtbase->limitLow + ((ldtbase->gd0a_lh & 0x0f) << 16) + 1;
+	int ldtlen = ldtbase->len + 1 + ((ldtbase->lenHigh) << 16) ;
 
 	__printf(szout, "ldt selector:%d,base:%x,size:%d\r\n",ldt, ldtbase, ldtlen);
 

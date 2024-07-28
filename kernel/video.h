@@ -134,6 +134,8 @@ typedef struct  {
 
 unsigned short * getCCIdxInGBK(unsigned short gbk);
 
+extern "C" int g_ScreenMode ;
+
 #ifdef DLL_EXPORT
 
 extern "C"  __declspec(dllexport) unsigned char* gCCFontBase;

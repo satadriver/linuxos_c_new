@@ -3,6 +3,7 @@
 #include "hardware.h"
 #include "task.h"
 #include "mouse.h"
+#include "keyboard.h"
 
 
 DWORD __declspec(naked) servicesProc(LIGHT_ENVIRONMENT* stack) {
@@ -60,10 +61,12 @@ DWORD __declspec(dllexport) __kServicesProc(DWORD num, DWORD * params) {
 	{
 		case KBD_OUTPUT:
 		{
+			r = __kGetKbd(0);
 			break;
 		}
 		case KBD_INPUT:
 		{
+			__kPutKbd((DWORD)params, 0);
 			break;
 		}
 		case MOUSE_OUTPUT:

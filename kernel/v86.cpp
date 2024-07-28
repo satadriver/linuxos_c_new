@@ -6,26 +6,26 @@
 #include "satadriver.h"
 #include "task.h"
 #include "atapi.h"
-
-#pragma pack(1)
-
-
-typedef struct {
-	
-	DWORD reax;
-	DWORD recx;
-	DWORD redx;
-	DWORD rebx;
-	DWORD resi;
-	DWORD redi;
-	DWORD int_cmd;
-}V86_INT_PARAMETER;
-
-#pragma pack()
+#include "core.h"
 
 
 
-int v86Process(int reax,int recx,int redx,int rebx,int resi,int redi,int cmd){
+
+
+
+int v86Process(int reax,int recx,int redx,int rebx,int resi,int redi,int rds, int res,int cmd ){
+
+do {
+	TssDescriptor* lptssd = (TssDescriptor*)(GDT_BASE + kTssV86Selector);
+	TSS* tss = (TSS*)V86_TSS_BASE;
+	if ((lptssd->type & 2) || (tss->link)) {
+		__sleep(0);
+		break;
+	}
+	else {
+		break;
+	}
+} while (TRUE);
 
 	V86_INT_PARAMETER* param = (V86_INT_PARAMETER*)V86_INT_ADDRESS;
 	param->reax = reax;
@@ -34,19 +34,116 @@ int v86Process(int reax,int recx,int redx,int rebx,int resi,int redi,int cmd){
 	param->rebx = rebx;
 	param->resi = resi;
 	param->redi = redi;
-
+	param->rds = rds;
+	param->res = res;
 	param->int_cmd = cmd;
 
 	__asm {	
 		int 255
 	}
-	return 0;
+
+	return param->result;
 }
 
 
 
 
 
+
+
+int getVideoMode(VesaSimpleInfo vsi[64] ) {
+
+	int res = 0;
+	int idx = 0;
+
+	char szout[1024];
+
+	//res = v86Process(0x4f02, 0, 0, 0x4108, 0, VESA_STATE_OFFSET, 0, VESA_STATE_SEG, 0x10);
+	//return 0;
+
+	res = v86Process(0x4f00, 0, 0, 0, 0, VESA_STATE_OFFSET, 0, VESA_STATE_SEG ,0x10 );
+	if ((res & 0xffff) == 0x4f) {
+		VESAINFOBLOCK* vib = (VESAINFOBLOCK*)VESA_STATE_ADDRESS;
+
+		WORD * addr = (WORD*)(vib->mode_dos_offset + (vib->mode_dos_seg << 4));
+
+		WORD mode = *addr;
+		while (mode != 0 && mode != 0xffff) {
+
+			res = v86Process(0x4f01, mode, 0, 0, 0, VESA_STATE_OFFSET + 0x100, 0, VESA_STATE_SEG, 0x10);
+			if ((res & 0xffff) == 0x4f)
+			{
+				VESAINFORMATION * vi = (VESAINFORMATION*)(VESA_STATE_OFFSET + 0x100 + (VESA_STATE_SEG << 4));
+				if (vi->ModeAttr & 0x80) {
+					if (vi->BitsPerPixel >= 24) {
+						if (vi->XRes >= 800 && vi->YRes >= 600) {
+
+							vsi[idx].mode = mode;
+							vsi[idx].x = vi->XRes;
+							vsi[idx].y = vi->YRes;
+							vsi[idx].bpp = vi->BitsPerPixel / 8;
+
+							vsi[idx].base = vi->PhyBasePtr;
+							vsi[idx].offset = vi->OffScreenMemOffset;
+							vsi[idx].size = vi->OffScreenMemSize;
+
+							idx++;
+						}
+					}
+				}
+			}
+			addr++;
+			mode = *addr;
+		} 
+	}
+	
+	return idx;
+}
+
+
+/*
+-----------------------------------------------------------
+				功能0x00：返回VBE信息
+------------------------------------------------------
+入口：
+	AX			0x4F00
+	ES：DI		指向VBE信息块的指针
+出口：
+	AX			VBE返回值
+------------------------------------------------------------
+
+-----------------------------------------------------------
+			功能0x01：返回VBE特定模式信息
+------------------------------------------------------
+入口：
+	AX			0x4F01
+	CX			模式号
+	ES：DI		指向VBE特定模式信息块的指针
+出口：
+	AX			VBE返回值
+------------------------------------------------------------
+
+-----------------------------------------------------------
+			功能0x02：设置VESA VBE 模式
+------------------------------------------------------
+入口：
+	AX			0x4F02
+	BX			模式号
+出口：
+	AX			VBE返回值
+------------------------------------------------------------
+当设置模式失败时，返回错误代码，一般返回AH=01H
+
+VESA 2.0以上增加了BX中D14，D15的位定义，完整定义如下：
+BX = 模式号
+	D0～D8：9位模式号
+	D9～D13：保留，必须为0
+	D14 = 0：使用普通的窗口页面缓存模式，用VBE功能05H切换显示页面
+		= 1：使用大的线性缓存区，其地址可从VBE功能01H的返回信息ModeInfo获得
+	D15 = 0：清除显示内存
+		= 1：不清除显示内存
+------------------------------------------------------------
+*/
 
 
 

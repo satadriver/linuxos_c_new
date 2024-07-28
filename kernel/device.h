@@ -7,7 +7,13 @@ void init8254();
 void initCMOS();
 void enableMouse();
 void init8042();
+
 void init8259();
+
+void initTextModeDevices();
+
+void initTextMode8259();
+
 void enableSpeaker();
 void getKeyboardID();
 

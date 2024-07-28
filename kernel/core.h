@@ -78,6 +78,10 @@ struct TssDescriptor {
 };
 
 
+#define LdtDescriptor TssDescriptor
+
+
+
 struct CallGateDescriptor {
 	WORD baseLow;
 	WORD selector;
