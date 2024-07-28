@@ -51,8 +51,6 @@ int initFileSystem() {
 		return FALSE;
 	}
 
-	//getHarddiskInfo((char*)HARDDISK_INFO_BASE);
-
 	ret = getMBR();
 	if (ret == 1)
 	{
@@ -64,7 +62,8 @@ int initFileSystem() {
 	else {
 		return 0;
 	}
-	return 0;
+
+	return TRUE;
 }
 
 int getMBR() {
@@ -74,6 +73,10 @@ int getMBR() {
 	{
 		__drawGraphChars((unsigned char*)"MBR format error\r\n", 0);
 		return FALSE;
+	}
+	else {
+		char szout[1024];
+		__printf(szout, "getMBR ok\r\n");
 	}
 
 	g_mpartOffset = gMBR.dpt[0].offset;

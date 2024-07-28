@@ -555,11 +555,6 @@ extern "C"  __declspec(dllexport) DWORD __kTaskSchedule(LIGHT_ENVIRONMENT * env)
 
 	gTasksListPtr = (TASK_LIST_ENTRY*)next;
 
-	if (prev->process->tid == gTasksListPtr->process->tid)
-	{
-		//return 0;
-	}
-
 	LPPROCESS_INFO tss = (LPPROCESS_INFO)TASKS_TSS_BASE;
 	LPPROCESS_INFO process = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
 
@@ -576,6 +571,7 @@ extern "C"  __declspec(dllexport) DWORD __kTaskSchedule(LIGHT_ENVIRONMENT * env)
 	process->tss.fs = env->fs;
 	process->tss.ds = env->ds;
 	process->tss.es = env->es;
+
 	DWORD dwcr3 = 0;
 	__asm {
 		mov eax,cr3
@@ -609,16 +605,9 @@ extern "C"  __declspec(dllexport) DWORD __kTaskSchedule(LIGHT_ENVIRONMENT * env)
 	// 		lldt ax
 	// 	}
 
-		//if (prev->process->status == TASK_RUN && process->status == TASK_RUN)
-	{
-		process->counter++;
-		__memcpy((char*)(tss + prev->process->tid), (char*)process, sizeof(PROCESS_INFO));
-	}
-
-	//if (gTasksListPtr->process->status == TASK_RUN)
-	{
-		__memcpy((char*)process, (char*)(gTasksListPtr->process->tid + tss), sizeof(PROCESS_INFO));
-	}
+	process->counter++;
+	__memcpy((char*)(tss + prev->process->tid), (char*)process, sizeof(PROCESS_INFO));
+	__memcpy((char*)process, (char*)(gTasksListPtr->process->tid + tss), sizeof(PROCESS_INFO));
 
 	if (process->tss.eflags & 0x20000) {
 
@@ -690,22 +679,15 @@ void tasktest(TASK_LIST_ENTRY *gTasksListPtr, TASK_LIST_ENTRY*gPrevTasksPtr) {
 	if (gTestFlag >= 0 && gTestFlag <= -1)
 	{
 		char szout[1024];
-		//TSS* procinfo = (TSS*)gAsmTsses;
-		//__printf(szout, "clock tick tss link:%x,eflags:%x\r\n", procinfo->link, procinfo->eflags);
-		//__drawGraphChars((unsigned char*)szout, 0);
-
 		__printf(szout,
 			"saved  cr3:%x,pid:%x,name:%s,level:%u,esp0:%x,ss0:%x,eip:%x,cs:%x,esp3:%x,ss3:%x,eflags:%x,link:%x,\r\n"
 			"loaded cr3:%x,pid:%x,name:%s,level:%u,esp0:%x,ss0:%x,eip:%x,cs:%x,esp3:%x,ss3:%x,eflags:%x,link:%x.\r\n\r\n",
 			gPrevTasksPtr->process->tss.cr3, gPrevTasksPtr->process->pid, gPrevTasksPtr->process->filename, gPrevTasksPtr->process->level,
 			gPrevTasksPtr->process->tss.esp0, gPrevTasksPtr->process->tss.ss0, gPrevTasksPtr->process->tss.eip, gPrevTasksPtr->process->tss.cs,
 			gPrevTasksPtr->process->tss.esp, gPrevTasksPtr->process->tss.ss, gPrevTasksPtr->process->tss.eflags, gPrevTasksPtr->process->tss.link,
-
 			gTasksListPtr->process->tss.cr3, gTasksListPtr->process->pid, gTasksListPtr->process->filename, gTasksListPtr->process->level,
 			gTasksListPtr->process->tss.esp0, gTasksListPtr->process->tss.ss0, gTasksListPtr->process->tss.eip, gTasksListPtr->process->tss.cs,
-			gTasksListPtr->process->tss.esp, gTasksListPtr->process->tss.ss, gTasksListPtr->process->tss.eflags, gTasksListPtr->process->tss.link
-		);
-		__drawGraphChars((unsigned char*)szout, 0);
+			gTasksListPtr->process->tss.esp, gTasksListPtr->process->tss.ss, gTasksListPtr->process->tss.eflags, gTasksListPtr->process->tss.link);
 		gTestFlag++;
 	}
 }

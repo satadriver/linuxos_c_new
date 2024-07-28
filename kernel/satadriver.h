@@ -54,17 +54,31 @@ typedef struct
 
 #pragma pack()
 
-int getHarddiskInfo();
+
+extern DWORD gAtapiPackSize;
+
+extern DWORD gATADev ;
+
+extern WORD gATAPIDev ;
+
+extern WORD gAtaBasePort;
+
+extern WORD gAtapiBasePort;
+
+
+int writesector(int port, int size, char* buf);
+
+int readsector(int port, int size, char* buf);
+
+int identifyDevice(int port,int cmd,char * buffer);
 
 int readSectorLBA48(unsigned int secnoLow, unsigned int secnoHigh, unsigned char seccnt, char* buf, int device);
 
 int writeSectorLBA48(unsigned int secnoLow, unsigned int secnoHigh, unsigned char seccnt, char* buf, int device);
 
-
 int readSectorLBA24(unsigned int secno, unsigned char seccnt, char* buf, int device);
 
 int writeSectorLBA24(unsigned int secno, unsigned char seccnt, char* buf, int device);
-
 
 int readSectorLBA24Mimo(unsigned int secno, unsigned char seccnt, char* buf, int device);
 
@@ -72,15 +86,17 @@ int readSectorLBA48Mimo(unsigned int secnoLow, unsigned int secnoHigh, unsigned 
 
 void waitFree(WORD port);
 
+void waitReady(WORD port);
+
 int waitComplete(WORD port);
 
-int testHdPort(unsigned short port);
+int checkIDEPort(unsigned short port);
 
-int testHdPortMimo(unsigned int addr);
+int checkIDEMimo(unsigned int addr);
 
 int __initHardDisk();
 
-int getHdPort();
+int getIDEPort();
 
 int readPortSector(unsigned int secno, DWORD secnohigh, unsigned int seccnt, char* buf);
 int writePortSector(unsigned int secno, DWORD secnohigh, unsigned int seccnt, char* buf);

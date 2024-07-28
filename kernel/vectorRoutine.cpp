@@ -12,6 +12,7 @@
 #include "cmosPeriodTimer.h"
 #include "cmosAlarm.h"
 #include "cmosExactTimer.h"
+#include "satadriver.h"
 
 #define EXCEPTION_TIPS_COLOR 0X9F3F00
 
@@ -1036,6 +1037,7 @@ void __declspec(naked) Com2IntProc(LIGHT_ENVIRONMENT* stack) {
 	{
 		char szout[1024];
 		__printf(szout, "Com2IntProc!\r\n");
+		outportb(0x20, 0x20);
 	}
 
 	__asm {
@@ -1081,6 +1083,7 @@ void __declspec(naked) Com1IntProc(LIGHT_ENVIRONMENT* stack) {
 	{
 		char szout[1024];
 		__printf(szout, "Com1IntProc!\r\n");
+		outportb(0x20, 0x20);
 	}
 
 	__asm {
@@ -1126,6 +1129,7 @@ void __declspec(naked) Parallel2IntProc(LIGHT_ENVIRONMENT* stack) {
 	{
 		char szout[1024];
 		__printf(szout, "Parallel2IntProc!\r\n");
+		outportb(0x20, 0x20);
 	}
 
 	__asm {
@@ -1171,6 +1175,7 @@ void __declspec(naked) FloppyDiskIntProc(LIGHT_ENVIRONMENT* stack) {
 	{
 		char szout[1024];
 		__printf(szout, "FloppyDiskIntProc!\r\n");
+		outportb(0x20, 0x20);
 	}
 
 	__asm {
@@ -1216,6 +1221,7 @@ void __declspec(naked) Parallel1IntProc(LIGHT_ENVIRONMENT* stack) {
 	{
 		char szout[1024];
 		__printf(szout, "Parallel1IntProc!\r\n");
+		outportb(0x20, 0x20);
 	}
 
 	__asm {
@@ -1261,6 +1267,7 @@ void __declspec(naked) SlaveIntProc(LIGHT_ENVIRONMENT* stack) {
 	{
 		char szout[1024];
 		__printf(szout, "SlaveIntProc!\r\n");
+		outportb(0x20, 0x20);
 	}
 
 	__asm {
@@ -1307,6 +1314,8 @@ void __declspec(naked) Slave1IntProc(LIGHT_ENVIRONMENT* stack) {
 	{
 		char szout[1024];
 		__printf(szout, "Slave1IntProc!\r\n");
+		outportb(0x20, 0x20);
+		outportb(0xa0, 0xa0);
 	}
 
 	__asm {
@@ -1352,6 +1361,8 @@ void __declspec(naked) NetcardIntProc(LIGHT_ENVIRONMENT* stack) {
 	{
 		char szout[1024];
 		__printf(szout, "NetcardIntProc!\r\n");
+		outportb(0x20, 0x20);
+		outportb(0xa0, 0xa0);
 	}
 
 	__asm {
@@ -1397,6 +1408,8 @@ void __declspec(naked) USBIntProc(LIGHT_ENVIRONMENT* stack) {
 	{
 		char szout[1024];
 		__printf(szout, "USBIntProc!\r\n");
+		outportb(0x20, 0x20);
+		outportb(0xa0, 0xa0);
 	}
 
 	__asm {
@@ -1442,6 +1455,10 @@ void __declspec(naked) CoprocessorIntProc(LIGHT_ENVIRONMENT* stack) {
 	{
 		char szout[1024];
 		__printf(szout, "CoprocessorIntProc!\r\n");
+		outportb(0x20, 0x20);
+		outportb(0xa0, 0xa0);
+
+		outportb(0xf0, 0xf0);
 	}
 
 	__asm {
@@ -1487,6 +1504,14 @@ void __declspec(naked) IDEMasterIntProc(LIGHT_ENVIRONMENT* stack) {
 	{
 		char szout[1024];
 		__printf(szout, "IDEMasterIntProc!\r\n");
+		outportb(0x20, 0x20);
+		outportb(0xa0, 0xa0);
+		__asm {
+			mov dx, gAtaBasePort
+			add dx, 7
+			in al, dx
+		}
+		
 	}
 
 	__asm {
@@ -1532,6 +1557,13 @@ void __declspec(naked) IDESlaveIntProc(LIGHT_ENVIRONMENT* stack) {
 	{
 		char szout[1024];
 		__printf(szout, "IDESlaveIntProc!\r\n");
+		outportb(0x20, 0x20);
+		outportb(0xa0, 0xa0);
+		__asm {
+			mov dx, gAtapiBasePort 
+			add dx,7
+			in al,dx
+		}
 	}
 
 	__asm {

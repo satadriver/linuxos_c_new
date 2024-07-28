@@ -146,7 +146,9 @@ typedef struct {
 #pragma pack()
 
 
-extern "C" __declspec(dllexport)WORD gKeyboardID;
+
+
+
 
 void kbdtest();
 
@@ -160,6 +162,8 @@ int isScancodeAsc(unsigned char c);
 
 #ifdef DLL_EXPORT
 
+extern "C" __declspec(dllexport)WORD gKeyboardID;
+
 extern "C"  __declspec(dllexport) DWORD gKbdTest;
 
 extern "C"  __declspec(dllexport) unsigned int __kGetKbd(int wid);
@@ -172,6 +176,8 @@ extern "C"  __declspec(dllexport) void __kKeyboardProc();
 
 extern "C"  __declspec(dllexport) void __kPutKbd(unsigned char s,int wid);
 #else
+
+extern "C" __declspec(dllimport) WORD gKeyboardID;
 
 extern "C"  __declspec(dllimport) DWORD gKbdTest;
 extern "C"  __declspec(dllimport) unsigned int __kGetKbd(int wid);

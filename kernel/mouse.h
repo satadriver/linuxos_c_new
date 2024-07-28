@@ -41,14 +41,17 @@ typedef struct {
 
 #pragma pack()
 
-extern "C" __declspec(dllexport) DWORD gMouseID;
+
 
 void mousetest();
 
 extern "C" void mouseProc();
 
-#ifdef DLL_EXPORT
 
+
+
+#ifdef DLL_EXPORT
+extern "C" __declspec(dllexport) DWORD gMouseID;
 extern "C"  __declspec(dllexport) void __initMouse(int x, int y);
 extern "C"  __declspec(dllexport) DWORD gMouseTest;
 
@@ -70,6 +73,7 @@ extern "C"  __declspec(dllexport) void __kDrawMouse();
 void __initMouse(int x, int y);
 
 #else
+extern "C" __declspec(dllimport) DWORD gMouseID;
 extern "C"  __declspec(dllimport) void __initMouse(int x, int y);
 extern "C"  __declspec(dllimport) DWORD gMouseTest;
 

@@ -15,17 +15,16 @@
 
 int v86Process(int reax,int recx,int redx,int rebx,int resi,int redi,int rds, int res,int cmd ){
 
-do {
-	TssDescriptor* lptssd = (TssDescriptor*)(GDT_BASE + kTssV86Selector);
-	TSS* tss = (TSS*)V86_TSS_BASE;
-	if ((lptssd->type & 2) || (tss->link)) {
-		__sleep(0);
-		break;
-	}
-	else {
-		break;
-	}
-} while (TRUE);
+	do {
+		TssDescriptor* lptssd = (TssDescriptor*)(GDT_BASE + kTssV86Selector);
+		TSS* tss = (TSS*)V86_TSS_BASE;
+		if ((lptssd->type & 2) || (tss->link)) {
+			__sleep(0);
+		}
+		else {
+			break;
+		}
+	} while (TRUE);
 
 	V86_INT_PARAMETER* param = (V86_INT_PARAMETER*)V86_INT_ADDRESS;
 	param->reax = reax;
@@ -283,15 +282,25 @@ int getAtapiDev(int disk, int maxno) {
 	return -1;
 }
 
-/*
-AH = 46h
-AL = 0 保留
-DL = 驱动器号
 
-返回:
-CF = 0, AH = 0 成功
-CF = 1, AH = 错误码
-*/
+
+
+
+int reject(int dev) {
+	int res = v86Process(0x4600, 0, dev, 0, 0, 0, 0, 0, 0x13); //jc error
+	return res;
+}
+
+
+//弹出可移动驱动器中的介质
+//入口 :
+//AH = 46h
+//AL = 0 保留
+//DL = 驱动器号
+//int 13h
+//返回 :
+//CF = 0，AH = 0 成功
+//CF = 1，AH = 错误码
 int rejectCDROM(int dev) {
 	if (dev <= 0)
 	{
@@ -300,6 +309,7 @@ int rejectCDROM(int dev) {
 		{
 			return FALSE;
 		}
+		reject(dev);
 	}
 
 	LPV86VMIPARAMS params = (LPV86VMIPARAMS)V86VMIPARAMS_ADDRESS;

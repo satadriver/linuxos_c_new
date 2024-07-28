@@ -10,6 +10,7 @@
 #include "cmosAlarm.h"
 #include "process.h"
 #include "atapi.h"
+#include "v86.h"
 
 int gMenuID = 0;
 

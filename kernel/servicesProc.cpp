@@ -121,10 +121,13 @@ DWORD __declspec(dllexport) __kServicesProc(DWORD num, DWORD * params) {
 		}
 		case DRAW_MOUSE:
 		{
+			__kDrawMouse();
 			break;
 		}
 		case RESTORE_MOUSE:
 		{
+
+			__kRestoreMouse();
 			break;
 		}
 		case SET_VIDEOMODE:

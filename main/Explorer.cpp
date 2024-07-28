@@ -1,5 +1,5 @@
 #include "def.h"
-
+#include "atapi.h"
 #include "Explorer.h"
 #include "console.h"
 #include "video.h"
@@ -48,6 +48,8 @@ int __kExplorer(unsigned int retaddr, int tid, char * filename, char * funcname,
 
 	__printf(szout, "__kExplorer task retaddr:%x,pid:%x,name:%s,funcname:%s,param:%x\n", retaddr, tid, filename, funcname, param);
 
+	//v86Process(0x4f02, 0, 0, 0x4112, 0, 0, 0, 0, 0x10);
+
 	WINDOWCLASS window;
 	initDesktopWindow(&window, EXPLORER_TASKNAME, tid);
 
@@ -81,8 +83,6 @@ int __kExplorer(unsigned int retaddr, int tid, char * filename, char * funcname,
 
 	__kAddAlarmTimer(30, (DWORD)__doAlarmTask, 0);
 
-	//v86Process(0x4f02,0,0,3,0,0,0,0,0x10);
-
 	//initEfer();
 
 	//getRCBA();
@@ -92,6 +92,12 @@ int __kExplorer(unsigned int retaddr, int tid, char * filename, char * funcname,
 	//callgateEntry(0, 0);
 
 	repeatDrawCCFontString();
+
+	char cdrom[0x1000];
+	char szcd[0x1000];
+	readAtapiSector(cdrom, 0, 1);
+	__dump(cdrom, 1024, 1,(unsigned char*)szcd);
+	__drawGraphChars((unsigned char*)szcd, 0);
 
 	//runElfFunction("c:\\liunux\\test.so", "__testfunction");
 

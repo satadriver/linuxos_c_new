@@ -10,7 +10,7 @@
 
 DWORD gKbdTest = FALSE;
 
-extern "C" __declspec(dllexport) WORD gKeyboardID = 0;
+WORD gKeyboardID = 0;
 
 //ctrl alt shift 等已经被过滤，肯定不会出现在当前的字母表中
 unsigned char ScanCodesBuf[96] =
@@ -433,7 +433,7 @@ void __kKeyboardProc() {
 
 			if (__memcmp(pb,"\xe1\x1d\x45\xe1\x9d\xc5",6) == 0 )
 			{
-				//make code is "\xe1\x1d\x45\xe1\x9d\xc5",but no break code!
+				//make code is "\xe1\x1d\x45\xe1\x9d\xc5",but no break code!按下后6个字节扫描码，松开后不产生扫描码
 				__drawGraphChars((unsigned char*)"get Pause/Break key!\r\n",0);
 				pauseBreak();
 			}

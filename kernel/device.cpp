@@ -69,9 +69,10 @@ void initDevices() {
 
 	init8259();
 	init8254();
+	init8042();
 	initCMOS();
 	enableMouse();
-	init8042();
+	setMouseRate(200);	
 	enableSpeaker();
 	getKeyboardID();
 
@@ -80,16 +81,41 @@ void initDevices() {
 
 void initTextModeDevices() {
 
-	initTextMode8259();
+	init8259();
 	init8254();
-	initCMOS();
-	enableMouse();
 	init8042();
+	initCMOS();
+	//enableMouse();
+	//setMouseRate(200);
 	enableSpeaker();
 	getKeyboardID();
-
 }
 
+
+void setMouseRate(int rate) {
+	__wait8042Empty();
+
+	outportb(PS2_COMMAND_PORT, 0xf3);
+
+	__wait8042Empty();
+	outportb(PS2_DATA_PORT, rate);
+}
+
+
+
+void disableMouse() {
+	__wait8042Empty();
+
+	outportb(PS2_COMMAND_PORT, 0xa7);
+
+	__wait8042Empty();
+
+	outportb(PS2_COMMAND_PORT, 0xd4);
+
+	__wait8042Empty();
+
+	outportb(PS2_DATA_PORT, 0xf5);
+}
 
 void enableMouse() {
 	__wait8042Empty();
@@ -176,17 +202,17 @@ void getKeyboardID() {
 	__wait8042Empty();
 	outportb(PS2_DATA_PORT, 0Xf2);
 
-	__wait8042Full();
-	unsigned char ack = inportw(PS2_DATA_PORT);
+	//__wait8042Full();
+	//unsigned char ack = inportw(PS2_DATA_PORT);
 
-	__wait8042Empty();
-	outportb(PS2_DATA_PORT, 0x20);
-
-	__wait8042Full();
-	unsigned char low = inportw(PS2_DATA_PORT);
+	//__wait8042Empty();
+	//outportb(PS2_DATA_PORT, 0x20);
 
 	__wait8042Full();
 	unsigned char high = inportw(PS2_DATA_PORT);
+
+	__wait8042Full();
+	unsigned char low = inportw(PS2_DATA_PORT);
 
 	gKeyboardID = (high << 8) | low;
 
@@ -246,21 +272,3 @@ void init8259() {
 }
 
 
-void initTextMode8259() {
-
-	outportb(0x20, 0x11);
-	outportb(0xa0, 0x11);
-	outportb(0x21, INTR_8259_MASTER);
-	outportb(0xa1, INTR_8259_SLAVE);
-	outportb(0x21, 4);
-	outportb(0xa1, 2);
-	outportb(0x21, 0x1);
-	outportb(0xa1, 0x1);
-
-	outportb(0x20, 0x00);
-	outportb(0xa0, 0x10);
-
-	//0: level trigger,1: pulse trigger
-	outportb(0x4d0, 0);
-	outportb(0x4d1, 0);
-}

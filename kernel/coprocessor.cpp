@@ -23,6 +23,7 @@ void initCoprocessor() {
 		__emit 0xe0
 
 		or eax,0x40600
+
 		//mov cr4,eax
 		__emit 0x0f
 		__emit 0x22
@@ -42,7 +43,6 @@ void __kCoprocessor() {
 	
 // 	char szout[1024];
 // 	__printf(szout, "coprocessor exceiton\n");
-// 	__drawGraphChars((unsigned char*)szout, 0);
 
 	if (gFpuStatus == 0)
 	{

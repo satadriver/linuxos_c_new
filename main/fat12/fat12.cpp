@@ -6,7 +6,7 @@
 #include "../satadriver.h"
 #include "../atapi.h"
 #include "../fat32/FAT32.h"
-#include "../atapi.h"
+#include "../v86.h"
 #include "../malloc.h"
 
 FAT12DBR gFat12Dbr;

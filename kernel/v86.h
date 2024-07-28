@@ -45,11 +45,18 @@ int getVideoMode(VesaSimpleInfo vsi[64]);
 
 int setGraphMode(int mode);
 
-#ifdef DLL_EXPORT
 
+
+int reject(int dev);
+
+extern "C" __declspec(dllexport) int rejectCDROM(int dev);
+
+
+#ifdef DLL_EXPORT
+extern "C" __declspec(dllexport) int getAtapiDev(int disk, int maxno);
 
 extern "C" __declspec(dllexport) int v86Process(int reax, int recx, int redx, int rebx, int resi, int redi, int rds, int cmd, int res);
 #else
-
+extern "C" __declspec(dllimport) int getAtapiDev(int disk, int maxno);
 extern "C" __declspec(dllimport) int v86Process(int reax, int recx, int redx, int rebx, int resi, int redi,int rds, int cmd, int res);
 #endif

@@ -12,7 +12,7 @@ void init8259();
 
 void initTextModeDevices();
 
-void initTextMode8259();
+
 
 void enableSpeaker();
 void getKeyboardID();
@@ -28,3 +28,8 @@ void waitPs2In();
 void __waitPs2Out();
 
 void __waitPs2In();
+
+void setMouseRate(int rate);
+
+
+void disableMouse();

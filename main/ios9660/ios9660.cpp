@@ -7,6 +7,7 @@
 #include "../UserUtils.h"
 #include "../def.h"
 #include "../malloc.h"
+#include "../v86.h"
 
 int gAtapiDev = -1;
 

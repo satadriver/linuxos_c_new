@@ -12,7 +12,7 @@
 
  DWORD gMouseTest = 0;
 
- extern "C" __declspec(dllexport) DWORD gMouseID = 0;
+DWORD gMouseID = 0;
 
 DWORD gMouseColor =	MOUSE_SHOW_COLOR;
 

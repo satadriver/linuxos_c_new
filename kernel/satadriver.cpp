@@ -10,17 +10,17 @@
 
 #include "hardware.h"
 
-WORD gHdBasePort = 0;
+WORD gAtaBasePort = 0;
 
-DWORD gHdBDF = 0;
+DWORD gATADev = 0;
 
-WORD gCDROMBasePort = 0;
+DWORD gAtapiPackSize = 0;
 
-DWORD gMSDev = 0;
+WORD gAtapiBasePort = 0;
+
+WORD gATAPIDev = 0;
 
 DWORD gMimo = 0;
-
-DWORD gAtaIRQ = 0;
 
 DWORD gSecMax = ONCE_READ_LIMIT;
 
@@ -54,18 +54,37 @@ int(__cdecl* writeSector)(unsigned int secnolow, DWORD secnohigh, unsigned int s
 //CHS=0/0/1，则根据公式LBA=255 × 63 × 0 + 63 × 0 + 1 – 1= 0
 //CHS模式支持的硬盘 用8bit来存储磁头地址，用10bit来存储柱面地址，用6bit来存储扇区地址，
 //而一个扇区共有512Byte，这样使用CHS寻址一块硬盘最大容量为256 * 1024 * 63 * 512B = 8064 MB
-int testHdPort(unsigned short port) {
+int checkIDEPort(unsigned short port) {
 
-	int r = inportb(port);
+	int r = inportb(port + 7);
 	if (r == 0x50) {
-		return TRUE;
+
+		char buffer[0x1000];
+		r = identifyDevice(port ,0xa1, buffer);
+		if (r) {
+			WORD gc = *(WORD*)buffer;
+			if (gc & 3 == 1) {
+				gAtapiPackSize = 16;
+			}
+			else if (gc & 3 == 0) {
+				gAtapiPackSize = 12;
+			}
+			return 2;
+		}
+		else {
+			r = identifyDevice(port , 0xec, buffer);
+			if (r) {
+				return 1;
+			}
+		}
+		return FALSE;
 	}
 	else {
 		return FALSE;
 	}
 }
 
-int testHdPortMimo(unsigned int addr) {
+int checkIDEMimo(unsigned int addr) {
 
 	char* p = (char*)addr;
 	if (p[0] == 0x50) {
@@ -74,7 +93,7 @@ int testHdPortMimo(unsigned int addr) {
 	return FALSE;
 }
 
-int getHdPort() {
+int getIDEPort() {
 
 	unsigned char szshow[1024];
 
@@ -84,102 +103,104 @@ int getHdPort() {
 	readSector = readPortSector;
 	writeSector = writePortSector;
 
-	ret = testHdPort(0x3f7);
-	if (ret)
+	ret = checkIDEPort(0x3f0);
+	if (ret == 1)
 	{
-		gHdBasePort = 0x3f0;	
-		gMSDev = 0xf0;
+		gAtaBasePort = 0x3f0;	
+		gATADev = 0xf0;
+	}
+	else if (ret == 2) {
+		gATAPIDev = 0xf0;
+		gAtapiBasePort = 0x3f0;
+	}
 
-		__printf((char*)szshow, "get ide hd master port:%x,device:%x\n", gHdBasePort, gMSDev);
-
-		ret = testHdPort(0x377);
-		if (ret)
-		{
-			gCDROMBasePort = 0x370;
-			__printf((char*)szshow, "get ide cdrom slave port:%x\n", gCDROMBasePort);
-		}
-
-		return TRUE;
+	ret = checkIDEPort(0x370);
+	if (ret==1)
+	{
+		gATADev = 0xf0;
+		gAtaBasePort = 0x370;
+	}
+	else if (ret == 2) {
+		gATAPIDev = 0xf0;
+		gAtapiBasePort = 0x370;
 	}
 
 	//1f7 = 3f6 = 3f7,376=377=177
-	ret = testHdPort(0x1f7);
-	if (ret)
+	ret = checkIDEPort(0x1f0);
+	if (ret == 1)
 	{
-		gHdBasePort = 0x1f0;
-		gMSDev = 0xe0;
+		gAtaBasePort = 0x1f0;
+		gATADev = 0xe0;
+	}
+	else if (ret == 2) {
+		gATAPIDev = 0xe0;
+		gAtapiBasePort = 0x1f0;
+	}
 
-		__printf((char*)szshow, "get ide hd slave port:%x,device:%x\n", gHdBasePort, gMSDev);
-
-		ret = testHdPort(0x177);
-		if (ret)
-		{
-			gCDROMBasePort = 0x170;
-			__printf((char*)szshow, "get ide cdrom master port:%x\n", gCDROMBasePort);
-		}
-		return TRUE;
+	ret = checkIDEPort(0x170);
+	if (ret == 1)
+	{
+		gATADev = 0xe0;
+		gAtaBasePort = 0x170;
+	}
+	else if (ret == 2) {
+		gATAPIDev = 0xe0;
+		gAtapiBasePort = 0x170;
 	}
 
 	DWORD hdport[16] ;
-	int cnt = getPciDevBasePort(hdport, 0x0101, &gHdBDF, &gAtaIRQ);
-	for (int i = 0; i < cnt; i+=2)
+	DWORD dev = 0;
+	DWORD irq = 0;
+	int cnt = getPciDevBasePort(hdport, 0x0101, &dev, &irq);
+	for (int i = 0; i < cnt; i++)
 	{
 		if (hdport[i])
 		{
 			if (i & 1)
 			{
-				gMSDev = 0xf0;
+				gATADev = 0xf0;
 			}
 			else {
-				gMSDev = 0xe0;
+				gATADev = 0xe0;
 			}
 
 			if ((hdport[i] & 1) == 0)
 			{
 				gMimo = 1;
 
-				ret = testHdPortMimo((hdport[i] & 0xFFFFfff0 ) + 7);
+				ret = checkIDEMimo((hdport[i] & 0xFFFFfff0 ) );
 				if (ret)
 				{
-					gHdBasePort = hdport[i] & 0xFFFFfff0;
+					gAtaBasePort = hdport[i] & 0xFFFFfff0;
 
-					__printf((char*)szshow, "get sata hd mimo:%x,master_slave:%x\n", gHdBasePort, gMSDev);
-
-					ret = testHdPortMimo((hdport[i + 1] & 0xFFFFfff0) + 7);
+					ret = checkIDEMimo((hdport[i + 1] & 0xFFFFfff0) );
 					if (ret)
 					{
-						gCDROMBasePort = hdport[i + 1]&0xFFFFfff0;
-						__printf((char*)szshow, "get sata cdrom mimo:%x,master_slave:%x\n", gCDROMBasePort, gMSDev);
+						gAtapiBasePort = hdport[i + 1]&0xFFFFfff0;
 					}
-
-					return TRUE;
 				}
 			}
 			else {
-				ret = testHdPort((hdport[i] & 0xFFFFfff0) + 7);
-				if (ret)
+				ret = checkIDEPort((hdport[i] & 0xFFFFfff0) );
+				if (ret == 1)
 				{
-					gHdBasePort = hdport[i] & 0xFFFFfff0;
-
-					__printf((char*)szshow, "get sata hd port:%x,master_slave:%x\n", gHdBasePort, gMSDev);
-
-					ret = testHdPort((hdport[i + 1] & 0xFFFFfff0) + 7);
-					if (ret)
-					{
-						gCDROMBasePort = hdport[i + 1] & 0xFFFFfff0;
-
-						__printf((char*)szshow, "get sata cdrom port:%x,master_slave:%x\n", gCDROMBasePort, gMSDev);
-					}
-
-					return TRUE;
+					gAtaBasePort = hdport[i] & 0xFFFFfff0;
+				}
+				else if (ret == 2) {
+					gAtapiBasePort = hdport[i] & 0xFFFFfff0;
 				}
 			}
 		}
 	}
 
-	__drawGraphChars((unsigned char*)"int13h\n", 0);
-	readSector = vm86ReadSector;
-	writeSector = vm86WriteSector;
+	if (gAtaBasePort ) {
+		__printf((char*)szshow, "ide master port:%x,device:%x,slave port:%d.device:%d\n", gAtaBasePort, gATADev, gAtapiBasePort, gATAPIDev);
+	}
+	else {
+		readSector = vm86ReadSector;
+		writeSector = vm86WriteSector;
+	}
+
 	return TRUE;
 }
 
@@ -196,9 +217,7 @@ int __initHardDisk() {
 	outportb(0x3f6, 0); //IRQ15
 	outportb(0x376, 0);	//IRQ14
 
-	int r = getHdPort();
-
-	getHarddiskInfo();
+	int r = getIDEPort();
 
 	return r;
 }
@@ -357,14 +376,14 @@ int readPortSector(unsigned int secno, DWORD secnohigh, unsigned int seccnt, cha
 	CHAR* offset = buf;
 	for (int i = 0; i < readcnt; i++)
 	{
-		ret = readSectorLBA48(secno, secnohigh, gSecMax, offset, gMSDev);
+		ret = readSectorLBA48(secno, secnohigh, gSecMax, offset, gATADev);
 		offset += (BYTES_PER_SECTOR * gSecMax);
 		secno += gSecMax;
 	}
 
 	if (readmod)
 	{
-		ret = readSectorLBA48(secno, secnohigh, readmod, offset, gMSDev);
+		ret = readSectorLBA48(secno, secnohigh, readmod, offset, gATADev);
 	}
 	return ret;
 }
@@ -377,14 +396,14 @@ int writePortSector(unsigned int secno, DWORD secnohigh, unsigned int seccnt, ch
 	CHAR* offset = buf;
 	for (int i = 0; i < readcnt; i++)
 	{
-		ret = writeSectorLBA48(secno, secnohigh, gSecMax, offset, gMSDev);
+		ret = writeSectorLBA48(secno, secnohigh, gSecMax, offset, gATADev);
 		offset += BYTES_PER_SECTOR * gSecMax;
 		secno += gSecMax;
 	}
 
 	if (readmod)
 	{
-		ret = writeSectorLBA48(secno, secnohigh, readmod, offset, gMSDev);
+		ret = writeSectorLBA48(secno, secnohigh, readmod, offset, gATADev);
 	}
 	return ret;
 }
@@ -396,16 +415,19 @@ int waitComplete(WORD port) {
 	int r = inportb(port - 6);
 	if (r == 0) {
 		while (1) {
-			r = inportb(port) & 0x58 ;
-			if (r == 0x58) {
-				return 0;
+			r = inportb(port);
+			if (r & 1) {
+				return FALSE;
+			}
+			else if ((r & 0x58) == 0x58) {
+				return TRUE;
 			}
 			else {
 				continue;
 			}
 		}
 	}
-	return -1;
+	return FALSE;
 }
 
 void waitFree(WORD port) {
@@ -439,22 +461,22 @@ void waitReady(WORD port) {
 
 
 
-void writesector(char* buf) {
+int writesector(int port,int len,char* buf) {
 	__asm {
 		cld
 		mov esi, buf
-		mov ecx, BYTES_PER_SECTOR / 4
-		mov dx, gHdBasePort
+		mov ecx, len
+		mov edx, port
 		rep outsd
 	}
 }
 
-void readsector(char * buf) {
+int readsector(int port,int len, char * buf) {
 	__asm {
 		cld
 		mov edi,buf
-		mov ecx, BYTES_PER_SECTOR / 4
-		mov dx, gHdBasePort
+		mov ecx, len
+		mov edx, port
 		rep insd
 	}
 }
@@ -465,24 +487,24 @@ int readSectorLBA24(unsigned int secno, unsigned char seccnt, char* buf, int dev
 		cli
 	}
 
-	waitFree(gHdBasePort + 7);
+	waitFree(gAtaBasePort + 7);
 
-	outportb(gHdBasePort + 1, 0);	//dma = 1,pio = 0
+	outportb(gAtaBasePort + 1, 0);	//dma = 1,pio = 0
 
-	outportb(gHdBasePort + 2, seccnt & 0xff);
+	outportb(gAtaBasePort + 2, seccnt & 0xff);
 
-	outportb(gHdBasePort + 3, secno & 0xff);
-	outportb(gHdBasePort + 4, (secno>>8) & 0xff);
-	outportb(gHdBasePort + 5,( secno>>16) & 0xff);
-	outportb(gHdBasePort + 6, ((secno >> 24) & 0x0f) + gMSDev);
+	outportb(gAtaBasePort + 3, secno & 0xff);
+	outportb(gAtaBasePort + 4, (secno>>8) & 0xff);
+	outportb(gAtaBasePort + 5,( secno>>16) & 0xff);
+	outportb(gAtaBasePort + 6, ((secno >> 24) & 0x0f) + gATADev);
 
-	waitReady(gHdBasePort + 7);
-	outportb(gHdBasePort + 7, HD_READ_COMMAND);
+	waitReady(gAtaBasePort + 7);
+	outportb(gAtaBasePort + 7, HD_READ_COMMAND);
 
 	char* lpbuf = buf;
 	for (int i = 0; i < seccnt; i++) {
-		waitComplete(gHdBasePort + 7);
-		readsector(lpbuf);
+		int res = waitComplete(gAtaBasePort + 7);
+		readsector(gAtaBasePort, BYTES_PER_SECTOR / 4, lpbuf);
 		lpbuf += BYTES_PER_SECTOR;
 	}
 
@@ -501,24 +523,24 @@ int writeSectorLBA24(unsigned int secno, unsigned char seccnt, char* buf, int de
 		cli
 	}
 
-	waitFree(gHdBasePort + 7);
+	waitFree(gAtaBasePort + 7);
 
-	outportb(gHdBasePort + 1, 0);	//dma = 1,pio = 0
+	outportb(gAtaBasePort + 1, 0);	//dma = 1,pio = 0
 
-	outportb(gHdBasePort + 2, seccnt & 0xff);
+	outportb(gAtaBasePort + 2, seccnt & 0xff);
 
-	outportb(gHdBasePort + 3, secno & 0xff);
-	outportb(gHdBasePort + 4, (secno >> 8) & 0xff);
-	outportb(gHdBasePort + 5, (secno >> 16) & 0xff);
-	outportb(gHdBasePort + 6, ((secno >> 24) & 0x0f) + gMSDev);
+	outportb(gAtaBasePort + 3, secno & 0xff);
+	outportb(gAtaBasePort + 4, (secno >> 8) & 0xff);
+	outportb(gAtaBasePort + 5, (secno >> 16) & 0xff);
+	outportb(gAtaBasePort + 6, ((secno >> 24) & 0x0f) + gATADev);
 
-	waitReady(gHdBasePort + 7);
-	outportb(gHdBasePort + 7, HD_WRITE_COMMAND);
+	waitReady(gAtaBasePort + 7);
+	outportb(gAtaBasePort + 7, HD_WRITE_COMMAND);
 
 	char* lpbuf = buf;
 	for (int i = 0; i < seccnt; i++) {
-		waitComplete(gHdBasePort + 7);
-		writesector(lpbuf);
+		int res = waitComplete(gAtaBasePort + 7);
+		writesector(gAtaBasePort, BYTES_PER_SECTOR / 4, lpbuf);
 		lpbuf += BYTES_PER_SECTOR;
 	}
 
@@ -537,32 +559,32 @@ int readSectorLBA48(unsigned int secnoLow, unsigned int secnoHigh, unsigned char
 		cli
 	}
 
-	waitFree(gHdBasePort + 7);
+	waitFree(gAtaBasePort + 7);
 
-	outportb(gHdBasePort + 1, 0);	//dma = 1,pio = 0
-	outportb(gHdBasePort + 1, 0);	//dma = 1,pio = 0
+	outportb(gAtaBasePort + 1, 0);	//dma = 1,pio = 0
+	outportb(gAtaBasePort + 1, 0);	//dma = 1,pio = 0
 
-	outportb(gHdBasePort + 2, 0);	//172,first high byte of sector counter,then low byte of counter
-	outportb(gHdBasePort + 2, seccnt & 0xff);
+	outportb(gAtaBasePort + 2, 0);	//172,first high byte of sector counter,then low byte of counter
+	outportb(gAtaBasePort + 2, seccnt & 0xff);
 
-	outportb(gHdBasePort + 5, (secnoHigh >> 8) & 0xff);
-	outportb(gHdBasePort + 4, secnoHigh & 0xff);
-	outportb(gHdBasePort + 3, (secnoLow>>24) & 0xff);
+	outportb(gAtaBasePort + 5, (secnoHigh >> 8) & 0xff);
+	outportb(gAtaBasePort + 4, secnoHigh & 0xff);
+	outportb(gAtaBasePort + 3, (secnoLow>>24) & 0xff);
 
-	outportb(gHdBasePort + 5, (secnoLow >> 16) & 0xff);
-	outportb(gHdBasePort + 4, (secnoLow >> 8) & 0xff);
-	outportb(gHdBasePort + 3, secnoLow & 0xff);
+	outportb(gAtaBasePort + 5, (secnoLow >> 16) & 0xff);
+	outportb(gAtaBasePort + 4, (secnoLow >> 8) & 0xff);
+	outportb(gAtaBasePort + 3, secnoLow & 0xff);
 	
-	outportb(gHdBasePort + 6, gMSDev);
+	outportb(gAtaBasePort + 6, device);
 
-	waitReady(gHdBasePort + 7);
+	waitReady(gAtaBasePort + 7);
 
-	outportb(gHdBasePort + 7, HD_LBA48READ_COMMAND);
+	outportb(gAtaBasePort + 7, HD_LBA48READ_COMMAND);
 
 	char* lpbuf = buf;
 	for (int i = 0; i < seccnt; i++) {
-		waitComplete(gHdBasePort + 7);
-		readsector(lpbuf);
+		int res = waitComplete(gAtaBasePort + 7);
+		readsector(gAtaBasePort, BYTES_PER_SECTOR / 4, lpbuf);
 		lpbuf += BYTES_PER_SECTOR;
 	}
 
@@ -581,31 +603,31 @@ int writeSectorLBA48(unsigned int secnoLow, unsigned int secnoHigh, unsigned cha
 		cli
 	}
 
-	waitFree(gHdBasePort + 7);
+	waitFree(gAtaBasePort + 7);
 
-	outportb(gHdBasePort + 1, 0);	//dma = 1,pio = 0
-	outportb(gHdBasePort + 1, 0);	//dma = 1,pio = 0
+	outportb(gAtaBasePort + 1, 0);	//dma = 1,pio = 0
+	outportb(gAtaBasePort + 1, 0);	//dma = 1,pio = 0
 
-	outportb(gHdBasePort + 2, 0);	//172,first high byte of sector counter,then low byte of counter
-	outportb(gHdBasePort + 2, seccnt & 0xff);
+	outportb(gAtaBasePort + 2, 0);	//172,first high byte of sector counter,then low byte of counter
+	outportb(gAtaBasePort + 2, seccnt & 0xff);
 
-	outportb(gHdBasePort + 5, (secnoHigh >> 8) & 0xff);
-	outportb(gHdBasePort + 4, secnoHigh & 0xff);
-	outportb(gHdBasePort + 3, (secnoLow >> 24) & 0xff);
+	outportb(gAtaBasePort + 5, (secnoHigh >> 8) & 0xff);
+	outportb(gAtaBasePort + 4, secnoHigh & 0xff);
+	outportb(gAtaBasePort + 3, (secnoLow >> 24) & 0xff);
 
-	outportb(gHdBasePort + 5, (secnoLow >> 16) & 0xff);
-	outportb(gHdBasePort + 4, (secnoLow >> 8) & 0xff);
-	outportb(gHdBasePort + 3, secnoLow & 0xff);
+	outportb(gAtaBasePort + 5, (secnoLow >> 16) & 0xff);
+	outportb(gAtaBasePort + 4, (secnoLow >> 8) & 0xff);
+	outportb(gAtaBasePort + 3, secnoLow & 0xff);
 
-	outportb(gHdBasePort + 6, gMSDev);
+	outportb(gAtaBasePort + 6, device);
 
-	waitReady(gHdBasePort + 7);
-	outportb(gHdBasePort + 7, HD_LBA48WRITE_COMMAND);
+	waitReady(gAtaBasePort + 7);
+	outportb(gAtaBasePort + 7, HD_LBA48WRITE_COMMAND);
 
 	char* lpbuf = buf;
 	for (int i = 0; i < seccnt; i++) {
-		waitComplete(gHdBasePort + 7);
-		writesector(lpbuf);
+		int res = waitComplete(gAtaBasePort + 7);
+		writesector(gAtaBasePort, BYTES_PER_SECTOR / 4, lpbuf);
 		lpbuf += BYTES_PER_SECTOR;
 	}
 
@@ -630,50 +652,47 @@ int readSectorLBA48Mimo(unsigned int secnoLow, unsigned int secnoHigh, unsigned 
 	return 0;
 }
 
-int getHarddiskInfo() {
-
-	char szout[1024];
-
+int identifyDevice(int port,int cmd,char * buffer) {	// IDENTIFY PACKET DEVICE – A1h and  IDENTIFY  DEVICE – ECh
 	__asm {
 		cli
 	}
 
-	waitFree(gHdBasePort + 7);
+	waitFree(port + 7);
 
-	outportb(gHdBasePort + 1, 0);	//dma = 1,pio = 0
+	outportb(port + 1, 0);	//dma = 1,pio = 0
+	outportb(port + 2, 0);
+	outportb(port + 3, 0);
+	outportb(port + 4, 0);
+	outportb(port + 5, 0);
+	outportb(port + 6, 0);
 
-	outportb(gHdBasePort + 2, 0);
+	waitReady(port + 7);
 
-	outportb(gHdBasePort + 3, 0);
-	outportb(gHdBasePort + 4, 0);
-	outportb(gHdBasePort + 5, 0);
-	outportb(gHdBasePort + 6, gMSDev);
+	outportb(port + 7, cmd);
 
-	waitReady(gHdBasePort + 7);
-	outportb(gHdBasePort + 7, 0xec);
-
-	char* lpbuf = (char*) HARDDISK_INFO_BASE;
-	waitComplete(gHdBasePort + 7);
-
-	readsector(lpbuf);
-	lpbuf += BYTES_PER_SECTOR;
+	int res = waitComplete(port + 7);
+	if (res) {
+		readsector(port, BYTES_PER_SECTOR / 4, buffer);
+	}
 
 	__asm {
 		sti
 	}
 
-	__printf(szout, "harddisk sequence:%s,firmware version:%s,type:%s,type sequence:%s\r\n",
-		(char*)HARDDISK_INFO_BASE + 20, (char*)HARDDISK_INFO_BASE + 46, (char*)HARDDISK_INFO_BASE + 54, (char*)HARDDISK_INFO_BASE + 176 * 2);
+	//char szout[1024];
+	//__printf(szout, "harddisk sequence:%s,firmware version:%s,type:%s,type sequence:%s\r\n",
+	//	(char*)HARDDISK_INFO_BASE + 20, (char*)HARDDISK_INFO_BASE + 46, (char*)HARDDISK_INFO_BASE + 54, (char*)HARDDISK_INFO_BASE + 176 * 2);
 
-	return BYTES_PER_SECTOR;
+	unsigned char szshow[0x1000];
+	__dump((char*)buffer, BYTES_PER_SECTOR, 0, szshow);
+	__drawGraphChars((unsigned char*)szshow, 0);
+
+	return res;
 }
 
 //驱动器读取一个扇区后，自动设置状态寄存器1F7H的DRQ数据请求位，并清除BSY位忙信号。 
 //DRQ位通知主机现在可以从缓冲区中读取512字节或更多的数据，同时向主机发INTRQ中断请求信号
-void __kDriverIntProc() {
 
-
-}
 
 int readDmaSectorLBA48(unsigned int secnoLow, unsigned int secnoHigh, unsigned char seccnt, char* buf, int device) {
 	return 0;

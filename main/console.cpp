@@ -28,8 +28,7 @@
 
 #define CURSOR_REFRESH_MILLISECONDS		300
 
-__declspec(dllimport) DWORD gMouseID;
-__declspec(dllimport) WORD gKeyboardID;
+
 
 int __cmd(char* cmd, WINDOWCLASS* window, char* pidname, int pid) {
 
@@ -384,9 +383,8 @@ int __kConsole(unsigned int retaddr, int tid, char* filename, char* funcname, DW
 
 	while (1)
 	{
-		unsigned int ck = __kGetKbd(window.id);
+		unsigned int asc = __kGetKbd(window.id)&0xff;
 		//unsigned int ck = __getchar(window.id);
-		unsigned int asc = ck & 0xff;
 		if (asc == 8)
 		{
 			ret = __clearChar(&window);

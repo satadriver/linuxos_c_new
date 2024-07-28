@@ -10,6 +10,8 @@
 #include "page.h"
 #include "servicesProc.h"
 #include "cmosExactTimer.h"
+#include "hardware.h"
+#include "device.h"
 
 
 #define SCREENPROTECT_BACKGROUND_COLOR 0		//0XBBFFFF		0X87CEEB
@@ -52,6 +54,10 @@ int initScreenProtect() {
 	{
 		gCircleCenterY = gRadius;
 	}
+
+	__kRestoreMouse();
+
+	disableMouse();
 
 	int screensize = gVideoHeight*gVideoWidth*gBytesPerPixel;
 
@@ -99,6 +105,10 @@ int stopScreenProtect() {
 	unsigned char * dst = (unsigned char*)gGraphBase;
 
 	__memcpy((char*)dst, (char*)src, screensize);
+
+	enableMouse();
+	setMouseRate(200);
+	__kDrawMouse();
 
 	return TRUE;
 }
@@ -165,9 +175,10 @@ extern "C" __declspec(dllexport) void __kScreenProtect(int p1,int p2,int p3,int 
 }
 
 
-
+int g_PauseBreakFlag = 0;
 
 void pauseBreak() {
+	g_PauseBreakFlag ^= g_PauseBreakFlag;
 	return;
 }
 
