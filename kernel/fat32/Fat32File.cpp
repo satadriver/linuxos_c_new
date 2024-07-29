@@ -3,7 +3,7 @@
 #include "fat32file.h"
 #include "fileutils.h"
 #include "../Utils.h"
-#include "../satadriver.h"
+#include "../ata.h"
 #include "../video.h"
 #include "FAT32Utils.h"
 #include "../malloc.h"

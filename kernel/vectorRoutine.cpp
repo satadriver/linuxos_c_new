@@ -12,7 +12,7 @@
 #include "cmosPeriodTimer.h"
 #include "cmosAlarm.h"
 #include "cmosExactTimer.h"
-#include "satadriver.h"
+#include "ata.h"
 
 #define EXCEPTION_TIPS_COLOR 0X9F3F00
 
@@ -1478,6 +1478,8 @@ void __declspec(naked) CoprocessorIntProc(LIGHT_ENVIRONMENT* stack) {
 	}
 }
 
+//驱动器读取一个扇区后，自动设置状态寄存器1F7H的DRQ数据请求位，并清除BSY位忙信号。 
+//DRQ位通知主机现在可以从缓冲区中读取512字节或更多的数据，同时向主机发INTRQ中断请求信号
 void __declspec(naked) IDEMasterIntProc(LIGHT_ENVIRONMENT* stack) {
 
 	__asm {
@@ -1506,12 +1508,9 @@ void __declspec(naked) IDEMasterIntProc(LIGHT_ENVIRONMENT* stack) {
 		__printf(szout, "IDEMasterIntProc!\r\n");
 		outportb(0x20, 0x20);
 		outportb(0xa0, 0xa0);
-		__asm {
-			mov dx, gAtaBasePort
-			add dx, 7
-			in al, dx
-		}
-		
+		inportb(gAtaBasePort + 7);
+		inportb(gAtaBasePort + 4);
+		inportb(gAtaBasePort + 5);
 	}
 
 	__asm {
@@ -1559,11 +1558,11 @@ void __declspec(naked) IDESlaveIntProc(LIGHT_ENVIRONMENT* stack) {
 		__printf(szout, "IDESlaveIntProc!\r\n");
 		outportb(0x20, 0x20);
 		outportb(0xa0, 0xa0);
-		__asm {
-			mov dx, gAtapiBasePort 
-			add dx,7
-			in al,dx
-		}
+		inportb(gAtapiBasePort + 7);
+		inportb(gAtapiBasePort + 4);
+		inportb(gAtapiBasePort + 5);
+
+
 	}
 
 	__asm {

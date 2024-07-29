@@ -3,7 +3,38 @@
 #include "def.h"
 
 
+#define VM_OUTPUT_BUSY_CONSTANT 1024
+
+
+
 #pragma pack(1)
+
+
+typedef struct
+{
+	unsigned char len;
+	unsigned char reserved;
+	unsigned short seccnt;
+	unsigned int segoff;
+	unsigned int secnolow;
+	unsigned int secnohigh;
+}INT13PAT, * LPINT13PAT;
+
+
+typedef struct
+{
+	unsigned char bwork;
+	unsigned char intno;
+	unsigned int reax;		//2
+	unsigned int recx;		//6
+	unsigned int redx;		//a
+	unsigned int rebx;		//e
+	unsigned int resi;		//12
+	unsigned int redi;		//16
+	unsigned short res;		//1a
+	unsigned short rds;		//1c
+	unsigned int result;	//1e
+}V86VMIPARAMS, * LPV86VMIPARAMS;
 
 
 typedef struct {
@@ -43,20 +74,24 @@ void restoreScreen();
 
 int getVideoMode(VesaSimpleInfo vsi[64]);
 
-int setGraphMode(int mode);
+int setVideoMode(int mode);
 
-
-
-int reject(int dev);
+int rejectAtapi(int dev);
 
 extern "C" __declspec(dllexport) int rejectCDROM(int dev);
 
+int vm86ReadSector(unsigned int secno, DWORD secnohigh, unsigned int seccnt, char* buf);
+int vm86WriteSector(unsigned int secno, DWORD secnohigh, unsigned int seccnt, char* buf);
 
 #ifdef DLL_EXPORT
 extern "C" __declspec(dllexport) int getAtapiDev(int disk, int maxno);
 
 extern "C" __declspec(dllexport) int v86Process(int reax, int recx, int redx, int rebx, int resi, int redi, int rds, int cmd, int res);
+extern "C"  __declspec(dllexport)  int vm86ReadBlock(unsigned int secno, DWORD secnohigh, unsigned short seccnt, char* buf, int disk, int sectorsize);
+extern "C"  __declspec(dllexport)  int vm86WriteBlock(unsigned int secno, DWORD secnohigh, unsigned short seccnt, char* buf, int disk, int sectorsize);
 #else
 extern "C" __declspec(dllimport) int getAtapiDev(int disk, int maxno);
 extern "C" __declspec(dllimport) int v86Process(int reax, int recx, int redx, int rebx, int resi, int redi,int rds, int cmd, int res);
+extern "C"  __declspec(dllimport)  int vm86ReadBlock(unsigned int secno, DWORD secnohigh, unsigned short seccnt, char* buf, int disk, int sectorsize);
+extern "C"  __declspec(dllimport)  int vm86WriteBlock(unsigned int secno, DWORD secnohigh, unsigned short seccnt, char* buf, int disk, int sectorsize);
 #endif

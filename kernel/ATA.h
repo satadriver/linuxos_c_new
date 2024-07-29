@@ -21,38 +21,7 @@
 
 #define ONCE_READ_LIMIT			128
 
-#pragma pack(1)
 
-typedef struct
-{
-	unsigned char len;
-	unsigned char reserved;
-	unsigned short seccnt;
-	unsigned int segoff;
-	unsigned int secnolow;
-	unsigned int secnohigh;
-}INT13PAT, * LPINT13PAT;
-
-
-typedef struct
-{
-	unsigned char bwork;
-	unsigned char intno;
-	unsigned int reax;		//2
-	unsigned int recx;		//6
-	unsigned int redx;		//a
-	unsigned int rebx;		//e
-	unsigned int resi;		//12
-	unsigned int redi;		//16
-	unsigned short res;		//1a
-	unsigned short rds;		//1c
-	unsigned int result;	//1e
-}V86VMIPARAMS, * LPV86VMIPARAMS;
-
-
-
-
-#pragma pack()
 
 
 extern DWORD gAtapiPackSize;
@@ -94,24 +63,21 @@ int checkIDEPort(unsigned short port);
 
 int checkIDEMimo(unsigned int addr);
 
-int __initHardDisk();
+int __initIDE();
 
 int getIDEPort();
 
 int readPortSector(unsigned int secno, DWORD secnohigh, unsigned int seccnt, char* buf);
 int writePortSector(unsigned int secno, DWORD secnohigh, unsigned int seccnt, char* buf);
 
-int vm86ReadSector(unsigned int secno, DWORD secnohigh, unsigned int seccnt, char* buf);
-int vm86WriteSector(unsigned int secno, DWORD secnohigh, unsigned int seccnt, char* buf);
+
 
 #ifdef DLL_EXPORT
-extern "C"  __declspec(dllexport)  int vm86ReadBlock(unsigned int secno, DWORD secnohigh, unsigned short seccnt, char* buf, int disk, int sectorsize);
-extern "C"  __declspec(dllexport)  int vm86WriteBlock(unsigned int secno, DWORD secnohigh, unsigned short seccnt, char* buf, int disk, int sectorsize);
+
 extern "C"  __declspec(dllexport)  int(__cdecl * readSector)(unsigned int secnolow, DWORD secnohigh, unsigned int seccnt, char* buf);
 extern "C"  __declspec(dllexport)  int(__cdecl * writeSector)(unsigned int secnolow, DWORD secnohigh, unsigned int seccnt, char* buf);
 #else
-extern "C"  __declspec(dllimport)  int vm86ReadBlock(unsigned int secno, DWORD secnohigh, unsigned short seccnt, char* buf, int disk, int sectorsize);
-extern "C"  __declspec(dllimport)  int vm86WriteBlock(unsigned int secno, DWORD secnohigh, unsigned short seccnt, char* buf, int disk, int sectorsize);
+
 extern "C"  __declspec(dllimport)  int(__cdecl * readSector)(unsigned int secnolow, DWORD secnohigh, unsigned int seccnt, char* buf);
 extern "C"  __declspec(dllimport)  int(__cdecl * writeSector)(unsigned int secnolow, DWORD secnohigh, unsigned int seccnt, char* buf);
 #endif

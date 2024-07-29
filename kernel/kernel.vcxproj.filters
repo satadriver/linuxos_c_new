@@ -69,7 +69,7 @@
     <ClCompile Include="task.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="satadriver.cpp">
+    <ClCompile Include="ATA.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="fat32\FAT32.cpp">
@@ -114,7 +114,7 @@
     <ClCompile Include="hardware.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="rs232.cpp">
+    <ClCompile Include="serialUART.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="v86.cpp">
@@ -239,7 +239,7 @@
     <ClInclude Include="Pe.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="satadriver.h">
+    <ClInclude Include="ATA.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="fat32\FAT32.h">
@@ -284,7 +284,7 @@
     <ClInclude Include="hardware.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="rs232.h">
+    <ClInclude Include="serialUART.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="v86.h">

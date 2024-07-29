@@ -5,7 +5,7 @@
 #include "device.h"
 #include "task.h"
 #include "servicesProc.h"
-#include "rs232.h"
+#include "serialUART.h"
 #include "coprocessor.h"
 #include "Pe.h"
 #include "cmosPeriodTimer.h"
@@ -175,9 +175,6 @@ extern "C" __declspec(dllexport) int __kTextModeEntry(LPVESAINFORMATION vesa, DW
 	__initTask();
 
 	initDll();
-
-	initRS232Com1();
-	initRS232Com2();
 
 	initEfer();
 

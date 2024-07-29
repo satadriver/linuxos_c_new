@@ -1,6 +1,6 @@
 
 #include "FAT32.h"
-#include "../satadriver.h"
+#include "../ata.h"
 #include "../Utils.h"
 #include "../video.h"
 #include "FAT32Utils.h"

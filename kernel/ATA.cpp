@@ -1,4 +1,4 @@
-#include "satadriver.h"
+#include "ata.h"
 #include "def.h"
 #include "Utils.h"
 #include "pci.h"
@@ -7,7 +7,7 @@
 #include "video.h"
 #include "atapi.h"
 #include "Kernel.h"
-
+#include "v86.h"
 #include "hardware.h"
 
 WORD gAtaBasePort = 0;
@@ -60,21 +60,29 @@ int checkIDEPort(unsigned short port) {
 	if (r == 0x50) {
 
 		char buffer[0x1000];
-		r = identifyDevice(port ,0xa1, buffer);
+		r = identifyDevice(port , 0xec, buffer);
 		if (r) {
-			WORD gc = *(WORD*)buffer;
-			if (gc & 3 == 1) {
-				gAtapiPackSize = 16;
+			unsigned char gc = *(unsigned char*)buffer;
+			if (gc * 0x80) {
+				return 1;
 			}
-			else if (gc & 3 == 0) {
-				gAtapiPackSize = 12;
+			else {
+				return FALSE;
 			}
-			return 2;
+			return 1;
 		}
 		else {
-			r = identifyDevice(port , 0xec, buffer);
+			r = identifyDevice(port , 0xa1 , buffer);
 			if (r) {
-				return 1;
+				WORD gc = *(WORD*)buffer;
+				if (gc & 3 == 1) {
+					gAtapiPackSize = 16;
+				}
+				else if (gc & 3 == 0) {
+					gAtapiPackSize = 12;
+				}
+
+				return 2;
 			}
 		}
 		return FALSE;
@@ -152,43 +160,59 @@ int getIDEPort() {
 	DWORD dev = 0;
 	DWORD irq = 0;
 	int cnt = getPciDevBasePort(hdport, 0x0101, &dev, &irq);
+	__printf((char*)szshow, "sata port:%x,%x,%x,%x\n", hdport[0],hdport[1], hdport[2], hdport[3]);
 	for (int i = 0; i < cnt; i++)
 	{
 		if (hdport[i])
 		{
-			if (i & 1)
-			{
-				gATADev = 0xf0;
-			}
-			else {
-				gATADev = 0xe0;
-			}
-
 			if ((hdport[i] & 1) == 0)
 			{
 				gMimo = 1;
 
-				ret = checkIDEMimo((hdport[i] & 0xFFFFfff0 ) );
-				if (ret)
+				ret = checkIDEMimo((hdport[i] & 0xffffFFF0 ) );
+				if (ret == 1)
 				{
-					gAtaBasePort = hdport[i] & 0xFFFFfff0;
-
-					ret = checkIDEMimo((hdport[i + 1] & 0xFFFFfff0) );
-					if (ret)
-					{
-						gAtapiBasePort = hdport[i + 1]&0xFFFFfff0;
-					}
+					gAtaBasePort = hdport[i] & 0xFFFffff0;
+				}
+				else if (ret == 2) {
+					gAtapiBasePort = hdport[i] & 0xFFFffff0;
 				}
 			}
 			else {
-				ret = checkIDEPort((hdport[i] & 0xFFFFfff0) );
+
+				ret = checkIDEPort((hdport[i] & 0xFFF0) );
 				if (ret == 1)
 				{
-					gAtaBasePort = hdport[i] & 0xFFFFfff0;
+					gAtaBasePort = hdport[i] & 0xFFF0;
+					if (i < 2)
+					{
+						gATADev = 0xf0;
+					}
+					else {
+						gATADev = 0xe0;
+					}
 				}
 				else if (ret == 2) {
-					gAtapiBasePort = hdport[i] & 0xFFFFfff0;
+					gAtapiBasePort = hdport[i] & 0xFFF0;
+					if (i < 2)
+					{
+						gATAPIDev = 0xf0;
+					}
+					else {
+						gATAPIDev = 0xe0;
+					}
 				}
+
+				//ret = checkIDEPort((hdport[i] & 0xFFF0) + 8);
+				//if (ret == 1)
+				//{
+				//	gATADev = 0xe0;
+				//	gAtaBasePort = (hdport[i] & 0xFFF0)+8;
+				//}
+				//else if (ret == 2) {
+				//	gATAPIDev = 0xe0;
+				//	gAtapiBasePort = (hdport[i] & 0xFFF0)+8;
+				//}
 			}
 		}
 	}
@@ -197,8 +221,11 @@ int getIDEPort() {
 		__printf((char*)szshow, "ide master port:%x,device:%x,slave port:%d.device:%d\n", gAtaBasePort, gATADev, gAtapiBasePort, gATAPIDev);
 	}
 	else {
+		gATAPIDev = 0xe0;
+		gATADev = 0xf0;
 		readSector = vm86ReadSector;
 		writeSector = vm86WriteSector;
+		__printf((char*)szshow, "int13 emulate ide read write\n");
 	}
 
 	return TRUE;
@@ -212,7 +239,7 @@ int getIDEPort() {
 //bit2:1 reset¸´Î»´ÅÅÌ,0²»¸´Î»´ÅÅÌ
 //bit3:always be 0
 //bit4-bit7:¶ÁÈ¡¶Ë¿ÚµÃÖµ¸ú1f7¶ÁÈ¡µÃ¸ß4Î»Ò»ÖÂ
-int __initHardDisk() {
+int __initIDE() {
 
 	outportb(0x3f6, 0); //IRQ15
 	outportb(0x376, 0);	//IRQ14
@@ -221,152 +248,6 @@ int __initHardDisk() {
 
 	return r;
 }
-
-int vm86ReadBlock(unsigned int secno, DWORD secnohigh, unsigned short seccnt, char* buf, int disk, int sectorsize) {
-
-	unsigned int counter = 0;
-
-	LPV86VMIPARAMS params = (LPV86VMIPARAMS)V86VMIPARAMS_ADDRESS;
-	while (params->bwork == 1)
-	{
-		__sleep(0);
-		counter++;
-		if (counter && (counter % 256 == 0))
-		{
-			__drawGraphChars((unsigned char*)"bwork is 1,work not start\n", 0);
-		}
-	}
-
-	params->intno = 0x13;
-	params->reax = 0x4200;
-	params->recx = 0;
-	params->redx = disk;
-	params->rebx = 0;
-	params->resi = V86VMIDATA_OFFSET;
-	params->redi = 0;
-	params->res = 0;
-	params->rds = V86VMIDATA_SEG;
-	params->result = 0;
-
-	LPINT13PAT pat = (LPINT13PAT)V86VMIDATA_ADDRESS;
-	pat->len = 0x10;
-	pat->reserved = 0;
-	pat->seccnt = seccnt;
-	pat->segoff = (INT13_RM_FILEBUF_SEG << 16) + INT13_RM_FILEBUF_OFFSET;
-	pat->secnolow = secno;
-	pat->secnohigh = secnohigh;
-
-	params->bwork = 1;
-
-	while (params->bwork == 1)
-	{
-		__sleep(0);
-		counter++;
-		if (counter && (counter % 256 == 0))
-		{
-			__drawGraphChars((unsigned char*)"bwork is 1,wait to complete\n", 0);
-		}
-	}
-
-	if (params->result > 0)
-	{
-		__memcpy(buf, (char*)INT13_RM_FILEBUF_ADDR, seccnt * sectorsize);
-		return seccnt * sectorsize;
-	}
-
-	return 0;
-}
-
-
-int vm86WriteBlock(unsigned int secno, DWORD secnohigh, unsigned short seccnt, char* buf, int disk, int sectorsize) {
-
-	LPV86VMIPARAMS params = (LPV86VMIPARAMS)V86VMIPARAMS_ADDRESS;
-	while (params->bwork == 1)
-	{
-		__sleep(0);
-	}
-
-	params->intno = 0x13;
-	params->reax = 0x4300;
-	params->recx = 0;
-	params->redx = disk;
-	params->rebx = 0;
-	params->resi = V86VMIDATA_OFFSET;
-	params->redi = 0;
-	params->res = 0;
-	params->rds = V86VMIDATA_SEG;
-	params->result = 0;
-
-	__memcpy((char*)INT13_RM_FILEBUF_ADDR, buf, seccnt * sectorsize);
-
-	LPINT13PAT pat = (LPINT13PAT)V86VMIDATA_ADDRESS;
-	pat->len = 0x10;
-	pat->reserved = 0;
-	pat->seccnt = seccnt;
-	pat->segoff = (INT13_RM_FILEBUF_SEG << 16) + INT13_RM_FILEBUF_OFFSET;
-	pat->secnolow = secno;
-	pat->secnohigh = secnohigh;
-
-	params->bwork = 1;
-
-	while (params->bwork == 1)
-	{
-		__sleep(0);
-	}
-
-	if (params->result)
-	{
-		return seccnt * sectorsize;
-	}
-	return 0;
-}
-
-
-int vm86ReadSector(unsigned int secno, DWORD secnohigh, unsigned int seccnt, char* buf) {
-
-	int readcnt = seccnt / ONCE_READ_LIMIT;
-	int readmod = seccnt % ONCE_READ_LIMIT;
-	int ret = 0;
-	CHAR* offset = buf;
-	for (int i = 0; i < readcnt; i++)
-	{
-		ret = vm86ReadBlock(secno, secnohigh, ONCE_READ_LIMIT, offset, 0x80, BYTES_PER_SECTOR);
-
-		offset += (BYTES_PER_SECTOR * ONCE_READ_LIMIT);
-		secno += ONCE_READ_LIMIT;
-	}
-
-	if (readmod)
-	{
-		ret = vm86ReadBlock(secno, secnohigh, readmod, offset, 0x80, BYTES_PER_SECTOR);
-	}
-	return ret;
-}
-
-
-int vm86WriteSector(unsigned int secno, DWORD secnohigh, unsigned int seccnt, char* buf) {
-
-	int readcnt = seccnt / ONCE_READ_LIMIT;
-	int readmod = seccnt % ONCE_READ_LIMIT;
-	int ret = 0;
-	CHAR* offset = buf;
-	for (int i = 0; i < readcnt; i++)
-	{
-		ret = vm86WriteBlock(secno, secnohigh, ONCE_READ_LIMIT, offset, 0x80, BYTES_PER_SECTOR);
-
-		offset += BYTES_PER_SECTOR * ONCE_READ_LIMIT;
-		secno += ONCE_READ_LIMIT;
-	}
-
-	if (readmod)
-	{
-		ret = vm86WriteBlock(secno, secnohigh, readmod, offset, 0x80, BYTES_PER_SECTOR);
-	}
-	return ret;
-}
-
-
-
 
 
 int readPortSector(unsigned int secno, DWORD secnohigh, unsigned int seccnt, char* buf) {
@@ -414,7 +295,8 @@ int waitComplete(WORD port) {
 
 	int r = inportb(port - 6);
 	if (r == 0) {
-		while (1) {
+		int cnt = 6;
+		while (cnt--) {
 			r = inportb(port);
 			if (r & 1) {
 				return FALSE;
@@ -423,6 +305,7 @@ int waitComplete(WORD port) {
 				return TRUE;
 			}
 			else {
+				__sleep(0);
 				continue;
 			}
 		}
@@ -431,10 +314,12 @@ int waitComplete(WORD port) {
 }
 
 void waitFree(WORD port) {
-	while (1)
+	int cnt = 6;
+	while (cnt--)
 	{
 		int r = inportb(port);
 		if (r & 0x80) {
+			__sleep(0);
 			continue;
 		}
 		else {
@@ -446,18 +331,19 @@ void waitFree(WORD port) {
 
 
 void waitReady(WORD port) {
-	while (1)
+	int cnt = 6;
+	while (cnt --)
 	{
 		int r = inportb(port);
 		if (r & 0x40) {
 			break;
 		}
 		else {
+			__sleep(0);
 			continue;
 		}
 	}
 }
-
 
 
 
@@ -639,7 +525,6 @@ int writeSectorLBA48(unsigned int secnoLow, unsigned int secnoHigh, unsigned cha
 }
 
 
-
 //bit0:0==memmory address,1== io address
 //bit1:size larger than 1MB
 //bit2:0 == 32bits address,1 == 64 bits address
@@ -673,6 +558,10 @@ int identifyDevice(int port,int cmd,char * buffer) {	// IDENTIFY PACKET DEVICE ¨
 	int res = waitComplete(port + 7);
 	if (res) {
 		readsector(port, BYTES_PER_SECTOR / 4, buffer);
+
+		unsigned char szshow[0x1000];
+		__dump((char*)buffer, BYTES_PER_SECTOR, 0, szshow);
+		__drawGraphChars((unsigned char*)szshow, 0);
 	}
 
 	__asm {
@@ -683,15 +572,8 @@ int identifyDevice(int port,int cmd,char * buffer) {	// IDENTIFY PACKET DEVICE ¨
 	//__printf(szout, "harddisk sequence:%s,firmware version:%s,type:%s,type sequence:%s\r\n",
 	//	(char*)HARDDISK_INFO_BASE + 20, (char*)HARDDISK_INFO_BASE + 46, (char*)HARDDISK_INFO_BASE + 54, (char*)HARDDISK_INFO_BASE + 176 * 2);
 
-	unsigned char szshow[0x1000];
-	__dump((char*)buffer, BYTES_PER_SECTOR, 0, szshow);
-	__drawGraphChars((unsigned char*)szshow, 0);
-
 	return res;
 }
-
-//Çý¶¯Æ÷¶ÁÈ¡Ò»¸öÉÈÇøºó£¬×Ô¶¯ÉèÖÃ×´Ì¬¼Ä´æÆ÷1F7HµÄDRQÊý¾ÝÇëÇóÎ»£¬²¢Çå³ýBSYÎ»Ã¦ÐÅºÅ¡£ 
-//DRQÎ»Í¨ÖªÖ÷»úÏÖÔÚ¿ÉÒÔ´Ó»º³åÇøÖÐ¶ÁÈ¡512×Ö½Ú»ò¸ü¶àµÄÊý¾Ý£¬Í¬Ê±ÏòÖ÷»ú·¢INTRQÖÐ¶ÏÇëÇóÐÅºÅ
 
 
 int readDmaSectorLBA48(unsigned int secnoLow, unsigned int secnoHigh, unsigned char seccnt, char* buf, int device) {

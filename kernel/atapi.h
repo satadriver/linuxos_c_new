@@ -8,13 +8,10 @@ int checkAtapiPort(WORD port);
 
 int writeAtapiCMD(unsigned short* cmd);
 
-//int writesector(WORD port, char* buf);
-//int readsector(WORD port, char* buf);
 
 
 
-extern unsigned char gAtapiCmdOpen[16];
-extern unsigned char gAtapiCmdClose[16];
+
 
 #ifdef DLL_EXPORT
 extern "C" __declspec(dllexport) int atapiCMD(unsigned short* cmd);

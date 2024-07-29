@@ -1,11 +1,18 @@
 
-#include "satadriver.h"
+#include "ata.h"
 #include "Utils.h"
 #include "video.h"
 #include "atapi.h"
 #include "hardware.h"
-#include "satadriver.h"
+#include "ata.h"
 
+
+
+unsigned char gAtapiCmdRead10[10] = { 0x28,0,0,0,0,0,0,0,0,0 };
+
+unsigned char gAtapiCmdWrite10[10] = { 0x2a,0,0,0,0,0,0,0,0,0 };
+
+unsigned char gAtapiCmdSeek10[10] = { 0x2b,0,0,0,0,0,0,0,0,0 };
 
 unsigned char gAtapiCmdOpen[16] =	{ 0x1b,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0};
 
@@ -15,7 +22,7 @@ unsigned char gAtapiCmdRead[16] = { 0xA8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0,0,0,
 
 unsigned char gAtapiCmdWrite[16] = {0xAA, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0,0,0,0 };
 
-//2,3,4,5 is bit31-bit24,bit23-bit16,bit15-bit8,bit7-bit0,9 is sector number
+//2,3,4,5 is bit31-bit24,bit23-bit16,bit15-bit8,bit7-bit0,6,7,8,9 is sector number, bit31-bit24,bit23-bit16,bit15-bit8,bit7-bit0
 
 
 
@@ -119,7 +126,7 @@ int readAtapiSector(char * buf,unsigned int secnum,unsigned char seccnt) {
 		sti
 	}
 
-	return 0;
+	return readsize;
 }
 
 
@@ -162,34 +169,12 @@ int writeAtapiSector(char* buf, unsigned int secnum, unsigned char seccnt) {
 		sti
 	}
 
-	return 0;
+	return readsize;
 }
 
 
 
-/*
-int writesector(WORD port, char* buf) {
-	__asm {
-		cld
-		mov esi, buf
-		mov ecx, ATAPI_SECTOR_SIZE / 4
-		mov dx, port
-		rep outsd
-	}
-	return 0;
-}
 
-int readsector(WORD port, char* buf) {
-	__asm {
-		cld
-		mov ecx, ATAPI_SECTOR_SIZE / 4
-		mov edi, buf
-		mov dx, port
-		rep insd
-	}
-	return 0;
-}
-*/
 
 
 /*

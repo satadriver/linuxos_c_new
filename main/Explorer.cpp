@@ -8,14 +8,14 @@
 #include "task.h"
 #include "graph.h"
 #include "soundBlaster/sbPlay.h"
-
+#include "floppy.h"
 #include "Utils.h"
 #include "menu.h"
 #include "windowclass.h"
 #include "Pe.h"
 #include "window.h"
 
-#include "satadriver.h"
+#include "ata.h"
 #include "UserUtils.h"
 #include "Kernel.h"
 #include "sysregs.h"
@@ -93,11 +93,10 @@ int __kExplorer(unsigned int retaddr, int tid, char * filename, char * funcname,
 
 	repeatDrawCCFontString();
 
-	char cdrom[0x1000];
-	char szcd[0x1000];
-	readAtapiSector(cdrom, 0, 1);
-	__dump(cdrom, 1024, 1,(unsigned char*)szcd);
-	__drawGraphChars((unsigned char*)szcd, 0);
+	//readAtapiSector(FLOPPY_DMA_BUFFER, 16, 1);
+	//readFloppySector(0, FLOPPY_DMA_BUFFER, 0, 4);
+	//__dump((char*)FLOPPY_DMA_BUFFER, 512, 1, (unsigned char*)szout);
+	//__drawGraphChars((unsigned char*)szout, 0);
 
 	//runElfFunction("c:\\liunux\\test.so", "__testfunction");
 

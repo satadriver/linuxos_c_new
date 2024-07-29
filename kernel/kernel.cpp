@@ -7,7 +7,7 @@
 #include "process.h"
 #include "task.h"
 #include "Pe.h"
-#include "satadriver.h"
+#include "ata.h"
 #include "fat32/FAT32.h"
 #include "fat32/fat32file.h" 
 #include "file.h"
@@ -16,7 +16,7 @@
 #include "pci.h"
 #include "speaker.h"
 #include "cmosAlarm.h"
-#include "rs232.h"
+#include "serialUART.h"
 #include "floppy.h"
 #include "malloc.h"
 #include "page.h"
@@ -73,9 +73,6 @@ int __kernelEntry(LPVESAINFORMATION vesa, DWORD fontbase,DWORD v86Proc,DWORD v86
 
 	initDll();
 
-	initRS232Com1();
-	initRS232Com2();
-
 	initEfer();
 
 	initCoprocessor();
@@ -100,25 +97,24 @@ int __kernelEntry(LPVESAINFORMATION vesa, DWORD fontbase,DWORD v86Proc,DWORD v86
 
 	//logFile("__kernelEntry\n");
 	
-// 	DWORD kernelMain = getAddrFromName(KERNEL_DLL_BASE, "__kKernelMain");
-// 	if (kernelMain)
-// 	{
-// 		TASKCMDPARAMS cmd;
-// 		__memset((char*)&cmd, 0, sizeof(TASKCMDPARAMS));
-// 		__kCreateThread((unsigned int)kernelMain,(DWORD)&cmd, "__kKernelMain");
-// 	}
+	int imagesize = getSizeOfImage((char*)KERNEL_DLL_SOURCE_BASE);
+	DWORD kernelMain = getAddrFromName(KERNEL_DLL_BASE, "__kKernelMain");
+	if (kernelMain)
+	{
+		TASKCMDPARAMS cmd;
+		__memset((char*)&cmd, 0, sizeof(TASKCMDPARAMS));
+		//__kCreateThread((unsigned int)kernelMain, KERNEL_DLL_BASE,(DWORD)&cmd, "__kKernelMain");
+		//__kCreateProcess((unsigned int)KERNEL_DLL_SOURCE_BASE, imagesize, "kernel.dll", "__kKernelMain", 3, 0);
+	}
 
 	initFileSystem();
 
 	initDebugger();
 
-// 	floppyInit();
-// 	FloppyReadSector(0, 1, (unsigned char*)FLOPPY_DMA_BUFFER);
-
 // 	ret = loadLibRunFun("c:\\liunux\\main.dll", "__kMainProcess");
+
  	
-	int imagesize = getSizeOfImage((char*)MAIN_DLL_SOURCE_BASE);
-	__printf(szout, "__kMainProcess size:%x\n", imagesize);
+	imagesize = getSizeOfImage((char*)MAIN_DLL_SOURCE_BASE);
 	__kCreateProcessFromAddrFunc(MAIN_DLL_SOURCE_BASE, imagesize,  "__kExplorer", 3, 0);
 
 	while (1)
@@ -145,25 +141,19 @@ void __kKernelMain(DWORD retaddr,int pid,char * filename,char * funcname,DWORD p
  	char szout[1024];
 	__printf(szout, "__kKernelMain task pid:%x,filename:%s,function name:%s\n", pid, filename,funcname);
 
- 	unsigned char sendbuf[1024];
- 	//最大不能超过14字节
- 	__strcpy((char*)sendbuf, "how are you?");
- 	ret = sendCom2Data(sendbuf, __strlen("how are you?"));
+	char* str = "Hi,how are you?Fine,thank you, and you ? I'm fine too!";
+
+ 	ret = sendUARTData((unsigned char*)str, __strlen(str),COM1PORT);
  
  	unsigned char recvbuf[1024];
- 	int recvlen = getCom2Data(recvbuf);
+ 	int recvlen = getCom1Data(recvbuf);
  	if (recvlen > 0)
  	{
  		*(recvbuf + recvlen) = 0;
- 		__printf(szout, "recvbuf data:%s\n", recvbuf);
- 	}
 
-	while (1)
-	{
-		__asm {
-			hlt
-		}
-	}
+ 		__printf(szout, "com recv data:%s\n", recvbuf);
+ 	}
+	return;
 }
 
 

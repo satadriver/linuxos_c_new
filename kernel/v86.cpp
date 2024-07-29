@@ -3,7 +3,7 @@
 
 #include "Utils.h"
 #include "video.h"
-#include "satadriver.h"
+#include "ata.h"
 #include "task.h"
 #include "atapi.h"
 #include "core.h"
@@ -48,6 +48,148 @@ int v86Process(int reax,int recx,int redx,int rebx,int resi,int redi,int rds, in
 
 
 
+int vm86ReadBlock(unsigned int secno, DWORD secnohigh, unsigned short seccnt, char* buf, int disk, int sectorsize) {
+
+	unsigned int counter = 0;
+
+	LPV86VMIPARAMS params = (LPV86VMIPARAMS)V86VMIPARAMS_ADDRESS;
+	while (params->bwork == 1)
+	{
+		__sleep(0);
+		counter++;
+		if (counter && (counter % VM_OUTPUT_BUSY_CONSTANT == 0))
+		{
+			//__drawGraphChars((unsigned char*)"wait bwork to be free\n", 0);
+		}
+	}
+
+	params->intno = 0x13;
+	params->reax = 0x4200;
+	params->recx = 0;
+	params->redx = disk;
+	params->rebx = 0;
+	params->resi = V86VMIDATA_OFFSET;
+	params->redi = 0;
+	params->res = 0;
+	params->rds = V86VMIDATA_SEG;
+	params->result = 0;
+
+	LPINT13PAT pat = (LPINT13PAT)V86VMIDATA_ADDRESS;
+	pat->len = 0x10;
+	pat->reserved = 0;
+	pat->seccnt = seccnt;
+	pat->segoff = (INT13_RM_FILEBUF_SEG << 16) + INT13_RM_FILEBUF_OFFSET;
+	pat->secnolow = secno;
+	pat->secnohigh = secnohigh;
+
+	params->bwork = 1;
+
+	counter = 0;
+	while (params->bwork == 1)
+	{
+		__sleep(0);
+		counter++;
+		if (counter && (counter % VM_OUTPUT_BUSY_CONSTANT == 0))
+		{
+			//__drawGraphChars((unsigned char*)"wait v86 code to clear bwork\n", 0);
+		}
+	}
+
+	if (params->result > 0)
+	{
+		__memcpy(buf, (char*)INT13_RM_FILEBUF_ADDR, seccnt * sectorsize);
+		return seccnt * sectorsize;
+	}
+
+	return 0;
+}
+
+
+int vm86WriteBlock(unsigned int secno, DWORD secnohigh, unsigned short seccnt, char* buf, int disk, int sectorsize) {
+
+	LPV86VMIPARAMS params = (LPV86VMIPARAMS)V86VMIPARAMS_ADDRESS;
+	while (params->bwork == 1)
+	{
+		__sleep(0);
+	}
+
+	params->intno = 0x13;
+	params->reax = 0x4300;
+	params->recx = 0;
+	params->redx = disk;
+	params->rebx = 0;
+	params->resi = V86VMIDATA_OFFSET;
+	params->redi = 0;
+	params->res = 0;
+	params->rds = V86VMIDATA_SEG;
+	params->result = 0;
+
+	__memcpy((char*)INT13_RM_FILEBUF_ADDR, buf, seccnt * sectorsize);
+
+	LPINT13PAT pat = (LPINT13PAT)V86VMIDATA_ADDRESS;
+	pat->len = 0x10;
+	pat->reserved = 0;
+	pat->seccnt = seccnt;
+	pat->segoff = (INT13_RM_FILEBUF_SEG << 16) + INT13_RM_FILEBUF_OFFSET;
+	pat->secnolow = secno;
+	pat->secnohigh = secnohigh;
+
+	params->bwork = 1;
+
+	while (params->bwork == 1)
+	{
+		__sleep(0);
+	}
+
+	if (params->result)
+	{
+		return seccnt * sectorsize;
+	}
+	return 0;
+}
+
+int vm86ReadSector(unsigned int secno, DWORD secnohigh, unsigned int seccnt, char* buf) {
+
+	int readcnt = seccnt / ONCE_READ_LIMIT;
+	int readmod = seccnt % ONCE_READ_LIMIT;
+	int ret = 0;
+	CHAR* offset = buf;
+	for (int i = 0; i < readcnt; i++)
+	{
+		ret = vm86ReadBlock(secno, secnohigh, ONCE_READ_LIMIT, offset, 0x80, BYTES_PER_SECTOR);
+
+		offset += (BYTES_PER_SECTOR * ONCE_READ_LIMIT);
+		secno += ONCE_READ_LIMIT;
+	}
+
+	if (readmod)
+	{
+		ret = vm86ReadBlock(secno, secnohigh, readmod, offset, 0x80, BYTES_PER_SECTOR);
+	}
+	return ret;
+}
+
+
+int vm86WriteSector(unsigned int secno, DWORD secnohigh, unsigned int seccnt, char* buf) {
+
+	int readcnt = seccnt / ONCE_READ_LIMIT;
+	int readmod = seccnt % ONCE_READ_LIMIT;
+	int ret = 0;
+	CHAR* offset = buf;
+	for (int i = 0; i < readcnt; i++)
+	{
+		ret = vm86WriteBlock(secno, secnohigh, ONCE_READ_LIMIT, offset, 0x80, BYTES_PER_SECTOR);
+
+		offset += BYTES_PER_SECTOR * ONCE_READ_LIMIT;
+		secno += ONCE_READ_LIMIT;
+	}
+
+	if (readmod)
+	{
+		ret = vm86WriteBlock(secno, secnohigh, readmod, offset, 0x80, BYTES_PER_SECTOR);
+	}
+	return ret;
+}
 
 
 int getVideoMode(VesaSimpleInfo vsi[64] ) {
@@ -207,7 +349,7 @@ void restoreScreen() {
 	}
 }
 
-int setGraphMode(int mode) {
+int setVideoMode(int mode) {
 
 	LPV86VMIPARAMS params = (LPV86VMIPARAMS)V86VMIPARAMS_ADDRESS;
 	while (params->bwork == 1)
@@ -286,7 +428,7 @@ int getAtapiDev(int disk, int maxno) {
 
 
 
-int reject(int dev) {
+int rejectAtapi(int dev) {
 	int res = v86Process(0x4600, 0, dev, 0, 0, 0, 0, 0, 0x13); //jc error
 	return res;
 }
@@ -309,7 +451,7 @@ int rejectCDROM(int dev) {
 		{
 			return FALSE;
 		}
-		reject(dev);
+		rejectAtapi(dev);
 	}
 
 	LPV86VMIPARAMS params = (LPV86VMIPARAMS)V86VMIPARAMS_ADDRESS;

@@ -1,7 +1,7 @@
 #include "fat32/Fat32File.h"
 #include "file.h"
 #include "Utils.h"
-#include "satadriver.h"
+#include "ata.h"
 #include "NTFS/ntfs.h"
 #include "video.h"
 #include "NTFS/ntfsFile.h"
@@ -45,7 +45,7 @@ int readFileTo(char * filename) {
 
 int initFileSystem() {
 	int ret = 0;
-	ret = __initHardDisk();
+	ret = __initIDE();
 	if (ret == FALSE)
 	{
 		return FALSE;

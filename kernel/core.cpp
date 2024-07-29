@@ -11,13 +11,14 @@
 #include "exception.h"
 #include "debugger.h"
 #include "keyboard.h"
-
+#include "serialUART.h"
 #include "mouse.h"
 #include "v86.h"
 #include "servicesProc.h"
 #include "task.h"
 #include "vectorRoutine.h"
 #include "descriptor.h"
+#include "floppy.h"
 
 
 void makeDataSegDescriptor(DWORD base, int dpl, int bit, int direction, int w, SegDescriptor* descriptor) {
@@ -349,11 +350,11 @@ void initIDT() {
 
 	makeTaskGateDescriptor((DWORD)kTssV86Selector, 3, (TaskGateDescriptor*)(descriptor + 0xff));
 
-	makeIntGateDescriptor((DWORD)Com2IntProc, KERNEL_MODE_CODE, 3, descriptor + INTR_8259_MASTER + 3);
-	makeIntGateDescriptor((DWORD)Com1IntProc, KERNEL_MODE_CODE, 3, descriptor + INTR_8259_MASTER + 4);
+	makeIntGateDescriptor((DWORD)__kCom2Proc, KERNEL_MODE_CODE, 3, descriptor + INTR_8259_MASTER + 3);
+	makeIntGateDescriptor((DWORD)__kCom1Proc, KERNEL_MODE_CODE, 3, descriptor + INTR_8259_MASTER + 4);
 	makeIntGateDescriptor((DWORD)Parallel2IntProc, KERNEL_MODE_CODE, 3, descriptor + INTR_8259_MASTER + 5);
 	makeIntGateDescriptor((DWORD)Parallel1IntProc, KERNEL_MODE_CODE, 3, descriptor + INTR_8259_MASTER + 7);
-	makeIntGateDescriptor((DWORD)FloppyDiskIntProc, KERNEL_MODE_CODE, 3, descriptor + INTR_8259_MASTER + 6);
+	makeIntGateDescriptor((DWORD)FloppyIntProc, KERNEL_MODE_CODE, 3, descriptor + INTR_8259_MASTER + 6);
 	makeIntGateDescriptor((DWORD)SlaveIntProc, KERNEL_MODE_CODE, 3, descriptor + INTR_8259_MASTER + 2);
 
 

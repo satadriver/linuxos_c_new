@@ -4,6 +4,7 @@
 #include "hardware.h"
 #include "Utils.h"
 #include "keyboard.h"
+#include "serialUART.h"
 
 #define PS2_COMMAND_PORT	0x64
 #define PS2_DATA_PORT		0x60
@@ -75,7 +76,7 @@ void initDevices() {
 	setMouseRate(200);	
 	enableSpeaker();
 	getKeyboardID();
-
+	initSerial();
 }
 
 
@@ -89,6 +90,8 @@ void initTextModeDevices() {
 	//setMouseRate(200);
 	enableSpeaker();
 	getKeyboardID();
+
+	initSerial();
 }
 
 

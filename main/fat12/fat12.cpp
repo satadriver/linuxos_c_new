@@ -3,7 +3,7 @@
 #include "../FileManager.h"
 #include "../file.h"
 #include "../UserUtils.h"
-#include "../satadriver.h"
+#include "../ata.h"
 #include "../atapi.h"
 #include "../fat32/FAT32.h"
 #include "../v86.h"

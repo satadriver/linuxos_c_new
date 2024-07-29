@@ -1,6 +1,6 @@
 #include "ntfs.h"
 #include "../file.h"
-#include "../satadriver.h"
+#include "../ata.h"
 #include "ntfsFile.h"
 #include "../Utils.h"
 #include "../video.h"

@@ -12,7 +12,7 @@
 #include "Pe.h"
 #include "window.h"
 #include "cmosExactTimer.h"
-#include "satadriver.h"
+#include "ata.h"
 #include "UserUtils.h"
 #include "Kernel.h"
 #include "sysregs.h"

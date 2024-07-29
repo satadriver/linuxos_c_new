@@ -2,7 +2,7 @@
 #include "ntfs.h"
 #include "../fat32/fileutils.h"
 #include "../Utils.h"
-#include "../satadriver.h"
+#include "../ata.h"
 #include "../file.h"
 #include "../video.h"
 #include "../malloc.h"
