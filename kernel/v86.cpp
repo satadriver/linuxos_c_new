@@ -48,7 +48,7 @@ int v86Process(int reax,int recx,int redx,int rebx,int resi,int redi,int rds, in
 
 
 
-int vm86ReadBlock(unsigned int secno, DWORD secnohigh, unsigned short seccnt, char* buf, int disk, int sectorsize) {
+int v86Int13Read(unsigned int secno, DWORD secnohigh, unsigned short seccnt, char* buf, int disk, int sectorsize) {
 
 	unsigned int counter = 0;
 
@@ -59,7 +59,7 @@ int vm86ReadBlock(unsigned int secno, DWORD secnohigh, unsigned short seccnt, ch
 		counter++;
 		if (counter && (counter % VM_OUTPUT_BUSY_CONSTANT == 0))
 		{
-			//__drawGraphChars((unsigned char*)"wait bwork to be free\n", 0);
+			__drawGraphChars((unsigned char*)"wait bwork to be free\n", 0);
 		}
 	}
 
@@ -97,15 +97,20 @@ int vm86ReadBlock(unsigned int secno, DWORD secnohigh, unsigned short seccnt, ch
 
 	if (params->result > 0)
 	{
+		//__drawGraphChars((unsigned char*)"vm read sector ok\n", 0);
+
 		__memcpy(buf, (char*)INT13_RM_FILEBUF_ADDR, seccnt * sectorsize);
 		return seccnt * sectorsize;
+	}
+	else {
+		__drawGraphChars((unsigned char*)"vm read sector error\n", 0);
 	}
 
 	return 0;
 }
 
 
-int vm86WriteBlock(unsigned int secno, DWORD secnohigh, unsigned short seccnt, char* buf, int disk, int sectorsize) {
+int v86Int13Write(unsigned int secno, DWORD secnohigh, unsigned short seccnt, char* buf, int disk, int sectorsize) {
 
 	LPV86VMIPARAMS params = (LPV86VMIPARAMS)V86VMIPARAMS_ADDRESS;
 	while (params->bwork == 1)
@@ -156,7 +161,7 @@ int vm86ReadSector(unsigned int secno, DWORD secnohigh, unsigned int seccnt, cha
 	CHAR* offset = buf;
 	for (int i = 0; i < readcnt; i++)
 	{
-		ret = vm86ReadBlock(secno, secnohigh, ONCE_READ_LIMIT, offset, 0x80, BYTES_PER_SECTOR);
+		ret = v86Int13Read(secno, secnohigh, ONCE_READ_LIMIT, offset, 0x80, BYTES_PER_SECTOR);
 
 		offset += (BYTES_PER_SECTOR * ONCE_READ_LIMIT);
 		secno += ONCE_READ_LIMIT;
@@ -164,7 +169,7 @@ int vm86ReadSector(unsigned int secno, DWORD secnohigh, unsigned int seccnt, cha
 
 	if (readmod)
 	{
-		ret = vm86ReadBlock(secno, secnohigh, readmod, offset, 0x80, BYTES_PER_SECTOR);
+		ret = v86Int13Read(secno, secnohigh, readmod, offset, 0x80, BYTES_PER_SECTOR);
 	}
 	return ret;
 }
@@ -178,7 +183,7 @@ int vm86WriteSector(unsigned int secno, DWORD secnohigh, unsigned int seccnt, ch
 	CHAR* offset = buf;
 	for (int i = 0; i < readcnt; i++)
 	{
-		ret = vm86WriteBlock(secno, secnohigh, ONCE_READ_LIMIT, offset, 0x80, BYTES_PER_SECTOR);
+		ret = v86Int13Write(secno, secnohigh, ONCE_READ_LIMIT, offset, 0x80, BYTES_PER_SECTOR);
 
 		offset += BYTES_PER_SECTOR * ONCE_READ_LIMIT;
 		secno += ONCE_READ_LIMIT;
@@ -186,7 +191,7 @@ int vm86WriteSector(unsigned int secno, DWORD secnohigh, unsigned int seccnt, ch
 
 	if (readmod)
 	{
-		ret = vm86WriteBlock(secno, secnohigh, readmod, offset, 0x80, BYTES_PER_SECTOR);
+		ret = v86Int13Write(secno, secnohigh, readmod, offset, 0x80, BYTES_PER_SECTOR);
 	}
 	return ret;
 }
@@ -361,7 +366,7 @@ int setVideoMode(int mode) {
 	params->reax = 0x4f02;
 	params->recx = 0;
 	params->redx = 0;
-	params->rebx = mode;
+	params->rebx = mode|0x4000;
 	params->resi = 0;
 	params->redi = 0;
 	params->res = 0;

@@ -122,6 +122,8 @@ int getIDEPort() {
 		gAtapiBasePort = 0x3f0;
 	}
 
+	__printf((char*)szshow, "getIDEPort 3f0 over\n");
+
 	ret = checkIDEPort(0x370);
 	if (ret==1)
 	{
@@ -132,6 +134,8 @@ int getIDEPort() {
 		gATAPIDev = 0xf0;
 		gAtapiBasePort = 0x370;
 	}
+
+	__printf((char*)szshow, "getIDEPort 370 over\n");
 
 	//1f7 = 3f6 = 3f7,376=377=177
 	ret = checkIDEPort(0x1f0);
@@ -145,6 +149,8 @@ int getIDEPort() {
 		gAtapiBasePort = 0x1f0;
 	}
 
+	__printf((char*)szshow, "getIDEPort 1f0 over\n");
+
 	ret = checkIDEPort(0x170);
 	if (ret == 1)
 	{
@@ -156,12 +162,14 @@ int getIDEPort() {
 		gAtapiBasePort = 0x170;
 	}
 
+	__printf((char*)szshow, "getIDEPort 170 over\n");
+
 	DWORD hdport[16] ;
 	DWORD dev = 0;
 	DWORD irq = 0;
 	int cnt = getPciDevBasePort(hdport, 0x0101, &dev, &irq);
 	__printf((char*)szshow, "sata port:%x,%x,%x,%x\n", hdport[0],hdport[1], hdport[2], hdport[3]);
-	for (int i = 0; i < cnt; i++)
+	for (int i = 0; i < cnt/2; i+=2)
 	{
 		if (hdport[i])
 		{
@@ -184,7 +192,7 @@ int getIDEPort() {
 				if (ret == 1)
 				{
 					gAtaBasePort = hdport[i] & 0xFFF0;
-					if (i < 2)
+					if (i % 4 == 0)
 					{
 						gATADev = 0xf0;
 					}
@@ -194,7 +202,7 @@ int getIDEPort() {
 				}
 				else if (ret == 2) {
 					gAtapiBasePort = hdport[i] & 0xFFF0;
-					if (i < 2)
+					if (i % 4 == 0)
 					{
 						gATAPIDev = 0xf0;
 					}
@@ -202,23 +210,12 @@ int getIDEPort() {
 						gATAPIDev = 0xe0;
 					}
 				}
-
-				//ret = checkIDEPort((hdport[i] & 0xFFF0) + 8);
-				//if (ret == 1)
-				//{
-				//	gATADev = 0xe0;
-				//	gAtaBasePort = (hdport[i] & 0xFFF0)+8;
-				//}
-				//else if (ret == 2) {
-				//	gATAPIDev = 0xe0;
-				//	gAtapiBasePort = (hdport[i] & 0xFFF0)+8;
-				//}
 			}
 		}
 	}
 
 	if (gAtaBasePort ) {
-		__printf((char*)szshow, "ide master port:%x,device:%x,slave port:%d.device:%d\n", gAtaBasePort, gATADev, gAtapiBasePort, gATAPIDev);
+		__printf((char*)szshow, "ide master port:%x,device:%x,slave port:%x,device:%x\n", gAtaBasePort, gATADev, gAtapiBasePort, gATAPIDev);
 	}
 	else {
 		gATAPIDev = 0xe0;

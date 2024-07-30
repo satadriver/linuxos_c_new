@@ -152,10 +152,13 @@ extern "C" __declspec(dllexport) int __kTextModeEntry(LPVESAINFORMATION vesa, DW
  	DWORD svgadev = 0;
  	DWORD svgairq = 0;
  	res = getPciDevBasePort(svgaregs, 0x0300, &svgadev, &svgairq);
- 	if ( svgaregs && (svgaregs[0] & 1) == 0 )		
- 	{
-		gTxtBuf = (char*)(svgaregs[0] & 0xfffffff0);
- 	}
+	for (int i = 0; i < 4; i++) {
+		if (svgaregs[i] && (svgaregs[i] & 1) == 0)
+		{
+			gTxtBuf = (char*)(svgaregs[i] & 0xfffffff0);
+		}
+	}
+
 
 	gTxtBuf = (char*)TEXTMODE_BASE;
 

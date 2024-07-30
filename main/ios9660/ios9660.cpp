@@ -17,7 +17,7 @@ int readIso9660Dirs(DWORD secno, LPFILEBROWSER files) {
 	int cnt = 0;
 	int iret = 0;
 	char buf[ATAPI_SECTOR_SIZE * 2];
-	iret = vm86ReadBlock(secno, 0, 1, buf, gAtapiDev, ATAPI_SECTOR_SIZE);
+	iret = v86Int13Read(secno, 0, 1, buf, gAtapiDev, ATAPI_SECTOR_SIZE);
 	if (iret <= 0)
 	{
 		__drawGraphChars((unsigned char*)"readIso9660Dirs iso9660 file system read sector error\n", 0);
@@ -95,7 +95,7 @@ int browseISO9660File(LPFILEBROWSER files) {
 
 	char buf[ATAPI_SECTOR_SIZE * 2];
 
-	iret = vm86ReadBlock(ISO9660FS_VOLUME_DESCRIPTOR_NO, 0, 1, buf, gAtapiDev, ATAPI_SECTOR_SIZE);
+	iret = v86Int13Read(ISO9660FS_VOLUME_DESCRIPTOR_NO, 0, 1, buf, gAtapiDev, ATAPI_SECTOR_SIZE);
 	if (iret <= 0)
 	{
 		__drawGraphChars((unsigned char*)"browseISO9660File read cdrom sector 16 error\n", 0);
@@ -111,7 +111,7 @@ int browseISO9660File(LPFILEBROWSER files) {
 	ISO9660FSDIR vterminate;
 	__memcpy((char*)&vterminate, buf + 0x9c, *(buf + 0x9c));
 
-	iret = vm86ReadBlock(vterminate.lba, 0, 1, buf, gAtapiDev, ATAPI_SECTOR_SIZE);
+	iret = v86Int13Read(vterminate.lba, 0, 1, buf, gAtapiDev, ATAPI_SECTOR_SIZE);
 	if (iret <= 0)
 	{
 		__drawGraphChars((unsigned char*)"iso 9660 file system read sector error\n", 0);
@@ -187,7 +187,7 @@ int readIso9660File(DWORD secno,DWORD seccnt, char ** buf) {
 	int mod = seccnt % 32;
 	for (int i = 0; i < times; i ++)
 	{
-		iret = vm86ReadBlock(secno, 0, 32, *buf, gAtapiDev, ATAPI_SECTOR_SIZE);
+		iret = v86Int13Read(secno, 0, 32, *buf, gAtapiDev, ATAPI_SECTOR_SIZE);
 		if (iret <= 0)
 		{
 			return FALSE;
@@ -199,7 +199,7 @@ int readIso9660File(DWORD secno,DWORD seccnt, char ** buf) {
 
 	if (mod)
 	{
-		iret = vm86ReadBlock(secno, 0, mod, *buf, gAtapiDev, ATAPI_SECTOR_SIZE);
+		iret = v86Int13Read(secno, 0, mod, *buf, gAtapiDev, ATAPI_SECTOR_SIZE);
 		if (iret <= 0)
 		{
 			return FALSE;

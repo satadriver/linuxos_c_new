@@ -111,8 +111,12 @@ int __kernelEntry(LPVESAINFORMATION vesa, DWORD fontbase,DWORD v86Proc,DWORD v86
 
 	initDebugger();
 
-// 	ret = loadLibRunFun("c:\\liunux\\main.dll", "__kMainProcess");
+	//while (1) 
+	{
+		;
+	}
 
+// 	ret = loadLibRunFun("c:\\liunux\\main.dll", "__kMainProcess");
  	
 	imagesize = getSizeOfImage((char*)MAIN_DLL_SOURCE_BASE);
 	__kCreateProcessFromAddrFunc(MAIN_DLL_SOURCE_BASE, imagesize,  "__kExplorer", 3, 0);

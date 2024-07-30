@@ -51,6 +51,16 @@ extern "C" __declspec(naked) void __kCallGateProc(DWORD  params, DWORD count) {
 	__asm {
 		mov esp, ebp
 
+		//mov eax, ss: [esp + 4]
+		//mov ss : [esp + 8],eax
+		//mov eax,ss:[esp ]
+		//mov ss:[esp + 4],eax
+		//pushfd
+		//pop eax
+		//mov ss : [esp + 12] , eax
+		//add esp,4
+		//iretd
+
 		retf 0x08		//ca 08 00		在长调用中使用retf，这点需要注意.
 	}
 
@@ -78,7 +88,7 @@ extern "C" __declspec(dllexport) void callgateEntry(DWORD  params,DWORD count) {
 		push gs
 		push ss
 
-		cli
+		//cli
 
 		push dword ptr count
 		push params
@@ -93,9 +103,10 @@ extern "C" __declspec(dllexport) void callgateEntry(DWORD  params,DWORD count) {
 		_emit callGateSelector
 		_emit 0
 
-		add esp,8
+		//retf 0x08 will balance the user mode stack esp,so do not to balance it self
+		//add esp,8
 
-		sti
+		//sti
 
 		pop ss
 		pop gs
@@ -178,9 +189,82 @@ DWORD g_sysEntryStack3 = 0;
 
 
 
+
+
+
+
+extern "C" __declspec(naked) int sysEntry() {
+
+	{
+		LPTSS tss = (LPTSS)CURRENT_TASK_TSS_BASE;
+
+		WORD rcs = 0;
+		DWORD resp = 0;
+		WORD rss = 0;
+		__asm {
+			mov ax, cs
+			mov rcs, ax
+
+			mov ax, ss
+			mov rss, ax
+
+			mov resp, esp
+		}
+		char szout[1024];
+		__printf(szout, "sysEntry current cs:%x,tss cs:%x,ss:%x,esp:%x\r\n", rcs, tss->cs, rss, resp);
+	}
+
+	__asm {
+		lea edx, __sysEntryExit
+		mov ecx, ds : [g_sysEntryStack3]
+		_emit 0x0f
+		_emit 0x35
+
+		__sysEntryExit :
+		ret
+	}
+}
+
+
+
+//only be invoked in ring3,in ring0 will cause exception 0dh
+extern "C" __declspec(naked) int sysEntryProc() {
+
+	{
+		if (g_sysEntryInit == 0) {
+			int res = sysEntryInit((DWORD)sysEntry);
+			if (res) {
+				g_sysEntryInit = TRUE;
+			}
+			else {
+				__asm {
+					ret
+				}
+			}
+		}
+	}
+	__asm {
+		mov ax, cs
+		test ax, 3
+		jz __sysEntryExit
+
+		mov ds : [g_sysEntryStack3] , esp
+
+		_emit 0x0f
+		_emit 0x34
+
+		__sysEntryExit :
+		ret
+	}	
+}
+
 int sysEntryInit(DWORD entryaddr) {
-	LPTSS tss = (LPTSS)CURRENT_TASK_TSS_BASE;
-	if (tss->cs & 3)
+	WORD regcs = 0;
+	__asm {
+		mov ax, cs
+		mov regcs, ax
+	}
+	if (regcs & 3)
 	{
 		return FALSE;
 	}
@@ -199,75 +283,7 @@ int sysEntryInit(DWORD entryaddr) {
 
 	writemsr(0x176, eip, high);
 
+	g_sysEntryInit = TRUE;
+
 	return TRUE;
 }
-
-
-
-int sysEntry(DWORD  params, DWORD size) {
-	LPTSS tss = (LPTSS)CURRENT_TASK_TSS_BASE;
-
-	WORD rcs = 0;
-	DWORD resp = 0;
-	WORD rss = 0;
-	__asm {
-		mov ax, cs
-		mov rcs, ax
-
-		mov ax, ss
-		mov rss, ax
-
-		mov resp, esp
-	}
-	char szout[1024];
-	__printf(szout, "sysEntry current cs:%x,tss cs:%x,ss:%x,esp:%x\r\n", rcs, tss->cs, rss, resp);
-
-	return 0;
-}
-
-//only be invoked in ring3,in ring0 will cause exception 0dh
-extern "C" __declspec(dllexport) int sysEntryProc(DWORD  params, DWORD size) {
-
-	int res = 0;
-	if (g_sysEntryInit == 0) {
-		DWORD addr = 0;
-		__asm {
-			lea eax, __sysEntry
-			mov addr, eax
-		}
-		res = sysEntryInit((DWORD)addr);
-		if (res ) {
-			g_sysEntryInit = TRUE;
-		}
-		else {
-			return FALSE;
-		}
-	}
-
-	__asm {
-		mov ax, cs
-		test ax, 3
-		jz __sysEntryExit
-
-		mov ds : [g_sysEntryStack3] , esp
-
-		_emit 0x0f
-		_emit 0x34
-	}
-
-	__sysEntry:
-	res = sysEntry(params, size);
-
-	__asm {
-		lea edx, __sysEntryExit
-		mov ecx, ds : [g_sysEntryStack3]
-		_emit 0x0f
-		_emit 0x35
-
-		__sysEntryExit :
-	}	
-
-	return res;
-
-}
-
