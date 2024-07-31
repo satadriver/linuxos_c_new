@@ -87,11 +87,11 @@ int __kExplorer(unsigned int retaddr, int tid, char * filename, char * funcname,
 
 	//getRCBA();
 
-	//sysEntryProc();
+	sysEntryProc();
 
 	//callgateEntry(0, 0);
 
-	repeatDrawCCFontString();
+	displayCCPoem();
 
 	//readAtapiSector(FLOPPY_DMA_BUFFER, 16, 1);
 	//readFloppySector(0, FLOPPY_DMA_BUFFER, 0, 4);

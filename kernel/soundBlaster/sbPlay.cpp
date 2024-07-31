@@ -2,6 +2,7 @@
 #include "sbPlay.h"
 #include "../Utils.h"
 #include "../file.h"
+#include "../hardware.h"
 
 //https://blog.csdn.net/weixin_33755847/article/details/93795780
 //http://homepages.cae.wisc.edu/~brodskye/sb16doc/sb16doc.html#ResetDSP
@@ -13,7 +14,21 @@ int gSoundBlast = 0;
 
 
 
-int writedsp(int value) {
+void writedsp(int value) {
+
+	int v = 0;
+	do {
+		v = inportb(SOUNDBLASTER_BASE_PORT + 0x0c);
+		if (v & 0x80) {
+			__sleep(0);
+			continue;
+		}
+		else {
+			break;
+		}
+	} while (TRUE);
+
+	/*
 	__asm {
 		push edx
 
@@ -29,9 +44,26 @@ int writedsp(int value) {
 		out dx,al
 		pop edx
 	}
+	*/
 }
 
 int readdsp() {
+	int v = 0;
+	do {
+		v = inportb(SOUNDBLASTER_BASE_PORT + 0x0e);
+		if (v & 0x80 == 0) {
+			__sleep(0);
+			continue;
+		}
+		else {
+			v = inportb(SOUNDBLASTER_BASE_PORT + 0x0a);
+			break;
+		}
+	} while (TRUE);
+
+	return v;
+
+	/*
 	__asm {
 		push edx
 		_readdspWait :
@@ -48,9 +80,15 @@ int readdsp() {
 		movzx eax,al
 		pop edx
 	}
+	*/
 }
 
 int initdsp() {
+
+	outportb(SOUNDBLASTER_BASE_PORT + 0x06, 1);
+	outportb(SOUNDBLASTER_BASE_PORT + 0x06, 0);
+
+	/*
 	__asm {
 		push edx
 		mov dx, SOUNDBLASTER_BASE_PORT
@@ -61,7 +99,7 @@ int initdsp() {
 		mov al,0
 		out dx,al
 		pop edx
-	}
+	}*/
 
 	int ret = readdsp();
 	if (ret == 0xaa)

@@ -22,14 +22,6 @@
 
 
 
-#define INPUT_TEXTMODE_COLOR		0X0f
-#define OUTPUT_TEXTMODE_COLOR		0X0a
-
-#define LINE_CHAR_COUNT				80
-#define ROW_CHAR_COUNT				25
-#define LINE_SIZE					(LINE_CHAR_COUNT<<1)
-
-#define TEXTMODE_BASE				0XB8000
 
 
 
@@ -47,15 +39,15 @@ int runcmd(char * cmd) {
 		char szout[1024];
 
 		VesaSimpleInfo vsi[64];
-
 		res = getVideoMode(vsi);
 
-		for (int idx = 0; idx < res; idx++) {
-			__sprintf(szout, "mode:%d,width:%d,height:%d,bytesPerPixel:%d,base:%x,offset:%x,size:%x\r\n",
-				vsi[idx].mode, vsi[idx].x, vsi[idx].y, vsi[idx].bpp, vsi[idx].base, vsi[idx].offset, vsi[idx].size);
-			outputStr(szout, OUTPUT_TEXTMODE_COLOR);
+		{
+			for (int idx = 0; idx < res; idx++) {
+				__sprintf(szout, "mode:%d,width:%d,height:%d,bytesPerPixel:%d,base:%x,offset:%x,size:%x\r\n",
+					vsi[idx].mode, vsi[idx].x, vsi[idx].y, vsi[idx].bpp, vsi[idx].base, vsi[idx].offset, vsi[idx].size);
+				outputStr(szout, OUTPUT_TEXTMODE_COLOR);
+			}
 		}
-
 	}
 	else if (__strcmp(cmd, "cpuinfo") == 0) {
 
@@ -96,12 +88,9 @@ int outputStr(char* str,char color) {
 
 int outputChar(char c,char color) {
 
-
 	if (c == 0x0a ) {
 		gTxtOffset = (gTxtOffset / LINE_SIZE) * LINE_SIZE + LINE_SIZE;
-		if (gTxtOffset >= LINE_SIZE * ROW_CHAR_COUNT) {
-			gTxtOffset = 0;
-		}
+		
 	}
 	else if (c == 0x0d) {
 		//int mod = gTxtOffset % LINE_SIZE;
@@ -110,10 +99,7 @@ int outputChar(char c,char color) {
 		//}
 		//gTxtOffset += LINE_SIZE;
 
-		gTxtOffset = (gTxtOffset / LINE_SIZE) * LINE_SIZE ;	
-		if (gTxtOffset >= LINE_SIZE * ROW_CHAR_COUNT) {
-			gTxtOffset = 0;
-		}
+		gTxtOffset = (gTxtOffset / LINE_SIZE) * LINE_SIZE ;			
 	}
 	else if (c == 0x08) {
 		gTxtOffset -= 2;
@@ -128,12 +114,12 @@ int outputChar(char c,char color) {
 		gTxtOffset++;
 		*(gTxtBuf + gTxtOffset) = color;
 		gTxtOffset++;
-		if (gTxtOffset >= LINE_SIZE * ROW_CHAR_COUNT) {
-			gTxtOffset = 0;
-		}
 	}
 
+	setScreenPos(gTxtOffset );
+
 	setCursor(gTxtOffset/2);
+	
 	return 0;
 }
 
@@ -158,7 +144,6 @@ extern "C" __declspec(dllexport) int __kTextModeEntry(LPVESAINFORMATION vesa, DW
 			gTxtBuf = (char*)(svgaregs[i] & 0xfffffff0);
 		}
 	}
-
 
 	gTxtBuf = (char*)TEXTMODE_BASE;
 
@@ -233,6 +218,8 @@ extern "C" __declspec(dllexport) int __kTextModeEntry(LPVESAINFORMATION vesa, DW
 	return 0;
 }
 
+//https://wiki.osdev.org/VGA_Hardware#Port_0x3C0
+//http://www.osdever.net/FreeVGA/vga/portidx.htm
 
 
 int setCursor(int pos) {
@@ -244,5 +231,41 @@ int setCursor(int pos) {
 	outportb(0x3d4, 0x0f);
 	outportb(0x3d5, pos  & 0xff);
 	//int h = inportb(0x3d5);
+	return 0;
+}
+
+int clearTextScreen() {
+	for (int i = 0; i < TEXTMODE_BUF_SIZE; i++) {
+		*((char*)TEXTMODE_BASE + i) = 0;
+	}
+	return 0;
+}
+
+int setScreenPos(int offset) {
+
+	if ( (offset < TEXTMODE_BUF_SIZE)) {
+		int line = offset / (LINE_SIZE );
+		int mod = offset % (LINE_SIZE );
+		if (mod) {
+			line++;
+		}
+		line++;
+		offset = (line * (LINE_SIZE ) - (LINE_SIZE * ROW_CHAR_COUNT))/2;
+		if (offset < 0) {
+			offset = 0;
+		}
+	}
+	else{
+		offset = 0;
+		gTxtOffset = offset;
+		clearTextScreen();
+	}
+
+	outportb(0x3d4, 0x0c);
+	outportb(0x3d5, (offset >> 8) & 0xff);
+
+	outportb(0x3d4, 0x0d);
+	outportb(0x3d5, offset & 0xff);
+
 	return 0;
 }

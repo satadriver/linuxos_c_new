@@ -68,6 +68,53 @@ __declspec(naked) void div0Exception(LIGHT_ENVIRONMENT* stack) {
 
 }
 
+//NMIs occur for RAM errors and unrecoverable hardware problems. 
+//For newer computers these things may be handled using machine check exceptions and/or SMI. 
+//For the newest chipsets (at least for Intel) there's also a pile of TCO stuff ("total cost of ownership") 
+//that is tied into it all (with a special "TCO IRQ" and connections to SMI/SMM, etc).
+
+
+
+
+//When the CPU is in Protected Mode, System Management Mode (SMM) is still invisibly active, 
+//and cannot be shut off. SMM also seems to use the EBDA. So the EBDA memory area should never be overwritten.
+
+//Note: the EBDA is a variable - sized memory area(on different BIOSes).If it exists, 
+//it is always immediately below 0xA0000 in memory.It is absolutely guaranteed to be at most 128 KiB in size.
+//Older computers typically uses 1 KiB from 0x9FC00 - 0x9FFFF, modern firmware can be found using significantly more.
+//You can determine the size of the EBDA by using BIOS function INT 12h, or by examining the word at 0x413 in the BDA(see below).
+//Both of those methods will tell you how much conventional memory is usable before the EBDA
+
+//The CMOS RTC expects a read from or write to the data port 0x71 after any write to index port 0x70 or it may go into an undefined state.
+//There may also need to be an I/O delay between accessing the index and data registers. 
+//The index port 0x70 may be a write-only port and always return 0xFF on read. 
+//Hence the bit masking below to preserve bits 0 through 6 of the CMOS index register may not work, 
+//nor may it be possible to retrieve the current state of the NMI mask from port 0x70.
+
+/*
+System Control Port A (0x92) layout:
+
+BIT	Description
+0	Alternate hot reset
+1	Alternate gate A20
+2	Reserved
+3	Security Lock
+4*	Watchdog timer status
+5	Reserved
+6	HDD 2 drive activity
+7	HDD 1 drive activity
+System Control Port B (0x61)
+
+Bit	Description
+0	Timer 2 tied to speaker
+1	Speaker data enable
+2	Parity check enable
+3	Channel check enable
+4	Refresh request
+5	Timer 2 output
+6*	Channel check
+7*	Parity check
+*/
 
 void __declspec(naked) NmiException(LIGHT_ENVIRONMENT* stack) {
 	__asm {
@@ -91,6 +138,10 @@ void __declspec(naked) NmiException(LIGHT_ENVIRONMENT* stack) {
 		MOV GS, AX
 	}
 	{
+		int v = inportb(0x92);
+
+		int v2 = inportb(0x61);
+
 		LPPROCESS_INFO process = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
 		char szout[1024];
 		__printf(szout, "NmiException! pid:%d\r\n", process->pid);
@@ -712,7 +763,7 @@ void __declspec(naked) coprocessorException(LIGHT_ENVIRONMENT* stack) {
 
 
 
-void __declspec(naked) alighCheckException(LIGHT_ENVIRONMENT* stack) {
+void __declspec(naked) alignCheckException(LIGHT_ENVIRONMENT* stack) {
 	__asm {
 
 		pushad

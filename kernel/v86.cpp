@@ -7,42 +7,8 @@
 #include "task.h"
 #include "atapi.h"
 #include "core.h"
+#include "textMode.h"
 
-
-
-
-
-
-int v86Process(int reax,int recx,int redx,int rebx,int resi,int redi,int rds, int res,int cmd ){
-
-	do {
-		TssDescriptor* lptssd = (TssDescriptor*)(GDT_BASE + kTssV86Selector);
-		TSS* tss = (TSS*)V86_TSS_BASE;
-		if ((lptssd->type & 2) || (tss->link)) {
-			__sleep(0);
-		}
-		else {
-			break;
-		}
-	} while (TRUE);
-
-	V86_INT_PARAMETER* param = (V86_INT_PARAMETER*)V86_INT_ADDRESS;
-	param->reax = reax;
-	param->recx = recx;
-	param->redx = redx;
-	param->rebx = rebx;
-	param->resi = resi;
-	param->redi = redi;
-	param->rds = rds;
-	param->res = res;
-	param->int_cmd = cmd;
-
-	__asm {	
-		int 255
-	}
-
-	return param->result;
-}
 
 
 
@@ -197,6 +163,49 @@ int vm86WriteSector(unsigned int secno, DWORD secnohigh, unsigned int seccnt, ch
 }
 
 
+
+
+
+
+
+
+
+
+
+int v86Process(int reax, int recx, int redx, int rebx, int resi, int redi, int rds, int res, int cmd) {
+
+	do {
+		TssDescriptor* lptssd = (TssDescriptor*)(GDT_BASE + kTssV86Selector);
+		TSS* tss = (TSS*)V86_TSS_BASE;
+		if ((lptssd->type & 2) || (tss->link)) {
+			__sleep(0);
+			break;
+		}
+		else {
+			break;
+		}
+	} while (TRUE);
+
+	V86_INT_PARAMETER* param = (V86_INT_PARAMETER*)V86_INT_ADDRESS;
+	param->reax = reax;
+	param->recx = recx;
+	param->redx = redx;
+	param->rebx = rebx;
+	param->resi = resi;
+	param->redi = redi;
+	param->rds = rds;
+	param->res = res;
+	param->int_cmd = cmd;
+
+	__asm {
+		int 255
+	}
+
+	return param->result;
+}
+
+
+
 int getVideoMode(VesaSimpleInfo vsi[64] ) {
 
 	int res = 0;
@@ -212,6 +221,9 @@ int getVideoMode(VesaSimpleInfo vsi[64] ) {
 		VESAINFOBLOCK* vib = (VESAINFOBLOCK*)VESA_STATE_ADDRESS;
 
 		WORD * addr = (WORD*)(vib->mode_dos_offset + (vib->mode_dos_seg << 4));
+
+		__sprintf(szout, "VESAINFOBLOCK address:%x\r\n", addr);
+		outputStr(szout, OUTPUT_TEXTMODE_COLOR);
 
 		WORD mode = *addr;
 		while (mode != 0 && mode != 0xffff) {

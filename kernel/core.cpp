@@ -329,7 +329,7 @@ void initIDT() {
 	makeTrapGateDescriptor((DWORD)pageException, KERNEL_MODE_CODE, 3, descriptor + 14);
 	makeTrapGateDescriptor((DWORD)anonymousException, KERNEL_MODE_CODE, 3, descriptor + 15);
 	makeTrapGateDescriptor((DWORD)coprocessorException, KERNEL_MODE_CODE, 3, descriptor + 16);
-	makeTrapGateDescriptor((DWORD)alighCheckException, KERNEL_MODE_CODE, 3, descriptor + 17);
+	makeTrapGateDescriptor((DWORD)alignCheckException, KERNEL_MODE_CODE, 3, descriptor + 17);
 	makeTrapGateDescriptor((DWORD)machineCheckException, KERNEL_MODE_CODE, 3, descriptor + 18);
 	makeTrapGateDescriptor((DWORD)simdException, KERNEL_MODE_CODE, 3, descriptor + 19);
 	makeTrapGateDescriptor((DWORD)virtualException, KERNEL_MODE_CODE, 3, descriptor + 20);
@@ -356,7 +356,6 @@ void initIDT() {
 	makeIntGateDescriptor((DWORD)Parallel1IntProc, KERNEL_MODE_CODE, 3, descriptor + INTR_8259_MASTER + 7);
 	makeIntGateDescriptor((DWORD)FloppyIntProc, KERNEL_MODE_CODE, 3, descriptor + INTR_8259_MASTER + 6);
 	makeIntGateDescriptor((DWORD)SlaveIntProc, KERNEL_MODE_CODE, 3, descriptor + INTR_8259_MASTER + 2);
-
 
 	makeIntGateDescriptor((DWORD)Slave1IntProc, KERNEL_MODE_CODE, 3, descriptor + INTR_8259_SLAVE + 1);
 	makeIntGateDescriptor((DWORD)NetcardIntProc, KERNEL_MODE_CODE, 3, descriptor + INTR_8259_SLAVE + 2);

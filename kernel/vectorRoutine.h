@@ -118,7 +118,7 @@ void anonymousException(LIGHT_ENVIRONMENT* stack);
 
 void coprocessorException(LIGHT_ENVIRONMENT* stack);
 
-void  alighCheckException(LIGHT_ENVIRONMENT* stack);
+void  alignCheckException(LIGHT_ENVIRONMENT* stack);
 
 void  machineCheckException(LIGHT_ENVIRONMENT* stack);
 

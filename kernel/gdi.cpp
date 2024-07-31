@@ -7,6 +7,7 @@
 #include "cmosPeriodTimer.h"
 #include "video.h"
 #include "cmosExactTimer.h"
+#include "hardware.h"
 
 float f(float x, float y, float z) {
 	return x*x + y*y + z*z - 1;
@@ -299,7 +300,7 @@ int initCCFont() {
 
 
 
-unsigned char * g_cc_poet = (unsigned char *)
+unsigned char * g_cc_poem = (unsigned char *)
 	"          沁园春·雪\r\n"
 	"【作者】毛泽东【朝代】近现代\r\n"
 	"北国风光，千里冰封，万里雪飘。\r\n"
@@ -330,17 +331,17 @@ unsigned char * g_cc_poet = (unsigned char *)
 
 DWORD g_cc_color = 0;
 DWORD g_cc_idx = 0;
-DWORD g_cc_timerno = 0;
+DWORD g_cc_timer = 0;
 
 
-//类似*lptest++;这种代码，最终的结果是lptest++，而不是lptest指向的值++
+//类似*lptest++;中，++的优先级高于*，会导致错误发生
 void drawCCFontChar(DWORD param1, DWORD param2, DWORD param3, DWORD param4) {
 
 	//__drawGraphChars((unsigned char*)"drawCCFontChar\r\n", 0);
 
 	DWORD * lpcolor = (DWORD*)param2;
 	DWORD *idx = (DWORD*)param3;
-	DWORD * timerno = (DWORD*)param4;
+	DWORD * timer = (DWORD*)param4;
 
 	unsigned short * lpcc = * (unsigned short **)param1;
 
@@ -353,12 +354,12 @@ void drawCCFontChar(DWORD param1, DWORD param2, DWORD param3, DWORD param4) {
 		(*idx)++;
 	}
 	else {
-		__kRemoveExactTimer(*timerno);
+		__kRemoveExactTimer(*timer);
 	}
 }
 
 
-int repeatDrawCCFontString() {
+int displayCCPoem() {
 
 	int result = 0;
 	//global variable do not need to initialize
@@ -368,9 +369,22 @@ int repeatDrawCCFontString() {
 	if (result)
 	{
 		__drawCCS((unsigned char*)"欢迎来到汉字的世界！\r\n", 0xff0000);
-		g_cc_timerno = __kAddExactTimer((DWORD)drawCCFontChar, 300, (DWORD)&g_cc_poet, (DWORD)&g_cc_color, (DWORD)&g_cc_idx,
-			(DWORD)&g_cc_timerno);
+		g_cc_timer = __kAddExactTimer((DWORD)drawCCFontChar, 300, (DWORD)&g_cc_poem, (DWORD)&g_cc_color, (DWORD)&g_cc_idx, (DWORD)&g_cc_timer);
 	}
 
-	return g_cc_timerno;
+	return g_cc_timer;
+}
+
+
+
+
+void SetPalette(char* palette) {
+
+	for (int i = 0; i < 256; i++)
+	{
+		outportb(0x3c8, i);
+		outportb(0x3c9, palette[i*4]);
+		outportb(0x3c9, palette[i*4 + 1]);
+		outportb(0x3c9, palette[i*4 + 2]);
+	}
 }
