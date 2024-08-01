@@ -460,3 +460,54 @@ void __kSoundInterruptionProc() {
 		}
 	}
 }
+
+
+
+void __declspec(naked) SoundInterruptProc(LIGHT_ENVIRONMENT* stack) {
+
+	__asm {
+
+		pushad
+		push ds
+		push es
+		push fs
+		push gs
+		push ss
+
+		push esp
+		sub esp, 4
+		push ebp
+		mov ebp, esp
+
+		mov eax, KERNEL_MODE_DATA
+		mov ds, ax
+		mov es, ax
+		MOV FS, ax
+		MOV GS, AX
+	}
+
+	{
+		char szout[1024];
+		__printf(szout, "SoundInterruptProc!\r\n");
+
+		__kSoundInterruptionProc();
+
+		outportb(0x20, 0x20);
+	}
+
+	__asm {
+		mov esp, ebp
+		pop ebp
+		add esp, 4
+		pop esp
+
+		pop ss
+		pop gs
+		pop fs
+		pop es
+		pop ds
+		popad
+
+		iretd
+	}
+}

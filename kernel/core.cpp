@@ -19,6 +19,8 @@
 #include "vectorRoutine.h"
 #include "descriptor.h"
 #include "floppy.h"
+#include "parallel.h"
+#include "soundBlaster/sbPlay.h"
 
 
 void makeDataSegDescriptor(DWORD base, int dpl, int bit, int direction, int w, SegDescriptor* descriptor) {
@@ -356,6 +358,8 @@ void initIDT() {
 	makeIntGateDescriptor((DWORD)Parallel1IntProc, KERNEL_MODE_CODE, 3, descriptor + INTR_8259_MASTER + 7);
 	makeIntGateDescriptor((DWORD)FloppyIntProc, KERNEL_MODE_CODE, 3, descriptor + INTR_8259_MASTER + 6);
 	makeIntGateDescriptor((DWORD)SlaveIntProc, KERNEL_MODE_CODE, 3, descriptor + INTR_8259_MASTER + 2);
+
+	makeIntGateDescriptor((DWORD)SoundInterruptProc, KERNEL_MODE_CODE, 3, descriptor + INTR_8259_MASTER + 5);
 
 	makeIntGateDescriptor((DWORD)Slave1IntProc, KERNEL_MODE_CODE, 3, descriptor + INTR_8259_SLAVE + 1);
 	makeIntGateDescriptor((DWORD)NetcardIntProc, KERNEL_MODE_CODE, 3, descriptor + INTR_8259_SLAVE + 2);

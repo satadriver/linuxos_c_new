@@ -882,6 +882,8 @@ int __shutdownSystem() {
 		out dx, ax;    //写入 2001h  到端口 1004h    实现暴力关机
 	}
 
+	outportw(0x4004, 0x3400);
+
 	for (int bdf = 0x80000008; bdf <= 0x80ffff08; bdf += 0x100)			//offset 8,read class type,vender type
 	{
 		outportd(0xcf8, bdf);

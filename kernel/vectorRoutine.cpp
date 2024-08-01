@@ -1181,6 +1181,8 @@ void __declspec(naked) Parallel2IntProc(LIGHT_ENVIRONMENT* stack) {
 		char szout[1024];
 		__printf(szout, "Parallel2IntProc!\r\n");
 		outportb(0x20, 0x20);
+
+		int v = inportb(0x278 + 1);
 	}
 
 	__asm {
@@ -1273,6 +1275,7 @@ void __declspec(naked) Parallel1IntProc(LIGHT_ENVIRONMENT* stack) {
 		char szout[1024];
 		__printf(szout, "Parallel1IntProc!\r\n");
 		outportb(0x20, 0x20);
+		int v = inportb(0x378 + 1);
 	}
 
 	__asm {
