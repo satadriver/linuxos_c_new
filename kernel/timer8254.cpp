@@ -1,7 +1,7 @@
 #include "timer8254.h"
-#include "hpet.h"
-#include "cmosExactTimer.h"
 
+#include "cmosExactTimer.h"
+#include "utils.h"
 
 
 TIMER_PROC_PARAM g8254Timer[REALTIMER_CALLBACK_MAX] = { 0 };

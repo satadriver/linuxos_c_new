@@ -10,8 +10,8 @@
 #include "textMode.h"
 
 
-
-
+//#define V86_INT13_MODE
+//#define V86_INT255_MODE
 
 
 int v86Int13Read(unsigned int secno, DWORD secnohigh, unsigned short seccnt, char* buf, int disk, int sectorsize) {
@@ -127,15 +127,23 @@ int vm86ReadSector(unsigned int secno, DWORD secnohigh, unsigned int seccnt, cha
 	CHAR* offset = buf;
 	for (int i = 0; i < readcnt; i++)
 	{
+#ifdef V86_INT255_MODE
+		ret = v86Int255Read(secno, secnohigh, ONCE_READ_LIMIT, offset, 0x80, BYTES_PER_SECTOR);
+#else
 		ret = v86Int13Read(secno, secnohigh, ONCE_READ_LIMIT, offset, 0x80, BYTES_PER_SECTOR);
-
+#endif
+		
 		offset += (BYTES_PER_SECTOR * ONCE_READ_LIMIT);
 		secno += ONCE_READ_LIMIT;
 	}
 
 	if (readmod)
 	{
+#ifdef V86_INT255_MODE
+		ret = v86Int255Read(secno, secnohigh, readmod, offset, 0x80, BYTES_PER_SECTOR);
+#else
 		ret = v86Int13Read(secno, secnohigh, readmod, offset, 0x80, BYTES_PER_SECTOR);
+#endif
 	}
 	return ret;
 }
@@ -149,7 +157,11 @@ int vm86WriteSector(unsigned int secno, DWORD secnohigh, unsigned int seccnt, ch
 	CHAR* offset = buf;
 	for (int i = 0; i < readcnt; i++)
 	{
+#ifdef V86_INT255_MODE
+		ret = v86Int255Write(secno, secnohigh, ONCE_READ_LIMIT, offset, 0x80, BYTES_PER_SECTOR);
+#else
 		ret = v86Int13Write(secno, secnohigh, ONCE_READ_LIMIT, offset, 0x80, BYTES_PER_SECTOR);
+#endif
 
 		offset += BYTES_PER_SECTOR * ONCE_READ_LIMIT;
 		secno += ONCE_READ_LIMIT;
@@ -157,7 +169,11 @@ int vm86WriteSector(unsigned int secno, DWORD secnohigh, unsigned int seccnt, ch
 
 	if (readmod)
 	{
+#ifdef V86_INT255_MODE
+		ret = v86Int255Write(secno, secnohigh, readmod, offset, 0x80, BYTES_PER_SECTOR);
+#else
 		ret = v86Int13Write(secno, secnohigh, readmod, offset, 0x80, BYTES_PER_SECTOR);
+#endif
 	}
 	return ret;
 }
@@ -166,10 +182,67 @@ int vm86WriteSector(unsigned int secno, DWORD secnohigh, unsigned int seccnt, ch
 
 
 
+int v86Int255Read(unsigned int secnum, DWORD secnumHigh,unsigned int seccnt,char *buf,int disk,int secsize) {
+
+	V86_INT_PARAMETER * params = (V86_INT_PARAMETER*)V86_INT_ADDRESS;
+	params->intnum = 0x13;
+	params->reax = 0x4200;
+	params->recx = 0;
+	params->redx = disk;
+	params->rebx = 0;
+	params->resi = V86VMIDATA_OFFSET;
+	params->redi = 0;
+	params->res = 0;
+	params->rds = V86VMIDATA_SEG;
+	params->result = 0;
+
+	LPINT13PAT pat = (LPINT13PAT)V86VMIDATA_ADDRESS;
+	pat->len = 0x10;
+	pat->reserved = 0;
+	pat->seccnt = seccnt;
+	pat->segoff = (INT13_RM_FILEBUF_SEG << 16) + INT13_RM_FILEBUF_OFFSET;
+	pat->secnolow = secnum;
+	pat->secnohigh = secnumHigh;
+
+	__asm {
+		int 255
+	}
+
+	return params->result;
+}
 
 
 
+int v86Int255Write(unsigned int secnum, DWORD secnumhigh, unsigned short seccnt, char* buf, int disk, int sectorsize) {
 
+	V86_INT_PARAMETER* params = (V86_INT_PARAMETER*)V86_INT_ADDRESS;
+	params->intnum = 0x13;
+	params->reax = 0x4300;
+	params->recx = 0;
+	params->redx = disk;
+	params->rebx = 0;
+	params->resi = V86VMIDATA_OFFSET;
+	params->redi = 0;
+	params->res = 0;
+	params->rds = V86VMIDATA_SEG;
+	params->result = 0;
+
+	__memcpy((char*)INT13_RM_FILEBUF_ADDR, buf, seccnt * sectorsize);
+
+	LPINT13PAT pat = (LPINT13PAT)V86VMIDATA_ADDRESS;
+	pat->len = 0x10;
+	pat->reserved = 0;
+	pat->seccnt = seccnt;
+	pat->segoff = (INT13_RM_FILEBUF_SEG << 16) + INT13_RM_FILEBUF_OFFSET;
+	pat->secnolow = secnum;
+	pat->secnohigh = secnumhigh;
+
+	if (params->result)
+	{
+		return seccnt * sectorsize;
+	}
+	return 0;
+}
 
 
 int v86Process(int reax, int recx, int redx, int rebx, int resi, int redi, int rds, int res, int cmd) {
@@ -195,7 +268,7 @@ int v86Process(int reax, int recx, int redx, int rebx, int resi, int redi, int r
 	param->redi = redi;
 	param->rds = rds;
 	param->res = res;
-	param->int_cmd = cmd;
+	param->intnum = cmd;
 
 	__asm {
 		int 255

@@ -3,7 +3,7 @@
 #include "task.h"
 #include "Utils.h"
 #include "video.h"
-#include "hpet.h"
+#include "acpi.h"
 
 int gFpuStatus = 0;
 

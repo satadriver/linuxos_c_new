@@ -73,7 +73,7 @@ void initDevices() {
 	init8042();
 	initCMOS();
 	enableMouse();
-	setMouseRate(200);	
+	setMouseRate(200);
 	enableSpeaker();
 	getKeyboardID();
 	initSerial();

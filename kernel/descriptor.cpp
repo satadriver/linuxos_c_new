@@ -157,7 +157,7 @@ void readmsr(DWORD no, DWORD *lowpart, DWORD * highpart) {
 	}
 
 	char szout[1024];
-	__printf(szout, "msr:%x,high:%x,low:%x\r\n", no, *highpart, *lowpart);
+	__printf(szout, "read msr:%x,high:%x,low:%x\r\n", no, *highpart, *lowpart);
 
 }
 

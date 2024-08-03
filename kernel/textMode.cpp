@@ -40,7 +40,6 @@ int runcmd(char * cmd) {
 
 		VesaSimpleInfo vsi[64];
 		res = getVideoMode(vsi);
-
 		{
 			for (int idx = 0; idx < res; idx++) {
 				__sprintf(szout, "mode:%d,width:%d,height:%d,bytesPerPixel:%d,base:%x,offset:%x,size:%x\r\n",
@@ -53,12 +52,14 @@ int runcmd(char * cmd) {
 
 		char cpu[1024];
 		getCpuInfo(cpu);
+		__strcat(cpu, "\r\n");
 		outputStr(cpu, OUTPUT_TEXTMODE_COLOR);
 	}
 	else if (__strcmp(cmd, "cputype") == 0) {
 
 		char cpu[1024];
 		getCpuType(cpu);
+		__strcat(cpu, "\r\n");
 		outputStr(cpu, OUTPUT_TEXTMODE_COLOR);
 	}
 	else if (__strcmp(cmd, "timestamp") == 0) {

@@ -166,7 +166,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="acpi.cpp" />
     <ClCompile Include="apic.cpp" />
     <ClCompile Include="atapi.cpp" />
     <ClCompile Include="cmosAlarm.cpp" />
@@ -189,7 +188,7 @@
     <ClCompile Include="file.cpp" />
     <ClCompile Include="floppy.cpp" />
     <ClCompile Include="gdi.cpp" />
-    <ClCompile Include="hpet.cpp" />
+    <ClCompile Include="acpi.cpp" />
     <ClCompile Include="ios9660\ios9660.cpp" />
     <ClCompile Include="hardware.cpp" />
     <ClCompile Include="listEntry.cpp" />
@@ -224,7 +223,6 @@
     <ClCompile Include="window.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="acpi.h" />
     <ClInclude Include="apic.h" />
     <ClInclude Include="atapi.h" />
     <ClInclude Include="cmosAlarm.h" />
@@ -248,7 +246,7 @@
     <ClInclude Include="file.h" />
     <ClInclude Include="floppy.h" />
     <ClInclude Include="gdi.h" />
-    <ClInclude Include="hpet.h" />
+    <ClInclude Include="acpi.h" />
     <ClInclude Include="ios9660\ios9660.h" />
     <ClInclude Include="hardware.h" />
     <ClInclude Include="listEntry.h" />

@@ -24,6 +24,7 @@ void writedsp(int value) {
 			continue;
 		}
 		else {
+			outportb(SOUNDBLASTER_BASE_PORT + 0x0c, value);
 			break;
 		}
 	} while (TRUE);
@@ -144,6 +145,23 @@ end;
 int initdma8(int addr,int firstsize,int bits) {
 	unsigned char dmaseg = addr / 0x10000;
 
+	outportb(0x0a, 5);
+	outportb(0x0c, 0);
+	outportb(0x0b, 0x59);
+
+	outportb(0x02, 0);
+	outportb(0x02, 0);
+
+	outportb(0x83, dmaseg);
+
+	outportb(0x03, (firstsize-1)&0xff);
+	outportb(0x03, ((firstsize - 1)>>8) & 0xff);
+
+	outportb(0x0a, 1);
+
+	return 0;
+
+	/*
 	__asm {
 		push edx
 
@@ -183,11 +201,28 @@ int initdma8(int addr,int firstsize,int bits) {
 
 		pop edx
 	}
+	*/
 }
 
 int initdma16(int addr, int firstsize, int bits) {
 	unsigned char dmaseg = addr / 0x10000;
 
+	outportb(0xd4, 5);
+	outportb(0xd8, 0);
+	outportb(0xd6, 0x59);
+
+	outportb(0xc4, 0);
+	outportb(0xc4, 0);
+
+	outportb(0x8b, dmaseg);
+
+	outportb(0xc6, (firstsize - 1) & 0xff);
+	outportb(0xc6, ((firstsize - 1) >> 8) & 0xff);
+
+	outportb(0xd4, 1);
+	return 0;
+
+	/*
 	__asm {
 		push edx
 
@@ -228,6 +263,7 @@ int initdma16(int addr, int firstsize, int bits) {
 
 		pop edx
 	}
+	*/
 }
 
 

@@ -31,6 +31,8 @@
 #include "device.h"
 #include "core.h"
 #include "cmosPeriodTimer.h"
+#include "apic.h"
+#include "acpi.h"
 
 
 //#pragma comment(linker, "/ENTRY:DllMain")
@@ -75,6 +77,8 @@ int __kernelEntry(LPVESAINFORMATION vesa, DWORD fontbase,DWORD v86Proc,DWORD v86
 
 	initEfer();
 
+	initACPI();
+
 	initCoprocessor();
 
 	initTimer();
@@ -87,7 +91,9 @@ int __kernelEntry(LPVESAINFORMATION vesa, DWORD fontbase,DWORD v86Proc,DWORD v86
 
 	__printf(szout, "Hello world of Liunux!\r\n");
 
-#ifndef SINGLE_TASK_TSS
+#ifdef SINGLE_TASK_TSS
+	//__createDosInFileTask(gV86VMIEntry, "V86VMIEntry");
+#else
 	__createDosInFileTask(gV86VMIEntry, "V86VMIEntry");
 #endif
 
@@ -110,11 +116,6 @@ int __kernelEntry(LPVESAINFORMATION vesa, DWORD fontbase,DWORD v86Proc,DWORD v86
 	initFileSystem();
 
 	initDebugger();
-
-	//while (1) 
-	{
-		;
-	}
 
 // 	ret = loadLibRunFun("c:\\liunux\\main.dll", "__kMainProcess");
  	
@@ -165,6 +166,11 @@ void __kKernelMain(DWORD retaddr,int pid,char * filename,char * funcname,DWORD p
 //注意二位数组在内存中的排列和结构
 void mytest() {
 	char tmp[0x4000] = { 0 };
+	for (int i = 0; i < 100; i++) {
+		tmp[i] = 0x80 - i;
+	}
+	char* lptmp = tmp;
+	char t = *(lptmp++);
 
 	PCI_CONFIG_VALUE pci = { 0 };
 	PCI_CONFIG_VALUE* lppci = &pci;

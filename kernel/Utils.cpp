@@ -3,6 +3,7 @@
 #include "video.h"
 #include "cmosAlarm.h"
 #include "cmosPeriodTimer.h"
+#include "acpi.h"
 
 
 int __memset(char * dst, int value, int len) {
@@ -882,6 +883,10 @@ int __shutdownSystem() {
 		out dx, ax;    //写入 2001h  到端口 1004h    实现暴力关机
 	}
 
+	doPowerOff();
+
+	return 0;
+
 	outportw(0x4004, 0x3400);
 
 	for (int bdf = 0x80000008; bdf <= 0x80ffff08; bdf += 0x100)			//offset 8,read class type,vender type
@@ -905,6 +910,9 @@ int __shutdownSystem() {
 //pu寻址位在第一位开始ffff:0000,当寻址位在第一位的时候及0，
 //会检测到当前地址0040:0072位是否为1234h,如果是1234h时，就不需要检测内存，如果不是1234h，就需要检测内存，就会重启
 int __reset() {
+
+	doReboot();
+	return 0;
 
 #if 0
 	outportb(0x92, 0x01);

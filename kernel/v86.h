@@ -47,7 +47,7 @@ typedef struct {
 	DWORD redi;
 	DWORD rds;
 	DWORD res;
-	DWORD int_cmd;
+	DWORD intnum;
 	DWORD result;
 }V86_INT_PARAMETER;
 
@@ -79,6 +79,10 @@ int setVideoMode(int mode);
 int rejectAtapi(int dev);
 
 extern "C" __declspec(dllexport) int rejectCDROM(int dev);
+
+int v86Int255Read(unsigned int secnum, DWORD secnumHigh, unsigned int seccnt, char* buf, int disk, int secsize);
+int v86Int255Write(unsigned int secnum, DWORD secnumhigh, unsigned short seccnt, char* buf, int disk, int sectorsize);
+
 
 int vm86ReadSector(unsigned int secno, DWORD secnohigh, unsigned int seccnt, char* buf);
 int vm86WriteSector(unsigned int secno, DWORD secnohigh, unsigned int seccnt, char* buf);

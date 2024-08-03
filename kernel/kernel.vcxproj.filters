@@ -180,9 +180,6 @@
     <ClCompile Include="peResource.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="hpet.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="acpi.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -351,9 +348,6 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="peResource.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="hpet.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="acpi.h">
