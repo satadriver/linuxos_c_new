@@ -481,6 +481,7 @@ void __kSoundInterruptionProc() {
 
 	if (gWavFormat->wBitsPerSample == 8)
 	{
+		inportb(SOUNDBLASTER_BASE_PORT + 0x0e);
 		__asm {
 			mov dx, SOUNDBLASTER_BASE_PORT
 			add dx, 0eh
@@ -489,6 +490,7 @@ void __kSoundInterruptionProc() {
 	}
 	else if (gWavFormat->wBitsPerSample == 16)
 	{
+		inportb(SOUNDBLASTER_BASE_PORT +0x0f);
 		__asm {
 			mov dx, SOUNDBLASTER_BASE_PORT
 			add dx, 0fh

@@ -7,20 +7,36 @@
 #include "memory.h"
 
 
-DWORD __kTerminateThread(int vtid, char * filename, char * funcname, DWORD lpparams) {
+//any thread can call this function to terminate self
+//any thread can call this with tid to terminate other thread
+//above so,the most import element is dwtid
+DWORD __kTerminateThread(int dwtid, char * filename, char * funcname, DWORD lpparams) {
 
-	int tid = vtid & 0x7fffffff;
+	int tid = dwtid & 0x7fffffff;
+	if (tid < 0 || tid >= TASK_LIMIT_TOTAL) {
+		return 0;
+	}
+
+	LPPROCESS_INFO tss = (LPPROCESS_INFO)TASKS_TSS_BASE;
+
+	LPPROCESS_INFO current = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
+
+	char szout[1024];
+	__printf(szout, "__kTerminateThread pid:%x,filename:%s,funcname:%s,current pid:%x\r\n",tid, filename, funcname, current->pid);
+
+	if (current->tid == tid)
+	{
+		current->status = TASK_OVER;
+	}
+	else {
+
+	}
 
 	removeTaskList(tid);
 
-	LPPROCESS_INFO tss = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
-	tss->status = TASK_OVER;
+	tss[tid].status = TASK_OVER;
 
-	char szout[1024];
-	__printf(szout, "__kTerminateThread tid:%d,filename:%s,funcname:%s\n", tid, filename, funcname);
-
-
-	if (vtid & 0x80000000)
+	if (dwtid & 0x80000000)
 	{
 		__sleep(0);
 	}

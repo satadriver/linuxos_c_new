@@ -5,7 +5,7 @@
 #include "task.h"
 #include "graph.h"
 #include "soundBlaster/sbPlay.h"
-
+#include "core.h"
 #include "Utils.h"
 #include "menu.h"
 #include "windowclass.h"
@@ -194,6 +194,19 @@ int __cmd(char* cmd, WINDOWCLASS* window, char* pidname, int pid) {
 
 			return __kCreateProcess(MAIN_DLL_SOURCE_BASE, imagesize, "main.dll", "__kPaint", 3, (DWORD)&taskcmd);
 		}
+	}
+	else if (__strcmp(params[0], "tssStatus") == 0) {
+		LPPROCESS_INFO process = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
+		DWORD eflags = 0;
+		__asm {
+			pushfd
+			pop eflags
+		}
+		TssDescriptor* descrptor = (TssDescriptor*)(GDT_BASE + kTssTaskSelector);
+	 	__sprintf(szout, "tid:%d, pid:%d ,link:%d,NT:%x,busy:%x\r\n",
+			process->tid, process->pid, process->tss.link,process->tss.trap,eflags & 0x4000,descrptor->type & 2);
+		ret = __outputConsole((unsigned char*)&szout, CONSOLE_FONT_COLOR, window);
+	 	process->tss.link = 0; 	
 	}
 	else if (__strcmp(params[0], "alloc") == 0)
 	{

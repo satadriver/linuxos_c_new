@@ -13,13 +13,9 @@
 #include "core.h"
 #include "vectorRoutine.h"
 
-
-
 TASK_LIST_ENTRY *gTasksListPtr = 0;
 
-
-
-
+/*
 void __terminateTask(int tid, char * filename, char * funcname, DWORD lpparams) {
 	int retvalue = 0;
 	__asm {
@@ -28,7 +24,7 @@ void __terminateTask(int tid, char * filename, char * funcname, DWORD lpparams) 
 
 	removeTaskList(tid);
 	__sleep(-1);
-}
+}*/
 
 
 TASK_LIST_ENTRY* searchTaskList(int tid) {
@@ -92,73 +88,6 @@ TASK_LIST_ENTRY* removeTaskList(int tid) {
 	return 0;
 }
 
-
-
-
-void initTaskSwitchTss() {
-	
-	DescriptTableReg idtbase;
-	__asm {
-		sidt idtbase
-	}
-
-	IntTrapGateDescriptor* descriptor = (IntTrapGateDescriptor*)idtbase.addr;
-
-	initKernelTss((TSS*)CURRENT_TASK_TSS_BASE, TASKS_STACK0_BASE + TASK_STACK0_SIZE - STACK_TOP_DUMMY,
-		KERNEL_TASK_STACK_TOP, 0, PDE_ENTRY_VALUE, 0);
-	makeTssDescriptor(CURRENT_TASK_TSS_BASE, 3, sizeof(TSS) - 1, (TssDescriptor*)(GDT_BASE + kTssTaskSelector));
-#ifdef SINGLE_TASK_TSS
-	makeIntGateDescriptor((DWORD)TimerInterrupt, KERNEL_MODE_CODE, 3, descriptor + INTR_8259_MASTER + 0);
-#else
-	initKernelTss((TSS*)TIMER_TSS_BASE, TSSTIMER_STACK0_TOP, TSSTIMER_STACK_TOP, (DWORD)TimerInterrupt, PDE_ENTRY_VALUE, 0);
-	makeTssDescriptor((DWORD)TIMER_TSS_BASE, 3,  sizeof(TSS) - 1, (TssDescriptor*)(GDT_BASE + kTssTimerSelector));
-	makeTaskGateDescriptor((DWORD)kTssTimerSelector, 3, (TaskGateDescriptor*)(descriptor + INTR_8259_MASTER + 0));
-#endif
-
-	__asm
-	{
-		mov eax, kTssTaskSelector
-		ltr ax
-		mov ax, ldtSelector
-		lldt ax
-	}
-}
-
-int __initTask() {
-
-	LPPROCESS_INFO tssbase = (LPPROCESS_INFO)TASKS_TSS_BASE;
-	for (int i = 0; i < TASK_LIMIT_TOTAL; i++)
-	{
-		__memset((char*)&tssbase[i], 0, sizeof(PROCESS_INFO));
-	}
-
-	//initTaskSwitchTss();
-	LPPROCESS_INFO process0 = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
-	__strcpy(process0->filename, KERNEL_DLL_MODULE_NAME);
-	__strcpy(process0->funcname, "__kernelEntry");
-	process0->tid = 0;
-	process0->pid = 0;
-	process0->moduleaddr = (DWORD)KERNEL_DLL_BASE;
-	process0->level = 0;
-	process0->counter = 0;
-	process0->status = TASK_RUN;
-	process0->vaddr = KERNEL_DLL_BASE;
-	process0->vasize = 0;
-	process0->espbase = KERNEL_TASK_STACK_TOP;
-
-	__memcpy((char*)TASKS_TSS_BASE, (char*)CURRENT_TASK_TSS_BASE, sizeof(PROCESS_INFO));
-
-	__memset((char*)TASKS_LIST_BASE, 0, TASK_LIMIT_TOTAL * sizeof(TASK_LIST_ENTRY));
-
-	gTasksListPtr = (TASK_LIST_ENTRY *)TASKS_LIST_BASE;
-	initListEntry(&gTasksListPtr->list);
-	gTasksListPtr->process = (LPPROCESS_INFO)TASKS_TSS_BASE;
-	gTasksListPtr->valid = 1;
-
-	//__memset((char*)V86_TASKCONTROL_ADDRESS, 0, LIMIT_V86_PROC_COUNT*12);
-	return 0;
-}
-
 //CF(bit 0) [Carry flag]   
 //若算术操作产生的结果在最高有效位(most-significant bit)发生进位或借位则将其置1，反之清零。
 //这个标志指示无符号整型运算的溢出状态，这个标志同样在多倍精度运算(multiple-precision arithmetic)中使用
@@ -168,8 +97,6 @@ int __initTask() {
 
 //OF(bit 11) [Overflow flag]   
 //如果整型结果是较大的正数或较小的负数，并且无法匹配目的操作数时将该位置1，反之清零。这个标志为带符号整型运算指示溢出状态
-
-//TF(bit 8) [Trap flag]   将该位设置为1以允许单步调试模式，清零则禁用该模式
 
 //OF是有符号数运算结果的标志
 //OF标志：这个标志有点复杂，其结果是CF标志和次最高位是否发生进位（如果进位是1，没进位是0）进行异或的结果
@@ -181,14 +108,8 @@ int __initTask() {
 //这些指令被称为I/O敏感指令，如果特权级低的指令视图访问这些I/O敏感指令将会导致常规保护错误(#GP)
 //可以改变IOPL的指令只有popfl和iret指令，但只有运行在特权级0的程序才能将其改变
 
-//EM位控制浮点指令的执行是用软件模拟，还是由硬件执行。EM=0时，硬件控制浮点指令传送到协处理器；EM=1时，浮点指令由软件模拟。 
-//TS位用于加快任务的切换，通过在必要时才进行协处理器切换的方法实现这一目的。每当进行任务切换时，处理器把TS置1。
-//TS = 1时，浮点指令将产生设备不可用(DNA)异常。 
-//MP位控制WAIT指令在TS = 1时，是否产生DNA异常。MP = 1和TS = 1时，WAIT产生异常；MP = 0时，WAIT指令忽略TS条件，不产生异常。
 
-
-
-void prepareTss(LPPROCESS_INFO tss) {
+void clearTssBuf(LPPROCESS_INFO tss) {
 	__memset((CHAR*)tss, 0, sizeof(PROCESS_INFO));
 	tss->status = TASK_SUSPEND;
 
@@ -212,7 +133,7 @@ int __getFreeTask(LPTASKRESULT ret) {
 	{
 		if (tss[i].status == TASK_OVER)
 		{
-			prepareTss(&tss[i]);
+			clearTssBuf(&tss[i]);
 
 			ret->number = i;
 			ret->lptss = &tss[i];
@@ -225,23 +146,11 @@ int __getFreeTask(LPTASKRESULT ret) {
 
 
 
-int __createDosInFileTask(DWORD addr, char * filename) {
-	if (__findProcessFileName(filename))
-	{
-		return 0;
-	}
-	return __kCreateProcess(addr,0x1000, filename, filename, DOS_PROCESS_RUNCODE | 3, 0);
-}
-
-
-
-
-
 TASK_LIST_ENTRY* __findProcessFuncName(char * funcname) {
 	TASK_LIST_ENTRY * list = (TASK_LIST_ENTRY*)TASKS_LIST_BASE;
 	do
 	{
-		if (__strcmp(list->process->funcname,funcname) == 0)
+		if ( (list->process->status == TASK_RUN) && (__strcmp(list->process->funcname,funcname) == 0))
 		{
 			return list;
 		}
@@ -259,7 +168,7 @@ TASK_LIST_ENTRY * __findProcessFileName(char * filename) {
 	TASK_LIST_ENTRY * list = (TASK_LIST_ENTRY*)TASKS_LIST_BASE;
 	do
 	{
-		if (__strcmp(list->process->filename, filename) == 0)
+		if (list->process->status == TASK_RUN && __strcmp(list->process->filename, filename) == 0)
 		{
 			return list;
 		}
@@ -275,7 +184,7 @@ TASK_LIST_ENTRY* __findProcessByPid(int pid) {
 	TASK_LIST_ENTRY * list = (TASK_LIST_ENTRY*)TASKS_LIST_BASE;
 	do
 	{
-		if (list->process->pid == pid)
+		if (list->process->status == TASK_RUN && list->process->pid == pid)
 		{
 			return list;
 		}
@@ -291,7 +200,7 @@ TASK_LIST_ENTRY* __findProcessByTid(int tid) {
 	TASK_LIST_ENTRY * list = (TASK_LIST_ENTRY*)TASKS_LIST_BASE;
 	do
 	{
-		if (list->process->tid == tid)
+		if (list->process->status == TASK_RUN && list->process->tid == tid)
 		{
 			return list;
 		}
@@ -397,6 +306,14 @@ int __resumePid(int pid) {
 }
 
 
+int __createDosInFileTask(DWORD addr, char* filename) {
+	if (__findProcessFileName(filename))
+	{
+		return 0;
+	}
+	return __kCreateProcess(addr, 0x1000, filename, filename, DOS_PROCESS_RUNCODE | 3, 0);
+}
+
 #ifndef SINGLE_TASK_TSS
 extern "C"  __declspec(dllexport) DWORD __kTaskSchedule(LIGHT_ENVIRONMENT* regs) {
 
@@ -449,14 +366,6 @@ extern "C"  __declspec(dllexport) DWORD __kTaskSchedule(LIGHT_ENVIRONMENT* regs)
 	LPPROCESS_INFO tss = (LPPROCESS_INFO)TASKS_TSS_BASE;
 	LPPROCESS_INFO process = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
 	
-// 	if (process->tss.link)
-// 	{
-// 		char szout[1024];
-// 		__printf(szout, "tid:%d pid:%d link:%d\r\n", process->tid, process->pid, process->tss.link);
-// 		__drawGraphChars((unsigned char*)szout, 0);
-// 		process->tss.link = 0;
-// 	}
-
 	//切换到新任务的cr3和ldt会被自动加载，但是iret也会加载cr3和ldt，因此不需要手动加载
 // 	DWORD nextcr3 = gTasksListPtr->process->tss.cr3;
 // 	LPTSS timertss = (LPTSS)gAsmTsses;
@@ -503,7 +412,6 @@ extern "C"  __declspec(dllexport) DWORD __kTaskSchedule(LIGHT_ENVIRONMENT* regs)
 
 	return TRUE;
 }
-
 #else
 extern "C"  __declspec(dllexport) DWORD __kTaskSchedule(LIGHT_ENVIRONMENT * env) {
 
@@ -522,7 +430,6 @@ extern "C"  __declspec(dllexport) DWORD __kTaskSchedule(LIGHT_ENVIRONMENT * env)
 	// 			}
 	// 		}
 	// 	}
-
 
 	TASK_LIST_ENTRY* prev = gTasksListPtr;
 
@@ -586,14 +493,6 @@ extern "C"  __declspec(dllexport) DWORD __kTaskSchedule(LIGHT_ENVIRONMENT * env)
 		process->tss.es = KERNEL_MODE_DATA;
 		process->tss.ss = KERNEL_MODE_DATA;
 	}
-
-	// 	if (process->tss.link)
-	// 	{
-	// 		char szout[1024];
-	// 		__printf(szout, "tid:%d pid:%d link:%d\r\n", process->tid, process->pid, process->tss.link);
-	// 		__drawGraphChars((unsigned char*)szout, 0);
-	// 		process->tss.link = 0;
-	// 	}
 
 		//切换到新任务的cr3和ldt会被自动加载，但是iret也会加载cr3和ldt，因此不需要手动加载
 	// 	DWORD nextcr3 = gTasksListPtr->process->tss.cr3;
@@ -690,4 +589,69 @@ void tasktest(TASK_LIST_ENTRY *gTasksListPtr, TASK_LIST_ENTRY*gPrevTasksPtr) {
 			gTasksListPtr->process->tss.esp, gTasksListPtr->process->tss.ss, gTasksListPtr->process->tss.eflags, gTasksListPtr->process->tss.link);
 		gTestFlag++;
 	}
+}
+
+
+void initTaskSwitchTss() {
+
+	DescriptTableReg idtbase;
+	__asm {
+		sidt idtbase
+	}
+
+	IntTrapGateDescriptor* descriptor = (IntTrapGateDescriptor*)idtbase.addr;
+
+	initKernelTss((TSS*)CURRENT_TASK_TSS_BASE, TASKS_STACK0_BASE + TASK_STACK0_SIZE - STACK_TOP_DUMMY,
+		KERNEL_TASK_STACK_TOP, 0, PDE_ENTRY_VALUE, 0);
+	makeTssDescriptor(CURRENT_TASK_TSS_BASE, 3, sizeof(TSS) - 1, (TssDescriptor*)(GDT_BASE + kTssTaskSelector));
+#ifdef SINGLE_TASK_TSS
+	makeIntGateDescriptor((DWORD)TimerInterrupt, KERNEL_MODE_CODE, 3, descriptor + INTR_8259_MASTER + 0);
+#else
+	initKernelTss((TSS*)TIMER_TSS_BASE, TSSTIMER_STACK0_TOP, TSSTIMER_STACK_TOP, (DWORD)TimerInterrupt, PDE_ENTRY_VALUE, 0);
+	makeTssDescriptor((DWORD)TIMER_TSS_BASE, 3, sizeof(TSS) - 1, (TssDescriptor*)(GDT_BASE + kTssTimerSelector));
+	makeTaskGateDescriptor((DWORD)kTssTimerSelector, 3, (TaskGateDescriptor*)(descriptor + INTR_8259_MASTER + 0));
+#endif
+
+	__asm
+	{
+		mov eax, kTssTaskSelector
+		ltr ax
+		mov ax, ldtSelector
+		lldt ax
+	}
+}
+
+int __initTask() {
+
+	LPPROCESS_INFO tssbase = (LPPROCESS_INFO)TASKS_TSS_BASE;
+	for (int i = 0; i < TASK_LIMIT_TOTAL; i++)
+	{
+		__memset((char*)&tssbase[i], 0, sizeof(PROCESS_INFO));
+	}
+
+	//initTaskSwitchTss();
+	LPPROCESS_INFO process0 = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
+	__strcpy(process0->filename, KERNEL_DLL_MODULE_NAME);
+	__strcpy(process0->funcname, "__kernelEntry");
+	process0->tid = 0;
+	process0->pid = 0;
+	process0->moduleaddr = (DWORD)KERNEL_DLL_BASE;
+	process0->level = 0;
+	process0->counter = 0;
+	process0->status = TASK_RUN;
+	process0->vaddr = KERNEL_DLL_BASE;
+	process0->vasize = 0;
+	process0->espbase = KERNEL_TASK_STACK_TOP;
+
+	__memcpy((char*)TASKS_TSS_BASE, (char*)CURRENT_TASK_TSS_BASE, sizeof(PROCESS_INFO));
+
+	__memset((char*)TASKS_LIST_BASE, 0, TASK_LIMIT_TOTAL * sizeof(TASK_LIST_ENTRY));
+
+	gTasksListPtr = (TASK_LIST_ENTRY*)TASKS_LIST_BASE;
+	initListEntry(&gTasksListPtr->list);
+	gTasksListPtr->process = (LPPROCESS_INFO)TASKS_TSS_BASE;
+	gTasksListPtr->valid = 1;
+
+	//__memset((char*)V86_TASKCONTROL_ADDRESS, 0, LIMIT_V86_PROC_COUNT*12);
+	return 0;
 }

@@ -31,10 +31,16 @@ void __kFreeProcess(int pid) {
 
 
 //1 先停止代码，然后释放内存，顺序不能反
-//2 先停止其他线程，然后停止本线程，顺序不能反了
-void __terminateProcess(int vpid, char * filename, char * funcname, DWORD lpparams) {
+//2 先停止其他线程，然后停止本线程，顺序不能反
+//3 any thread of process can call this to terminate process resident in
+// any process can call this to terminate self to other process with dwtid
+//above so,the most import element is dwtid
+void __terminateProcess(int dwtid, char * filename, char * funcname, DWORD lpparams) {
 
-	int pid = vpid & 0x7fffffff;
+	int tid = dwtid & 0x7fffffff;
+	if (tid < 0 || tid >= TASK_LIMIT_TOTAL) {
+		return;
+	}
 
 	char szout[1024];
 
@@ -43,39 +49,48 @@ void __terminateProcess(int vpid, char * filename, char * funcname, DWORD lppara
 		mov retvalue, eax
 	}
 
-	LPPROCESS_INFO tss = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
-	if (tss->pid != pid)
-	{
-		__printf(szout, "__terminateProcess pid:%x,filename:%s,funcname:%s,current pid:%x not equal\n",
-			pid, filename, funcname, tss->pid);
-	}
-	else {
-		__printf(szout, "__terminateProcess pid:%x,filename:%s,funcname:%s\n", pid, filename, funcname);
-	}
+	LPPROCESS_INFO tasks = (LPPROCESS_INFO)TASKS_TSS_BASE;
+
+	LPPROCESS_INFO current = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
+
+	__printf(szout, "__terminateProcess pid:%x,filename:%s,funcname:%s,current pid:%x\n",tid, filename, funcname, current->pid);
+
+	int pid = tasks[tid].pid;
 
 	LPPROCESS_INFO process = 0;
-	TASK_LIST_ENTRY * p = 0;
-	do 
-	{
-		p = __findProcessByPid(pid);
-		if (p == 0)
-		{
-			break;
-		}
-		else if ( p->process->pid != p->process->tid)
-		{
-			TASK_LIST_ENTRY * list = removeTaskList(p->process->tid);
-		}
-		else {
-			process = p->process;
-		}
-	} while (p);
 
-	__kFreeProcess(tss->pid);
+	__asm
+	{
+		cli
+	}
+
+	TASK_LIST_ENTRY* list = (TASK_LIST_ENTRY*)TASKS_LIST_BASE;
+	do
+	{
+		if ( (list->process->status == TASK_RUN) && (list->process->pid == pid) )
+		{
+			if (list->process->pid != list->process->tid ) {
+				TASK_LIST_ENTRY* list = removeTaskList(list->process->tid);
+				tasks[list->process->tid].status = TASK_OVER;
+			}
+			else {
+				process = list->process;
+			}
+		}	
+		list = (TASK_LIST_ENTRY*)list->list.next;
+	} while (list != (TASK_LIST_ENTRY*)TASKS_LIST_BASE);
+
+	__kFreeProcess(process->pid);
 
 	removeTaskList(process->pid);
 
-	if (vpid & 0x80000000)
+	tasks[process->pid].status = TASK_OVER;
+
+	__asm {
+		sti
+	}
+
+	if (dwtid & 0x80000000)
 	{
 		__sleep(0);
 	}

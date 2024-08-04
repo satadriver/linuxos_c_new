@@ -46,15 +46,13 @@ typedef struct {
 #define DOS_TASK_OVER			0X20000000
 #define DOS_PROCESS_RUNCODE		0X80000000
 
-
-#define TASK_STATUS_PTR			0X80000000
 #define TASK_OVER				0
 #define TASK_RUN				1
 #define TASK_SUSPEND			2
 
 
 
-void prepareTss(LPPROCESS_INFO tss);
+void clearTssBuf(LPPROCESS_INFO tss);
 
 void tasktest();
 
@@ -62,7 +60,7 @@ TASK_LIST_ENTRY* addTaskList(int tid);
 
 TASK_LIST_ENTRY* removeTaskList(int tid);
 
-void __terminateTask(int pid, char * pname, char * funcname, DWORD lpparams);
+//void __terminateTask(int pid, char * pname, char * funcname, DWORD lpparams);
 
 int __initTask();
 
