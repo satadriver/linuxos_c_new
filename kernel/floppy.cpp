@@ -40,7 +40,7 @@ void wait_status() {
 
 
 
-extern "C"  __declspec(dllexport)void readFloppySector(int dev,DWORD buf,int secnum,int seccnt) {
+extern "C"  __declspec(dllexport)int readFloppySector(int dev,DWORD buf,int secnum,int seccnt) {
 	int v = 0;
 
 	int cylinder = getCylinder(secnum);
@@ -156,6 +156,7 @@ extern "C"  __declspec(dllexport)void readFloppySector(int dev,DWORD buf,int sec
 	v = inportb(0x3f5);
 	wait_status();
 	outportb(0x3f2, 4);
+	return TRUE;
 }
 
 

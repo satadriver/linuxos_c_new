@@ -288,7 +288,6 @@ void initGdt() {
 
 		mov ax, ldtSelector
 		lldt ax
-
 	}
 }
 

@@ -42,9 +42,9 @@ TASK_LIST_ENTRY* searchTaskList(int tid) {
 TASK_LIST_ENTRY* addTaskList(int tid) {
 	LPPROCESS_INFO base = (LPPROCESS_INFO)TASKS_TSS_BASE;
 
-	TASK_LIST_ENTRY* tasklist = (TASK_LIST_ENTRY*)TASKS_LIST_BASE;
+	//TASK_LIST_ENTRY* tasklist = (TASK_LIST_ENTRY*)gTasksListPtr;
 
-	TASK_LIST_ENTRY * list = (TASK_LIST_ENTRY*)tasklist;
+	TASK_LIST_ENTRY * list = (TASK_LIST_ENTRY*)TASKS_LIST_BASE;
 	for (int i = 0; i < TASK_LIMIT_TOTAL; i++)
 	{
 		if (list[i].valid == 0 ) {
@@ -53,7 +53,7 @@ TASK_LIST_ENTRY* addTaskList(int tid) {
 			list[i].process = base + tid;
 			list[i].process->status = TASK_RUN;
 			
-			addlistTail((LIST_ENTRY*)&tasklist->list, (LIST_ENTRY*)&list[i].list);
+			addlistTail((LIST_ENTRY*)&gTasksListPtr->list, (LIST_ENTRY*)&list[i].list);
 			return &list[i];
 		}
 	}
@@ -216,6 +216,7 @@ int __terminateByFileName(char * filename) {
 	TASK_LIST_ENTRY* list = __findProcessFileName(filename);
 	if (list)
 	{
+		list->process->status = TASK_OVER;
 		removeTaskList(list->process->pid);
 	}
 
@@ -227,6 +228,7 @@ int __terminateByFuncName(char * funcname) {
 	TASK_LIST_ENTRY* list = __findProcessFuncName(funcname);
 	if (list)
 	{
+		list->process->status = TASK_OVER;
 		removeTaskList(list->process->pid);
 	}
 
@@ -238,6 +240,7 @@ int __terminatePid(int pid) {
 	TASK_LIST_ENTRY* list = __findProcessByPid(pid);
 	if (list)
 	{
+		list->process->status = TASK_OVER;
 		removeTaskList(list->process->pid);
 	}
 
@@ -250,6 +253,7 @@ int __terminateTid(int tid) {
 	TASK_LIST_ENTRY* list = __findProcessByTid(tid);
 	if (list)
 	{
+		list->process->status = TASK_OVER;
 		removeTaskList(list->process->pid);
 	}
 
@@ -367,7 +371,7 @@ extern "C"  __declspec(dllexport) DWORD __kTaskSchedule(LIGHT_ENVIRONMENT* regs)
 	LPPROCESS_INFO process = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
 	
 	//切换到新任务的cr3和ldt会被自动加载，但是iret也会加载cr3和ldt，因此不需要手动加载
-// 	DWORD nextcr3 = gTasksListPtr->process->tss.cr3;
+// 	DWORD nextcr3 = next->process->tss.cr3;
 // 	LPTSS timertss = (LPTSS)gAsmTsses;
 // 	timertss->cr3 = nextcr3;
 // 	short ldt = ((DWORD)glpLdt - (DWORD)glpGdt);
@@ -378,7 +382,7 @@ extern "C"  __declspec(dllexport) DWORD __kTaskSchedule(LIGHT_ENVIRONMENT* regs)
 
 	process->counter++;
 	__memcpy((char*)(tss + prev->process->tid), (char*)process, sizeof(PROCESS_INFO));
-	__memcpy((char*)process, (char*)(gTasksListPtr->process->tid + tss), sizeof(PROCESS_INFO));
+	__memcpy((char*)process, (char*)(next->process->tid + tss), sizeof(PROCESS_INFO));
 	
 	//tasktest();
 
@@ -397,9 +401,9 @@ extern "C"  __declspec(dllexport) DWORD __kTaskSchedule(LIGHT_ENVIRONMENT* regs)
 	}
 	prev->process->fpu = 1;
 
-	if (gTasksListPtr->process->fpu)
+	if (next->process->fpu)
 	{
-		char * fenvnext = (char*)FPU_STATUS_BUFFER + (gTasksListPtr->process->tid << 9);
+		char * fenvnext = (char*)FPU_STATUS_BUFFER + (next->process->tid << 9);
 		__asm {
 			clts
 			fwait
@@ -495,7 +499,7 @@ extern "C"  __declspec(dllexport) DWORD __kTaskSchedule(LIGHT_ENVIRONMENT * env)
 	}
 
 		//切换到新任务的cr3和ldt会被自动加载，但是iret也会加载cr3和ldt，因此不需要手动加载
-	// 	DWORD nextcr3 = gTasksListPtr->process->tss.cr3;
+	// 	DWORD nextcr3 = next->process->tss.cr3;
 	// 	LPTSS timertss = (LPTSS)gAsmTsses;
 	// 	timertss->cr3 = nextcr3;
 	// 	short ldt = ((DWORD)glpLdt - (DWORD)glpGdt);
@@ -506,7 +510,7 @@ extern "C"  __declspec(dllexport) DWORD __kTaskSchedule(LIGHT_ENVIRONMENT * env)
 
 	process->counter++;
 	__memcpy((char*)(tss + prev->process->tid), (char*)process, sizeof(PROCESS_INFO));
-	__memcpy((char*)process, (char*)(gTasksListPtr->process->tid + tss), sizeof(PROCESS_INFO));
+	__memcpy((char*)process, (char*)(next->process->tid + tss), sizeof(PROCESS_INFO));
 
 	if (process->tss.eflags & 0x20000) {
 
@@ -535,9 +539,9 @@ extern "C"  __declspec(dllexport) DWORD __kTaskSchedule(LIGHT_ENVIRONMENT * env)
 	}
 	prev->process->fpu = 1;
 
-	if (gTasksListPtr->process->fpu)
+	if (next->process->fpu)
 	{
-		char* fenvnext = (char*)FPU_STATUS_BUFFER + (gTasksListPtr->process->tid << 9);
+		char* fenvnext = (char*)FPU_STATUS_BUFFER + (next->process->tid << 9);
 		__asm {
 			clts
 			fwait
@@ -561,12 +565,6 @@ extern "C"  __declspec(dllexport) DWORD __kTaskSchedule(LIGHT_ENVIRONMENT * env)
 	env->ds = process->tss.ds;
 	env->es = process->tss.es;
 	env->ss = process->tss.ss;
-
-	dwcr3 = process->tss.cr3;
-	__asm {
-		mov eax, dwcr3
-		//mov cr3, eax
-	}
 
 	return TRUE;
 }

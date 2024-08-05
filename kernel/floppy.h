@@ -42,10 +42,10 @@ int getSector(int lba);
 
 
 #ifdef DLL_EXPORT
-extern "C" void __declspec(dllexport) readFloppySector(int dev, DWORD buf, int secnum, int seccnt);
+extern "C" int __declspec(dllexport) readFloppySector(int dev, DWORD buf, int secnum, int seccnt);
 extern "C" void __declspec(dllexport) FloppyIntProc(LIGHT_ENVIRONMENT* stack);
 #else
-extern "C" void __declspec(dllimport) readFloppySector(int dev, DWORD buf, int secnum, int seccnt);
+extern "C" int __declspec(dllimport) readFloppySector(int dev, DWORD buf, int secnum, int seccnt);
 extern "C" void __declspec(dllimport) FloppyIntProc(LIGHT_ENVIRONMENT* stack);
 #endif
 

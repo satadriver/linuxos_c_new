@@ -23,13 +23,13 @@
 
 
 
-
+LPVESAINFORMATION glpVesaInfo;
 
 char* gTxtBuf = 0;
 
 int gTxtOffset = 0;
 
-
+DWORD gFont = 0;
 
 int runcmd(char * cmd) {
 	int res = 0;
@@ -38,6 +38,21 @@ int runcmd(char * cmd) {
 
 		char szout[1024];
 
+		res = v86Process(0x4f02, 0, 0, 0x4112, 0, 0, 0, 0, 0x10);
+
+		VESAINFORMATION vesaInfo;
+		vesaInfo.BitsPerPixel = 24;
+		vesaInfo.YRes = 480;
+		vesaInfo.XRes = 640;
+		vesaInfo.PhyBasePtr = 0xe0000000;
+		vesaInfo.OffScreenMemOffset = 0;
+		vesaInfo.BytesPerScanLine = vesaInfo.XRes * (vesaInfo.BitsPerPixel>>3);
+
+		__initVideo(glpVesaInfo, gFontBase);
+
+		enableMouse();
+		setMouseRate(200);
+		/*
 		VesaSimpleInfo vsi[64];
 		res = getVideoMode(vsi);
 		{
@@ -46,7 +61,29 @@ int runcmd(char * cmd) {
 					vsi[idx].mode, vsi[idx].x, vsi[idx].y, vsi[idx].bpp, vsi[idx].base, vsi[idx].offset, vsi[idx].size);
 				outputStr(szout, OUTPUT_TEXTMODE_COLOR);
 			}
+		}*/
+
+#ifdef SINGLE_TASK_TSS
+		//__createDosInFileTask(gV86VMIEntry, "V86VMIEntry");
+#else
+		__createDosInFileTask(gV86VMIEntry, "V86VMIEntry");
+#endif
+
+		int imagesize = getSizeOfImage((char*)MAIN_DLL_SOURCE_BASE);
+		__kCreateProcessFromAddrFunc(MAIN_DLL_SOURCE_BASE, imagesize, "__kExplorer", 3, 0);
+
+		while (1)
+		{
+			if (__findProcessFuncName("__kExplorer") == FALSE)
+			{
+				__kCreateProcess(MAIN_DLL_SOURCE_BASE, imagesize, "main.dll", "__kExplorer", 3, 0);
+			}
+
+			__asm {
+				hlt
+			}
 		}
+
 	}
 	else if (__strcmp(cmd, "cpuinfo") == 0) {
 
@@ -134,6 +171,8 @@ extern "C" __declspec(dllexport) int __kTextModeEntry(LPVESAINFORMATION vesa, DW
 	gKernelData = kerneldata;
 	gKernel16 = kernel16;
 	gKernel32 = kernel32;
+	gFont = fontbase;
+	glpVesaInfo = vesa;
 
  	DWORD svgaregs[16];
  	DWORD svgadev = 0;
@@ -173,8 +212,7 @@ extern "C" __declspec(dllexport) int __kTextModeEntry(LPVESAINFORMATION vesa, DW
 
 	__asm {
 		in al, 60h
-		sti
-		
+		sti	
 	}
 
 	initFileSystem();

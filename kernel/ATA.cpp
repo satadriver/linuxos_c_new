@@ -367,7 +367,7 @@ int readsector(int port,int len, char * buf) {
 int readSectorLBA24(unsigned int secno, unsigned char seccnt, char* buf, int device) {
 
 	__asm{
-		cli
+		//cli
 	}
 
 	waitFree(gAtaBasePort + 7);
@@ -392,7 +392,7 @@ int readSectorLBA24(unsigned int secno, unsigned char seccnt, char* buf, int dev
 	}
 
 	__asm {
-		sti
+		//sti
 	}
 
 	return seccnt * BYTES_PER_SECTOR;
@@ -403,7 +403,7 @@ int readSectorLBA24(unsigned int secno, unsigned char seccnt, char* buf, int dev
 int writeSectorLBA24(unsigned int secno, unsigned char seccnt, char* buf, int device) {
 
 	__asm {
-		cli
+		//cli
 	}
 
 	waitFree(gAtaBasePort + 7);
@@ -428,7 +428,7 @@ int writeSectorLBA24(unsigned int secno, unsigned char seccnt, char* buf, int de
 	}
 
 	__asm {
-		sti
+		//sti
 	}
 
 	return seccnt * BYTES_PER_SECTOR;
@@ -439,7 +439,7 @@ int writeSectorLBA24(unsigned int secno, unsigned char seccnt, char* buf, int de
 int readSectorLBA48(unsigned int secnoLow, unsigned int secnoHigh, unsigned char seccnt, char* buf, int device) {
 
 	__asm {
-		cli
+		//cli
 	}
 
 	waitFree(gAtaBasePort + 7);
@@ -472,7 +472,7 @@ int readSectorLBA48(unsigned int secnoLow, unsigned int secnoHigh, unsigned char
 	}
 
 	__asm {
-		sti
+		//sti
 	}
 
 	return seccnt * BYTES_PER_SECTOR;
@@ -483,7 +483,7 @@ int readSectorLBA48(unsigned int secnoLow, unsigned int secnoHigh, unsigned char
 int writeSectorLBA48(unsigned int secnoLow, unsigned int secnoHigh, unsigned char seccnt, char* buf, int device) {
 
 	__asm {
-		cli
+		//cli
 	}
 
 	waitFree(gAtaBasePort + 7);
@@ -515,7 +515,7 @@ int writeSectorLBA48(unsigned int secnoLow, unsigned int secnoHigh, unsigned cha
 	}
 
 	__asm {
-		sti
+		//sti
 	}
 
 	return seccnt * BYTES_PER_SECTOR;
@@ -536,7 +536,7 @@ int readSectorLBA48Mimo(unsigned int secnoLow, unsigned int secnoHigh, unsigned 
 
 int identifyDevice(int port,int cmd,char * buffer) {	// IDENTIFY PACKET DEVICE ¨C A1h and  IDENTIFY  DEVICE ¨C ECh
 	__asm {
-		cli
+		//cli
 	}
 
 	waitFree(port + 7);
@@ -562,7 +562,7 @@ int identifyDevice(int port,int cmd,char * buffer) {	// IDENTIFY PACKET DEVICE ¨
 	}
 
 	__asm {
-		sti
+		//sti
 	}
 
 	//char szout[1024];

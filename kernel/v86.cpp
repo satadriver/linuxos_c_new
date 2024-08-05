@@ -286,9 +286,6 @@ int getVideoMode(VesaSimpleInfo vsi[64] ) {
 
 	char szout[1024];
 
-	//res = v86Process(0x4f02, 0, 0, 0x4108, 0, VESA_STATE_OFFSET, 0, VESA_STATE_SEG, 0x10);
-	//return 0;
-
 	res = v86Process(0x4f00, 0, 0, 0, 0, VESA_STATE_OFFSET, 0, VESA_STATE_SEG ,0x10 );
 	if ((res & 0xffff) == 0x4f) {
 		VESAINFOBLOCK* vib = (VESAINFOBLOCK*)VESA_STATE_ADDRESS;

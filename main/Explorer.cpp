@@ -40,6 +40,27 @@
 
 #define EXPLORER_TASKNAME	"__kExplorer"
 
+
+int g_test1Cnt = 0;
+
+int g_test2Cnt = 0;
+
+extern "C" __declspec(dllexport) void __taskTest1(unsigned int retaddr, int tid, char* filename, char* funcname, DWORD param) {
+	char szout[1024];
+	while (g_test1Cnt++ < 10) {
+		__printf(szout, "__taskTest1 tid:%d running %d!\r\n",tid, g_test1Cnt);
+	}
+}
+
+
+extern "C" __declspec(dllexport) void __taskTest2(unsigned int retaddr, int tid, char* filename, char* funcname, DWORD param) {
+	char szout[1024];
+	while (g_test2Cnt++ < 10) {
+		__printf(szout, "__taskTest2 tid:%d running %d!\r\n",tid, g_test2Cnt);
+		__sleep(0);
+	}
+}
+
 int __kExplorer(unsigned int retaddr, int tid, char * filename, char * funcname, DWORD param) {
 	int ret = 0;
 
@@ -83,15 +104,16 @@ int __kExplorer(unsigned int retaddr, int tid, char * filename, char * funcname,
 
 	__kAddAlarmTimer(30, (DWORD)__doAlarmTask, 0);
 
-	//initEfer();
-
-	//getRCBA();
-
 	//sysEntryProc();
 
 	//callgateEntry(0, 0);
 
-	displayCCPoem();
+	//displayCCPoem();
+
+	DWORD address = getAddrFromName(MAIN_DLL_BASE, "__taskTest1");
+	return __kCreateThread((DWORD)address, MAIN_DLL_BASE, (DWORD)0, "__taskTest1");
+	DWORD address2 = getAddrFromName(MAIN_DLL_BASE, "__taskTest2");
+	return __kCreateThread((DWORD)address2, MAIN_DLL_BASE, (DWORD)0, "__taskTest2");
 
 	//readAtapiSector(FLOPPY_DMA_BUFFER, 16, 1);
 	//readFloppySector(0, FLOPPY_DMA_BUFFER, 0, 4);

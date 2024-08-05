@@ -326,7 +326,7 @@ int initACPI(void)
 extern "C"  __declspec(dllexport) int doPowerOff(void)
 {
 	__asm {
-		cli
+		//cli
 	}
 	const ACPIHeader *dt = acpiDsdt; /*先找dsdt*/
 retry:;
@@ -376,7 +376,7 @@ retry:;
 extern "C"  __declspec(dllexport) int doReboot(void)
 {
 	__asm {
-		cli
+		//cli
 	}
 	if (acpiFadt->header.length < 129)
 		goto next;  /*检查是否支持reset寄存器*/

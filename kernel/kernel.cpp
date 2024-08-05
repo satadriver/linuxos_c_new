@@ -86,6 +86,7 @@ int __kernelEntry(LPVESAINFORMATION vesa, DWORD fontbase,DWORD v86Proc,DWORD v86
 	sysEntryInit((DWORD)sysEntry);
 
 	__asm {
+		in al,0x60
 		sti
 	}
 
@@ -118,15 +119,20 @@ int __kernelEntry(LPVESAINFORMATION vesa, DWORD fontbase,DWORD v86Proc,DWORD v86
 	initDebugger();
 
 // 	ret = loadLibRunFun("c:\\liunux\\main.dll", "__kMainProcess");
+
+
  	
 	imagesize = getSizeOfImage((char*)MAIN_DLL_SOURCE_BASE);
 	__kCreateProcessFromAddrFunc(MAIN_DLL_SOURCE_BASE, imagesize,  "__kExplorer", 3, 0);
+
+	__kGetKbd(0);
 
 	while (1)
 	{
 		if (__findProcessFuncName("__kExplorer") == FALSE)
 		{
 			__kCreateProcess(MAIN_DLL_SOURCE_BASE, imagesize, "main.dll", "__kExplorer", 3, 0);
+			__printf(szout, "create process __kExplorer\r\n");
 		}
 
 		__asm {

@@ -75,7 +75,7 @@ unsigned short makehalf(unsigned char low, unsigned char high) {
 
 void addAlarmTimer(DWORD interval) {
 	__asm {
-		cli
+		//cli
 	}
 	int ret = 0;
 
@@ -155,7 +155,7 @@ void addAlarmTimer(DWORD interval) {
 	writeCmosPort(0x01, b2bcd(dstsecond));
 
 	__asm {
-		sti
+		//sti
 	}
 
 	char szout[1024];
@@ -208,13 +208,13 @@ int __kAddAlarmTimer( DWORD interval, DWORD linearaddr, DWORD param) {
 
 void __kRemoveAlarmTimer() {
 	__asm {
-		cli
+		//cli
 	}
 	gCmosAlarmProc.addr = 0;
 	gCmosAlarmProc.interval = 0;
 	gCmosAlarmProc.param = 0;
 	__asm{
-		sti
+		//sti
 	}
 }
 

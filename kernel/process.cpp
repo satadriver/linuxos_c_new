@@ -61,7 +61,7 @@ void __terminateProcess(int dwtid, char * filename, char * funcname, DWORD lppar
 
 	__asm
 	{
-		cli
+		//cli
 	}
 
 	TASK_LIST_ENTRY* list = (TASK_LIST_ENTRY*)TASKS_LIST_BASE;
@@ -87,7 +87,7 @@ void __terminateProcess(int dwtid, char * filename, char * funcname, DWORD lppar
 	tasks[process->pid].status = TASK_OVER;
 
 	__asm {
-		sti
+		//sti
 	}
 
 	if (dwtid & 0x80000000)
@@ -107,7 +107,7 @@ int __initProcess(LPPROCESS_INFO tss, int pid, DWORD filedata, char * filename, 
 
 	char szout[1024];
 
-	tss->tss.trap = 1;
+	tss->tss.trap = 0;
 	tss->tss.ldt = 0;
 
 	tss->tss.iomapOffset = 136;
@@ -185,7 +185,7 @@ int __initProcess(LPPROCESS_INFO tss, int pid, DWORD filedata, char * filename, 
 	DWORD syslevel = level & 3;
 	tss->level = syslevel;
 
-	DWORD eflags = 0x200200;	//if = 1,et = 1
+	DWORD eflags = 0x200202;	//if = 1,et = 1
 	if (syslevel)
 	{
 		eflags |= (syslevel<<12);	//iopl = 3
@@ -347,8 +347,7 @@ int __initProcess(LPPROCESS_INFO tss, int pid, DWORD filedata, char * filename, 
 	tss->ppid = thistss->pid;
 	tss->sleep = 0;
 
-	//__printf(szout, "imagebase:%x,imagesize:%x,map base:%x,entry:%x,cr3:%x,esp:%x\n",
-	//getImageBase((char*)pemap), imagesize, pemap, entry, tss->tss.cr3,tss->espbase);
+	__printf(szout, "imagebase:%x,imagesize:%x,map base:%x,entry:%x,cr3:%x,esp:%x\n",getImageBase((char*)pemap), imagesize, pemap, entry, tss->tss.cr3,tss->espbase);
 
 	addTaskList(tss->tid);
 

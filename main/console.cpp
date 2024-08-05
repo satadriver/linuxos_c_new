@@ -26,7 +26,7 @@
 
 
 
-#define CURSOR_REFRESH_MILLISECONDS		300
+
 
 
 
@@ -156,7 +156,7 @@ int __cmd(char* cmd, WINDOWCLASS* window, char* pidname, int pid) {
 	else if (__strcmp(params[0], "loadfiles") == 0)
 	{
 		DATALOADERINFO* info = (DATALOADERINFO*)(gKernelData<<4);
-		__printf(szout, 
+		__sprintf(szout, 
 			"flag:%s,mbr:%d,mbrbak:%d,loaderSec:%d,loaderSecCnt:%d,kSec:%d,kSecCnt:%d,kdllSec:%d,kdllSecCnt:%d,mdllSec:%d,mdllSecCnt:%d,fontSec:%d,fontSecCnt:%d\r\n",
 			&info->_flags, info->_bakMbrSecOff, info->_bakMbr2SecOff, info->_loaderSecOff, info->_loaderSecCnt,
 			info->_kernelSecOff, info->_kernelSecCnt, info->_kdllSecOff, info->_kdllSecCnt,
@@ -365,12 +365,12 @@ int __cmd(char* cmd, WINDOWCLASS* window, char* pidname, int pid) {
 		getCpuInfo(cpuinfo);
 		getCpuType(cputype);
 
-		__printf(szout, "cpuinfo:%s,cpu type:%s\n", cpuinfo, cputype);
+		__sprintf(szout, "cpuinfo:%s,cpu type:%s\n", cpuinfo, cputype);
 		ret = __outputConsole((unsigned char*)&szout, CONSOLE_FONT_COLOR, window);
 	}
 	else if (__strcmp(params[0], "pcidev") == 0)
 	{
-		showAllPciDevs();
+		//showAllPciDevs();
 	}
 	return 0;
 }

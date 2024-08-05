@@ -62,7 +62,7 @@ int checkAtapiPort(WORD port) {
 int atapiCMD(unsigned short *cmd) {
 
 	__asm {
-		cli
+		//cli
 	}
 
 	waitFree(gAtapiBasePort + 7);
@@ -80,7 +80,7 @@ int atapiCMD(unsigned short *cmd) {
 	writeAtapiCMD(cmd);
 
 	__asm {
-		sti
+		//sti
 	}
 
 	return 0;
@@ -90,7 +90,7 @@ int atapiCMD(unsigned short *cmd) {
 int readAtapiSector(char * buf,unsigned int secnum,unsigned char seccnt) {
 
 	__asm {
-		cli
+		//cli
 	}
 
 	waitFree(gAtapiBasePort + 7);
@@ -123,7 +123,7 @@ int readAtapiSector(char * buf,unsigned int secnum,unsigned char seccnt) {
 	}
 
 	__asm {
-		sti
+		//sti
 	}
 
 	return readsize;
@@ -133,7 +133,7 @@ int readAtapiSector(char * buf,unsigned int secnum,unsigned char seccnt) {
 int writeAtapiSector(char* buf, unsigned int secnum, unsigned char seccnt) {
 
 	__asm {
-		cli
+		//cli
 	}
 
 	waitFree(gAtapiBasePort + 7);
@@ -166,7 +166,7 @@ int writeAtapiSector(char* buf, unsigned int secnum, unsigned char seccnt) {
 	}
 
 	__asm {
-		sti
+		//sti
 	}
 
 	return readsize;

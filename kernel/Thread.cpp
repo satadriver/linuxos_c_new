@@ -76,7 +76,7 @@ DWORD __kCreateThread(DWORD addr, DWORD module, DWORD runparam,char * funcname) 
 	tss->ppid = process->pid;
 	tss->level = process->level;
 	tss->status = TASK_SUSPEND;
-	tss->tss.link = 1;	
+	tss->tss.link = 0;	
 	tss->tss.iomapOffset = 136;
 	tss->tss.iomapEnd = 0xff;
 	tss->vaddr = process->vaddr;

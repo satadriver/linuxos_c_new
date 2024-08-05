@@ -120,7 +120,8 @@ int __initDosTss(LPPROCESS_INFO tss, int pid, DWORD addr, char * filename, char 
 	__memset((char*)tss->tss.iomap, 0, sizeof(tss->tss.iomap));
 
 	//由于是单处理器，所以每个进程装入的时候必须打开中断位，否则一个进程一旦独占了唯一的一个cpu会导致无法中断
-	DWORD eflags = 0x223200;
+	DWORD eflags = 0x220202;
+	eflags = eflags | (level << 12);
 	//eflags |= 0x4000;		//nt == 1
 
 	WORD seg = (unsigned short)(addr >> 4);
