@@ -22,7 +22,8 @@ DWORD __kTerminateThread(int dwtid, char * filename, char * funcname, DWORD lppa
 	LPPROCESS_INFO current = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
 
 	char szout[1024];
-	__printf(szout, "__kTerminateThread pid:%x,filename:%s,funcname:%s,current pid:%x\r\n",tid, filename, funcname, current->pid);
+	__printf(szout, "__kTerminateThread pid:%x,filename:%s,funcname:%s,current pid:%x\r\n",
+		tid, filename, funcname, current->pid);
 
 	if (current->tid == tid)
 	{
@@ -63,31 +64,33 @@ DWORD __kCreateThread(DWORD addr, DWORD module, DWORD runparam,char * funcname) 
 	DWORD imagesize = getSizeOfImage((char*)addr);
 	DWORD alignsize = getAlignedSize(imagesize, PAGE_SIZE);
 	
-	//创建线程中，如果想要修改父进程的信息，必须在CURRENT_TASK_TSS_BASE中修改，如果CURRENT_TASK_TSS_BASE没被修改，线程切换时信息还是会被替换
+	//如果想要修改父进程的信息，必须在CURRENT_TASK_TSS_BASE中修改，否则线程切换时信息还是会被替换
 	LPPROCESS_INFO process = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
 	LPPROCESS_INFO tss = freetask.lptss;
 	__memset((char*)tss->tss.intMap, 0, sizeof(tss->tss.intMap));
 	__memset((char*)tss->tss.iomap, 0, sizeof(tss->tss.iomap));
-	tss->sleep = 0;
+	
 	tss->tss.cr3 = process->tss.cr3;
 	tss->heapbase = process->heapbase;
 	tss->heapsize = process->heapsize;
 	tss->pid = process->pid;
 	tss->ppid = process->pid;
 	tss->level = process->level;
-	tss->status = TASK_SUSPEND;
-	tss->tss.link = 0;	
-	tss->tss.iomapOffset = 136;
-	tss->tss.iomapEnd = 0xff;
 	tss->vaddr = process->vaddr;
 	tss->vasize = process->vasize;
-	tss->vasize += alignsize;
 	tss->tss.eflags = process->tss.eflags;
 	int level = process->level;
 	if (level)
 	{
-		tss->tss.eflags = tss->tss.eflags | ((level &3)<<12);
+		tss->tss.eflags = tss->tss.eflags | ((level & 3) << 12);
 	}
+	tss->status = TASK_SUSPEND;
+	tss->tss.link = 0;	
+	tss->tss.iomapOffset = 136;
+	tss->tss.iomapEnd = 0xff;
+
+	tss->vasize += alignsize;
+	tss->sleep = 0;
 
 	tss->tss.eip = addr;
 	tss->moduleaddr = linear2phy(module);
@@ -192,9 +195,6 @@ DWORD __kCreateThread(DWORD addr, DWORD module, DWORD runparam,char * funcname) 
 		tss->tss.esp = (DWORD)ret3;
 		tss->tss.ebp = (DWORD)ret3;
 		tss->tss.ss = KERNEL_MODE_STACK;
-
-		tss->tss.esp = (DWORD)tss->espbase + UTASK_STACK_SIZE - STACK_TOP_DUMMY - sizeof(TASKPARAMS);
-		tss->tss.ebp = (DWORD)tss->espbase + UTASK_STACK_SIZE - STACK_TOP_DUMMY - sizeof(TASKPARAMS);
 #else
 		tss->tss.esp = (DWORD)tss->espbase + UTASK_STACK_SIZE - STACK_TOP_DUMMY - sizeof(TASKPARAMS);
 		tss->tss.ebp = (DWORD)tss->espbase + UTASK_STACK_SIZE - STACK_TOP_DUMMY - sizeof(TASKPARAMS);
@@ -216,13 +216,9 @@ DWORD __kCreateThread(DWORD addr, DWORD module, DWORD runparam,char * funcname) 
 		__memcpy((char*)params->lpcmdparams, (char*)runparam, sizeof(TASKCMDPARAMS));
 	}
 
-	tss->pid = process->pid;
-
 	tss->tid = freetask.number;
 
 	tss->counter = 0;
-
-	tss->ppid = process->pid;
 
 	__strcpy(tss->filename, process->filename);
 	__strcpy(tss->funcname, funcname);
