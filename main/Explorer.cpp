@@ -110,10 +110,7 @@ int __kExplorer(unsigned int retaddr, int tid, char * filename, char * funcname,
 
 	//displayCCPoem();
 
-	DWORD address = getAddrFromName(MAIN_DLL_BASE, "__taskTest1");
-	return __kCreateThread((DWORD)address, MAIN_DLL_BASE, (DWORD)0, "__taskTest1");
-	DWORD address2 = getAddrFromName(MAIN_DLL_BASE, "__taskTest2");
-	return __kCreateThread((DWORD)address2, MAIN_DLL_BASE, (DWORD)0, "__taskTest2");
+
 
 	//readAtapiSector(FLOPPY_DMA_BUFFER, 16, 1);
 	//readFloppySector(0, FLOPPY_DMA_BUFFER, 0, 4);

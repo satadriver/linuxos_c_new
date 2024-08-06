@@ -64,7 +64,7 @@ TASK_LIST_ENTRY* addTaskList(int tid) {
 
 TASK_LIST_ENTRY* removeTaskList(int tid) {
 
-	TASK_LIST_ENTRY * list = (TASK_LIST_ENTRY*)TASKS_LIST_BASE;
+	TASK_LIST_ENTRY * list = (TASK_LIST_ENTRY*)gTasksListPtr;
 	do 
 	{
 		if (list->valid && list->process && list->process->tid == tid)
@@ -79,11 +79,8 @@ TASK_LIST_ENTRY* removeTaskList(int tid) {
 			return list;
 		}
 		list = (TASK_LIST_ENTRY *)list->list.next;
-		if (list == 0)
-		{
-			break;
-		}
-	} while (list != (TASK_LIST_ENTRY *)TASKS_LIST_BASE);
+
+	} while (list && list != (TASK_LIST_ENTRY *)gTasksListPtr);
 
 	return 0;
 }
@@ -648,7 +645,7 @@ int __initTask() {
 	gTasksListPtr = (TASK_LIST_ENTRY*)TASKS_LIST_BASE;
 	initListEntry(&gTasksListPtr->list);
 	gTasksListPtr->process = (LPPROCESS_INFO)TASKS_TSS_BASE;
-	gTasksListPtr->valid = 1;
+	gTasksListPtr->valid = TRUE;
 
 	//__memset((char*)V86_TASKCONTROL_ADDRESS, 0, LIMIT_V86_PROC_COUNT*12);
 	return 0;
