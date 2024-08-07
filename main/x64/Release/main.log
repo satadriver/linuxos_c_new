@@ -1,0 +1,610 @@
+﻿d:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Microsoft\VC\v150\Platforms\x64\PlatformToolsets\v141_xp\Toolset.targets(39,5): warning MSB8051: 面向 Windows XP 的支持已被弃用，将来的 Visual Studio 版本不再提供该支持。请访问 https://go.microsoft.com/fwlink/?linkid=2023588，获取详细信息。
+  console.cpp
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(62): warning C4311: “类型强制转换”: 从“TASKCMDPARAMS *”到“unsigned long”的指针截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(62): warning C4302: “类型强制转换”: 从“TASKCMDPARAMS *”到“unsigned long”截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(71): warning C4311: “类型强制转换”: 从“TASKCMDPARAMS *”到“unsigned long”的指针截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(71): warning C4302: “类型强制转换”: 从“TASKCMDPARAMS *”到“unsigned long”截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(80): warning C4311: “类型强制转换”: 从“TASKCMDPARAMS *”到“unsigned long”的指针截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(80): warning C4302: “类型强制转换”: 从“TASKCMDPARAMS *”到“unsigned long”截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(97): warning C4311: “类型强制转换”: 从“char *”到“unsigned long”的指针截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(97): warning C4302: “类型强制转换”: 从“char *”到“unsigned long”截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(158): warning C4312: “类型强制转换”: 从“unsigned long”转换到更大的“DATALOADERINFO *”
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(195): warning C4311: “类型强制转换”: 从“TASKCMDPARAMS *”到“unsigned long”的指针截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(195): warning C4302: “类型强制转换”: 从“TASKCMDPARAMS *”到“unsigned long”截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(201): error C4235: 使用了非标准扩展: 不支持在此结构上使用“__asm”关键字
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(202): error C2065: “pushfd”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(203): error C2146: 语法错误: 缺少“;”(在标识符“pop”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(203): error C2065: “pop”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(203): error C2146: 语法错误: 缺少“;”(在标识符“eflags”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(204): error C2143: 语法错误: 缺少“;”(在“}”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(254): warning C4312: “类型强制转换”: 从“unsigned long”转换到更大的“char *”
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(264): warning C4312: “类型强制转换”: 从“unsigned long”转换到更大的“char *”
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(280): warning C4311: “类型强制转换”: 从“TASKCMDPARAMS *”到“unsigned long”的指针截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(280): warning C4302: “类型强制转换”: 从“TASKCMDPARAMS *”到“unsigned long”截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(297): error C4235: 使用了非标准扩展: 不支持在此结构上使用“__asm”关键字
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(298): error C2065: “rdtsc”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(299): error C2146: 语法错误: 缺少“;”(在标识符“mov”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(299): error C2065: “mov”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(299): error C2146: 语法错误: 缺少“;”(在标识符“l”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(299): error C2065: “eax”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(300): error C2146: 语法错误: 缺少“;”(在标识符“mov”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(300): error C2065: “mov”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(300): error C2146: 语法错误: 缺少“;”(在标识符“h”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(300): error C2065: “edx”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(301): error C2143: 语法错误: 缺少“;”(在“}”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(309): error C4235: 使用了非标准扩展: 不支持在此结构上使用“__asm”关键字
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(310): error C2065: “mov”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(310): error C2146: 语法错误: 缺少“;”(在标识符“eax”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(310): error C2065: “eax”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(311): error C2146: 语法错误: 缺少“;”(在标识符“rdpmc”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(311): error C2065: “rdpmc”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(312): error C2146: 语法错误: 缺少“;”(在标识符“mov”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(312): error C2065: “mov”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(312): error C2146: 语法错误: 缺少“;”(在标识符“l”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(312): error C2065: “eax”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(313): error C2146: 语法错误: 缺少“;”(在标识符“mov”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(313): error C2065: “mov”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(313): error C2146: 语法错误: 缺少“;”(在标识符“h”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(313): error C2065: “edx”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(314): error C2143: 语法错误: 缺少“;”(在“}”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(346): error C4235: 使用了非标准扩展: 不支持在此结构上使用“__asm”关键字
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(347): error C2065: “mov”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(347): error C2146: 语法错误: 缺少“;”(在标识符“edx”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(347): error C2065: “edx”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(348): error C2146: 语法错误: 缺少“;”(在标识符“mov”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(348): error C2065: “mov”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(348): error C2146: 语法错误: 缺少“;”(在标识符“eax”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(348): error C2065: “eax”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(349): error C2146: 语法错误: 缺少“;”(在标识符“out”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(349): error C2065: “out”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(349): error C2146: 语法错误: 缺少“;”(在标识符“dx”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(349): error C2065: “dx”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(349): error C2065: “eax”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(350): error C2143: 语法错误: 缺少“;”(在“}”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(354): error C4235: 使用了非标准扩展: 不支持在此结构上使用“__asm”关键字
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(355): error C2065: “mov”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(355): error C2146: 语法错误: 缺少“;”(在标识符“edx”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(355): error C2065: “edx”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(356): error C2146: 语法错误: 缺少“;”(在标识符“mov”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(356): error C2065: “mov”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(356): error C2146: 语法错误: 缺少“;”(在标识符“eax”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(356): error C2065: “eax”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(357): error C2146: 语法错误: 缺少“;”(在标识符“out”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(357): error C2065: “out”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(357): error C2146: 语法错误: 缺少“;”(在标识符“dx”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(357): error C2065: “dx”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(357): error C2065: “eax”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(358): error C2143: 语法错误: 缺少“;”(在“}”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(527): warning C4312: “类型强制转换”: 从“unsigned int”转换到更大的“unsigned char *”
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(536): warning C4311: “类型强制转换”: 从“unsigned char *”到“unsigned int”的指针截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(536): warning C4302: “类型强制转换”: 从“unsigned char *”到“unsigned int”截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(544): warning C4312: “类型强制转换”: 从“int”转换到更大的“unsigned char *”
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(552): warning C4311: “类型强制转换”: 从“unsigned char *”到“unsigned int”的指针截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(552): warning C4302: “类型强制转换”: 从“unsigned char *”到“unsigned int”截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(554): warning C4312: “类型强制转换”: 从“int”转换到更大的“unsigned char *”
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(561): warning C4312: “类型强制转换”: 从“unsigned long”转换到更大的“unsigned char *”
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(601): warning C4311: “类型强制转换”: 从“unsigned char *”到“unsigned int”的指针截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(601): warning C4302: “类型强制转换”: 从“unsigned char *”到“unsigned int”截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(605): warning C4311: “类型强制转换”: 从“unsigned char *”到“unsigned int”的指针截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(605): warning C4302: “类型强制转换”: 从“unsigned char *”到“unsigned int”截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(611): warning C4312: “类型强制转换”: 从“int”转换到更大的“unsigned char *”
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(617): warning C4311: “类型强制转换”: 从“unsigned char *”到“int”的指针截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(617): warning C4302: “类型强制转换”: 从“unsigned char *”到“int”截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(661): warning C4311: “类型强制转换”: 从“int (__cdecl *)(int,int,int,int)”到“unsigned long”的指针截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\console.cpp(661): warning C4302: “类型强制转换”: 从“int (__cdecl *)(int,int,int,int)”到“unsigned long”截断
+  explorer.cpp
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\hept.h(29): warning C4200: 使用了非标准扩展: 结构/联合中的零大小数组
+  E:\virtualbox\vmshare\liunux\liunuxos_c\main\hept.h(29): note: 默认构造函数或 copy/move 赋值运算符将忽略此成员
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\explorer.cpp(105): warning C4311: “类型强制转换”: 从“void (__cdecl *)(unsigned long)”到“unsigned long”的指针截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\explorer.cpp(105): warning C4302: “类型强制转换”: 从“void (__cdecl *)(unsigned long)”到“unsigned long”截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\explorer.cpp(151): warning C4311: “类型强制转换”: 从“char *”到“unsigned long”的指针截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\explorer.cpp(151): warning C4302: “类型强制转换”: 从“char *”到“unsigned long”截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\explorer.cpp(154): warning C4311: “类型强制转换”: 从“TASKCMDPARAMS *”到“unsigned long”的指针截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\explorer.cpp(154): warning C4302: “类型强制转换”: 从“TASKCMDPARAMS *”到“unsigned long”截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\explorer.cpp(174): warning C4018: “<”: 有符号/无符号不匹配
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\explorer.cpp(176): warning C4018: “<”: 有符号/无符号不匹配
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\explorer.cpp(189): error C4235: 使用了非标准扩展: 不支持在此结构上使用“__asm”关键字
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\explorer.cpp(190): error C2065: “mov”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\explorer.cpp(190): error C2146: 语法错误: 缺少“;”(在标识符“ecx”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\explorer.cpp(190): error C2065: “ecx”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\explorer.cpp(191): error C2146: 语法错误: 缺少“;”(在标识符“cmp”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\explorer.cpp(191): error C2065: “cmp”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\explorer.cpp(191): error C2146: 语法错误: 缺少“;”(在标识符“ecx”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\explorer.cpp(191): error C2065: “ecx”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\explorer.cpp(192): error C2146: 语法错误: 缺少“;”(在标识符“jz”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\explorer.cpp(192): error C2065: “jz”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\explorer.cpp(192): error C2146: 语法错误: 缺少“;”(在标识符“_callfunc”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\explorer.cpp(192): error C2065: “_callfunc”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\explorer.cpp(193): error C2146: 语法错误: 缺少“;”(在标识符“mov”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\explorer.cpp(193): error C2065: “mov”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\explorer.cpp(193): error C2146: 语法错误: 缺少“;”(在标识符“esi”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\explorer.cpp(193): error C2065: “esi”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\explorer.cpp(194): error C2146: 语法错误: 缺少“;”(在标识符“add”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\explorer.cpp(194): error C2065: “add”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\explorer.cpp(194): error C2146: 语法错误: 缺少“;”(在标识符“esi”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\explorer.cpp(194): error C2065: “esi”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\explorer.cpp(195): error C2146: 语法错误: 缺少“;”(在标识符“sub”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\explorer.cpp(195): error C2065: “sub”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\explorer.cpp(195): error C2146: 语法错误: 缺少“;”(在标识符“esi”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\explorer.cpp(195): error C2065: “esi”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\explorer.cpp(196): error C2146: 语法错误: 缺少“;”(在标识符“_params”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\explorer.cpp(197): error C2065: “mov”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\explorer.cpp(197): error C2146: 语法错误: 缺少“;”(在标识符“eax”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\explorer.cpp(197): error C2065: “eax”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\explorer.cpp(197): error C3481: “esi”: 未找到 lambda 捕获变量
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\explorer.cpp(198): error C3260: “标识符”: 跳过 lambda 主体之前的意外标记
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\explorer.cpp(215): error C3493: 无法隐式捕获“mouseinfo”，因为尚未指定默认捕获模式
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\explorer.cpp(215): error C3493: 无法隐式捕获“computer”，因为尚未指定默认捕获模式
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\explorer.cpp(217): error C3493: 无法隐式捕获“taskcmd”，因为尚未指定默认捕获模式
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\explorer.cpp(226): error C2143: 语法错误: 缺少“;”(在“if”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\explorer.cpp(233): warning C4311: “类型强制转换”: 从“TASKCMDPARAMS *”到“unsigned long”的指针截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\explorer.cpp(233): warning C4302: “类型强制转换”: 从“TASKCMDPARAMS *”到“unsigned long”截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\explorer.cpp(244): warning C4311: “类型强制转换”: 从“TASKCMDPARAMS *”到“unsigned long”的指针截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\explorer.cpp(244): warning C4302: “类型强制转换”: 从“TASKCMDPARAMS *”到“unsigned long”截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\explorer.cpp(248): error C2181: 没有匹配 if 的非法 else
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\explorer.cpp(274): error C2601: “isDesktop”: 本地函数定义是非法的
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\explorer.cpp(283): fatal error C1004: 发现意外的文件尾
+  fat12.cpp
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\fat12\fat12.cpp(41): warning C4311: “类型强制转换”: 从“char *”到“unsigned long”的指针截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\fat12\fat12.cpp(41): warning C4302: “类型强制转换”: 从“char *”到“unsigned long”截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\fat12\fat12.cpp(111): warning C4311: “类型强制转换”: 从“FAT12DBR *”到“unsigned long”的指针截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\fat12\fat12.cpp(111): warning C4302: “类型强制转换”: 从“FAT12DBR *”到“unsigned long”截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\fat12\fat12.cpp(117): warning C4311: “类型强制转换”: 从“FAT12DBR *”到“unsigned long”的指针截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\fat12\fat12.cpp(117): warning C4302: “类型强制转换”: 从“FAT12DBR *”到“unsigned long”截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\fat12\fat12.cpp(176): warning C4312: “类型强制转换”: 从“unsigned long”转换到更大的“LPFAT32DIRECTORY”
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\fat12\fat12.cpp(89): warning C4101: “szout”: 未引用的局部变量
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\fat12\fat12.cpp(238): warning C4311: “类型强制转换”: 从“char *”到“unsigned long”的指针截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\fat12\fat12.cpp(238): warning C4302: “类型强制转换”: 从“char *”到“unsigned long”截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\fat12\fat12.cpp(264): warning C4312: “类型强制转换”: 从“unsigned long”转换到更大的“char *”
+  fat32dirs.cpp
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\fat32\fat32dirs.cpp(60): warning C4312: “类型强制转换”: 从“unsigned long”转换到更大的“char *”
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\fat32\fat32dirs.cpp(68): warning C4311: “类型强制转换”: 从“char *”到“unsigned long”的指针截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\fat32\fat32dirs.cpp(68): warning C4302: “类型强制转换”: 从“char *”到“unsigned long”截断
+  fileManager.cpp
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\fileManager.cpp(140): warning C4312: “类型强制转换”: 从“unsigned long”转换到更大的“char *”
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\fileManager.cpp(155): warning C4311: “类型强制转换”: 从“char *”到“unsigned long”的指针截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\fileManager.cpp(155): warning C4302: “类型强制转换”: 从“char *”到“unsigned long”截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\fileManager.cpp(163): warning C4311: “类型强制转换”: 从“TASKCMDPARAMS *”到“unsigned long”的指针截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\fileManager.cpp(163): warning C4302: “类型强制转换”: 从“TASKCMDPARAMS *”到“unsigned long”截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\fileManager.cpp(173): warning C4311: “类型强制转换”: 从“char *”到“unsigned long”的指针截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\fileManager.cpp(173): warning C4302: “类型强制转换”: 从“char *”到“unsigned long”截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\fileManager.cpp(182): warning C4311: “类型强制转换”: 从“TASKCMDPARAMS *”到“unsigned long”的指针截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\fileManager.cpp(182): warning C4302: “类型强制转换”: 从“TASKCMDPARAMS *”到“unsigned long”截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\fileManager.cpp(193): warning C4311: “类型强制转换”: 从“TASKCMDPARAMS *”到“unsigned long”的指针截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\fileManager.cpp(193): warning C4302: “类型强制转换”: 从“TASKCMDPARAMS *”到“unsigned long”截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\fileManager.cpp(199): warning C4311: “类型强制转换”: 从“TASKCMDPARAMS *”到“unsigned long”的指针截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\fileManager.cpp(199): warning C4302: “类型强制转换”: 从“TASKCMDPARAMS *”到“unsigned long”截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\fileManager.cpp(212): warning C4312: “类型强制转换”: 从“unsigned long”转换到更大的“LPTASKCMDPARAMS”
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\fileManager.cpp(234): warning C4312: “类型强制转换”: 从“unsigned long”转换到更大的“LPFILEBROWSER”
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\fileManager.cpp(256): warning C4311: “类型强制转换”: 从“LPFILEBROWSER”到“unsigned long”的指针截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\fileManager.cpp(256): warning C4302: “类型强制转换”: 从“LPFILEBROWSER”到“unsigned long”截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\fileManager.cpp(394): warning C4311: “类型强制转换”: 从“LPFILEBROWSER”到“unsigned long”的指针截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\fileManager.cpp(394): warning C4302: “类型强制转换”: 从“LPFILEBROWSER”到“unsigned long”截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\fileManager.cpp(443): warning C4018: “<”: 有符号/无符号不匹配
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\fileManager.cpp(484): warning C4311: “类型强制转换”: 从“LPFILEBROWSER”到“unsigned long”的指针截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\fileManager.cpp(484): warning C4302: “类型强制转换”: 从“LPFILEBROWSER”到“unsigned long”截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\fileManager.cpp(495): warning C4312: “类型强制转换”: 从“int”转换到更大的“unsigned char *”
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\fileManager.cpp(514): warning C4311: “类型强制转换”: 从“unsigned char *”到“int”的指针截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\fileManager.cpp(514): warning C4302: “类型强制转换”: 从“unsigned char *”到“int”截断
+  fileManagerWindow.cpp
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\fileManagerWindow.cpp(12): warning C4312: “类型强制转换”: 从“unsigned int”转换到更大的“unsigned char *”
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\fileManagerWindow.cpp(45): warning C4312: “类型强制转换”: 从“unsigned int”转换到更大的“unsigned char *”
+  graph.cpp
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(20): warning C4311: “类型强制转换”: 从“unsigned char *”到“unsigned long”的指针截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(20): warning C4302: “类型强制转换”: 从“unsigned char *”到“unsigned long”截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(31): warning C4311: “类型强制转换”: 从“unsigned char *”到“unsigned long”的指针截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(31): warning C4302: “类型强制转换”: 从“unsigned char *”到“unsigned long”截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(41): warning C4311: “类型强制转换”: 从“unsigned char *”到“unsigned long”的指针截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(41): warning C4302: “类型强制转换”: 从“unsigned char *”到“unsigned long”截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(78): error C4235: 使用了非标准扩展: 不支持在此结构上使用“__asm”关键字
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(79): error C2065: “mov”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(79): error C2146: 语法错误: 缺少“;”(在标识符“dx”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(79): error C2065: “dx”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(79): error C3688: 文本后缀“c8h”无效；未找到文文本运算符或文本运算符模板“operator """"c8h”
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(80): error C2146: 语法错误: 缺少“;”(在标识符“mov”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(80): error C2065: “mov”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(80): error C2146: 语法错误: 缺少“;”(在标识符“al”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(80): error C2065: “al”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(80): error C2065: “byte”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(80): error C2146: 语法错误: 缺少“;”(在标识符“ptr”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(80): error C2065: “ptr”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(80): error C2146: 语法错误: 缺少“;”(在标识符“i”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(81): error C2146: 语法错误: 缺少“;”(在标识符“out”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(81): error C2065: “out”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(81): error C2146: 语法错误: 缺少“;”(在标识符“dx”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(81): error C2065: “dx”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(81): error C2065: “al”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(83): error C2146: 语法错误: 缺少“;”(在标识符“movzx”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(83): error C2065: “movzx”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(83): error C2146: 语法错误: 缺少“;”(在标识符“eax”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(83): error C2065: “eax”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(83): error C2065: “byte”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(83): error C2146: 语法错误: 缺少“;”(在标识符“ptr”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(83): error C2065: “ptr”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(83): error C2146: 语法错误: 缺少“;”(在标识符“data”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(84): error C2146: 语法错误: 缺少“;”(在标识符“mov”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(84): error C2065: “mov”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(84): error C2146: 语法错误: 缺少“;”(在标识符“ecx”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(84): error C2065: “ecx”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(85): error C2146: 语法错误: 缺少“;”(在标识符“mul”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(85): error C2065: “mul”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(85): error C2146: 语法错误: 缺少“;”(在标识符“ecx”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(85): error C2065: “ecx”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(86): error C2146: 语法错误: 缺少“;”(在标识符“mov”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(86): error C2065: “mov”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(86): error C2146: 语法错误: 缺少“;”(在标识符“ecx”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(86): error C2065: “ecx”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(87): error C2146: 语法错误: 缺少“;”(在标识符“div”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(87): error C2065: “div”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(87): error C2146: 语法错误: 缺少“;”(在标识符“ecx”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(87): error C2065: “ecx”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(88): error C2146: 语法错误: 缺少“;”(在标识符“mov”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(88): error C2065: “mov”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(88): error C2146: 语法错误: 缺少“;”(在标识符“dx”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(88): error C2065: “dx”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(88): error C3688: 文本后缀“c9h”无效；未找到文文本运算符或文本运算符模板“operator """"c9h”
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(89): error C2146: 语法错误: 缺少“;”(在标识符“out”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(89): error C2065: “out”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(89): error C2146: 语法错误: 缺少“;”(在标识符“dx”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(89): error C2065: “dx”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(89): error C2065: “al”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(92): error C2146: 语法错误: 缺少“;”(在标识符“movzx”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(92): error C2065: “movzx”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(92): error C2146: 语法错误: 缺少“;”(在标识符“eax”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(92): error C2065: “eax”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(92): error C2065: “byte”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(92): error C2146: 语法错误: 缺少“;”(在标识符“ptr”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(92): error C2065: “ptr”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(92): error C2146: 语法错误: 缺少“;”(在标识符“data”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(93): error C2146: 语法错误: 缺少“;”(在标识符“mov”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(93): error C2065: “mov”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(93): error C2146: 语法错误: 缺少“;”(在标识符“ecx”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(93): error C2065: “ecx”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(94): error C2146: 语法错误: 缺少“;”(在标识符“mul”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(94): error C2065: “mul”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(94): error C2146: 语法错误: 缺少“;”(在标识符“ecx”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(94): error C2065: “ecx”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(95): error C2146: 语法错误: 缺少“;”(在标识符“mov”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(95): error C2065: “mov”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(95): error C2146: 语法错误: 缺少“;”(在标识符“ecx”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(95): error C2065: “ecx”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(96): error C2146: 语法错误: 缺少“;”(在标识符“div”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(96): error C2065: “div”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(96): error C2146: 语法错误: 缺少“;”(在标识符“ecx”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(96): error C2065: “ecx”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(97): error C2146: 语法错误: 缺少“;”(在标识符“mov”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(97): error C2065: “mov”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(97): error C2146: 语法错误: 缺少“;”(在标识符“dx”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(97): error C2065: “dx”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(97): error C3688: 文本后缀“c9h”无效；未找到文文本运算符或文本运算符模板“operator """"c9h”
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(98): error C2146: 语法错误: 缺少“;”(在标识符“out”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(98): error C2065: “out”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(98): error C2146: 语法错误: 缺少“;”(在标识符“dx”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(98): error C2065: “dx”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(98): error C2065: “al”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(101): error C2146: 语法错误: 缺少“;”(在标识符“movzx”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(101): error C2065: “movzx”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(101): error C2146: 语法错误: 缺少“;”(在标识符“eax”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(101): error C2065: “eax”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(101): error C2065: “byte”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(101): error C2146: 语法错误: 缺少“;”(在标识符“ptr”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(101): error C2065: “ptr”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(101): error C2146: 语法错误: 缺少“;”(在标识符“data”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(102): error C2146: 语法错误: 缺少“;”(在标识符“mov”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(102): error C2065: “mov”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(102): error C2146: 语法错误: 缺少“;”(在标识符“ecx”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(102): error C2065: “ecx”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(103): error C2146: 语法错误: 缺少“;”(在标识符“mul”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(103): error C2065: “mul”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(103): error C2146: 语法错误: 缺少“;”(在标识符“ecx”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(103): error C2065: “ecx”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\graph.cpp(104): fatal error C1003: 错误计数超过 100；正在停止编译
+  jpeg.cpp
+  ios9660.cpp
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\ios9660\ios9660.cpp(82): warning C4101: “szout”: 未引用的局部变量
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\ios9660\ios9660.cpp(188): warning C4312: “类型强制转换”: 从“unsigned long”转换到更大的“char *”
+  machine.cpp
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(19): error C4235: 使用了非标准扩展: 不支持在此结构上使用“__asm”关键字
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(20): error C2065: “mov”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(20): error C2146: 语法错误: 缺少“;”(在标识符“eax”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(20): error C2065: “eax”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(21): error C2146: 语法错误: 缺少“;”(在标识符“cpuid”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(21): error C2065: “cpuid”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(22): error C2146: 语法错误: 缺少“;”(在标识符“cmp”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(22): error C2065: “cmp”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(22): error C2146: 语法错误: 缺少“;”(在标识符“eax”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(22): error C2065: “eax”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(23): error C2146: 语法错误: 缺少“;”(在标识符“jb”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(23): error C2065: “jb”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(23): error C2146: 语法错误: 缺少“;”(在标识符“_tmpQuit”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(23): error C2065: “_tmpQuit”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(25): error C2146: 语法错误: 缺少“;”(在标识符“mov”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(25): error C2065: “mov”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(25): error C2146: 语法错误: 缺少“;”(在标识符“eax”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(25): error C2065: “eax”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(26): error C2146: 语法错误: 缺少“;”(在标识符“cpuid”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(26): error C2065: “cpuid”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(27): error C2146: 语法错误: 缺少“;”(在标识符“test”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(27): error C2065: “test”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(27): error C2146: 语法错误: 缺少“;”(在标识符“eax”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(27): error C2065: “eax”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(28): error C2146: 语法错误: 缺少“;”(在标识符“jz”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(28): error C2065: “jz”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(28): error C2146: 语法错误: 缺少“;”(在标识符“_tmpQuit”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(28): error C2065: “_tmpQuit”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(30): error C2146: 语法错误: 缺少“;”(在标识符“mov”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(30): error C2065: “mov”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(30): error C2146: 语法错误: 缺少“;”(在标识符“ecx”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(30): error C2065: “ecx”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(31): error C2146: 语法错误: 缺少“;”(在标识符“rdmsr”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(31): error C2065: “rdmsr”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(32): error C2146: 语法错误: 缺少“;”(在标识符“test”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(32): error C2065: “test”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(32): error C2146: 语法错误: 缺少“;”(在标识符“eax”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(32): error C2065: “eax”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(33): error C2146: 语法错误: 缺少“;”(在标识符“jnz”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(33): error C2065: “jnz”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(33): error C2146: 语法错误: 缺少“;”(在标识符“_tmp85”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(33): error C2065: “_tmp85”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(35): error C2146: 语法错误: 缺少“;”(在标识符“mov”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(35): error C2065: “mov”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(35): error C2146: 语法错误: 缺少“;”(在标识符“Tjunction”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(35): error C2065: “eax”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(36): error C2146: 语法错误: 缺少“;”(在标识符“jmp”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(36): error C2065: “jmp”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(36): error C2146: 语法错误: 缺少“;”(在标识符“_getdts”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(36): error C2065: “_getdts”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(37): error C2146: 语法错误: 缺少“;”(在标识符“_tmp85”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(39): error C2065: “mov”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(39): error C2146: 语法错误: 缺少“;”(在标识符“Tjunction”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(39): error C2065: “eax”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(41): error C2146: 语法错误: 缺少“;”(在标识符“_getdts”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(42): error C2065: “mov”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(42): error C2146: 语法错误: 缺少“;”(在标识符“ebx”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(42): error C2065: “ebx”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(42): error C2065: “eax”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(43): error C2146: 语法错误: 缺少“;”(在标识符“and”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(43): error C2065: “and”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(43): error C2146: 语法错误: 缺少“;”(在标识符“ebx”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(43): error C2065: “ebx”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(44): error C2146: 语法错误: 缺少“;”(在标识符“shr”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(44): error C2065: “shr”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(44): error C2146: 语法错误: 缺少“;”(在标识符“ebx”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(44): error C2065: “ebx”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(48): error C2146: 语法错误: 缺少“;”(在标识符“mov”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(48): error C2065: “mov”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(48): error C2146: 语法错误: 缺少“;”(在标识符“ecx”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(48): error C2065: “ecx”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(49): error C2146: 语法错误: 缺少“;”(在标识符“rdmsr”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(49): error C2065: “rdmsr”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(50): error C2146: 语法错误: 缺少“;”(在标识符“and”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(50): error C2065: “and”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(50): error C2146: 语法错误: 缺少“;”(在标识符“eax”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(50): error C2065: “eax”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(51): error C2146: 语法错误: 缺少“;”(在标识符“shr”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(51): error C2065: “shr”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(51): error C2146: 语法错误: 缺少“;”(在标识符“eax”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(51): error C2065: “eax”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(52): error C2146: 语法错误: 缺少“;”(在标识符“sub”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(52): error C2065: “sub”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(52): error C2146: 语法错误: 缺少“;”(在标识符“ebx”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(52): error C2065: “ebx”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(52): error C2065: “eax”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(53): error C2146: 语法错误: 缺少“;”(在标识符“mov”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(53): error C2065: “mov”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(53): error C2146: 语法错误: 缺少“;”(在标识符“eax”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(53): error C2065: “eax”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(53): error C2065: “ebx”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(54): error C2146: 语法错误: 缺少“;”(在标识符“mov”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(54): error C2065: “mov”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(54): error C2146: 语法错误: 缺少“;”(在标识符“temp”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(54): error C2065: “eax”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(55): error C2146: 语法错误: 缺少“;”(在标识符“_tmpQuit”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\machine.cpp(56): error C2059: 语法错误:“}”
+  main.cpp
+  menu.cpp
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\menu.cpp(21): warning C4312: “类型强制转换”: 从“int”转换到更大的“unsigned char *”
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\menu.cpp(23): warning C4312: “类型强制转换”: 从“unsigned int”转换到更大的“unsigned char *”
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\menu.cpp(25): warning C4018: “<=”: 有符号/无符号不匹配
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\menu.cpp(27): warning C4018: “<=”: 有符号/无符号不匹配
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\menu.cpp(49): warning C4311: “类型强制转换”: 从“unsigned char *”到“int”的指针截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\menu.cpp(49): warning C4302: “类型强制转换”: 从“unsigned char *”到“int”截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\menu.cpp(57): warning C4018: “>=”: 有符号/无符号不匹配
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\menu.cpp(62): warning C4018: “>=”: 有符号/无符号不匹配
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\menu.cpp(74): warning C4312: “类型强制转换”: 从“int”转换到更大的“unsigned char *”
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\menu.cpp(76): warning C4312: “类型强制转换”: 从“unsigned int”转换到更大的“unsigned char *”
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\menu.cpp(78): warning C4018: “<=”: 有符号/无符号不匹配
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\menu.cpp(80): warning C4018: “<=”: 有符号/无符号不匹配
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\menu.cpp(107): warning C4018: “<”: 有符号/无符号不匹配
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\menu.cpp(129): warning C4312: “类型强制转换”: 从“int”转换到更大的“unsigned char *”
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\menu.cpp(177): warning C4311: “类型强制转换”: 从“unsigned char *”到“int”的指针截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\menu.cpp(177): warning C4302: “类型强制转换”: 从“unsigned char *”到“int”截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\menu.cpp(199): warning C4311: “类型强制转换”: 从“int (__cdecl *)(void)”到“unsigned long”的指针截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\menu.cpp(199): warning C4302: “类型强制转换”: 从“int (__cdecl *)(void)”到“unsigned long”截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\menu.cpp(200): warning C4311: “类型强制转换”: 从“int (__cdecl *)(void)”到“unsigned long”的指针截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\menu.cpp(200): warning C4302: “类型强制转换”: 从“int (__cdecl *)(void)”到“unsigned long”截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\menu.cpp(201): warning C4311: “类型强制转换”: 从“int (__cdecl *)(void)”到“unsigned long”的指针截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\menu.cpp(201): warning C4302: “类型强制转换”: 从“int (__cdecl *)(void)”到“unsigned long”截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\menu.cpp(202): warning C4311: “类型强制转换”: 从“int (__cdecl *)(unsigned int,int,char *,char *,unsigned long)”到“unsigned long”的指针截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\menu.cpp(202): warning C4302: “类型强制转换”: 从“int (__cdecl *)(unsigned int,int,char *,char *,unsigned long)”到“unsigned long”截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\menu.cpp(203): warning C4311: “类型强制转换”: 从“int (__cdecl *)(unsigned int,int,char *,char *,unsigned long)”到“unsigned long”的指针截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\menu.cpp(203): warning C4302: “类型强制转换”: 从“int (__cdecl *)(unsigned int,int,char *,char *,unsigned long)”到“unsigned long”截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\menu.cpp(204): warning C4311: “类型强制转换”: 从“void (__cdecl *)(unsigned long)”到“unsigned long”的指针截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\menu.cpp(204): warning C4302: “类型强制转换”: 从“void (__cdecl *)(unsigned long)”到“unsigned long”截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\menu.cpp(205): warning C4311: “类型强制转换”: 从“int (__cdecl *)(int)”到“unsigned long”的指针截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\menu.cpp(205): warning C4302: “类型强制转换”: 从“int (__cdecl *)(int)”到“unsigned long”截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\menu.cpp(217): warning C4311: “类型强制转换”: 从“char *”到“unsigned long”的指针截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\menu.cpp(217): warning C4302: “类型强制转换”: 从“char *”到“unsigned long”截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\menu.cpp(218): warning C4311: “类型强制转换”: 从“char *”到“unsigned long”的指针截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\menu.cpp(218): warning C4302: “类型强制转换”: 从“char *”到“unsigned long”截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\menu.cpp(220): warning C4311: “类型强制转换”: 从“void (__cdecl *)(int,char *,char *,unsigned long)”到“unsigned long”的指针截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\menu.cpp(220): warning C4302: “类型强制转换”: 从“void (__cdecl *)(int,char *,char *,unsigned long)”到“unsigned long”截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\menu.cpp(221): warning C4311: “类型强制转换”: 从“void (__cdecl *)(int,char *,char *,unsigned long)”到“unsigned long”的指针截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\menu.cpp(221): warning C4302: “类型强制转换”: 从“void (__cdecl *)(int,char *,char *,unsigned long)”到“unsigned long”截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\menu.cpp(224): warning C4311: “类型强制转换”: 从“char *”到“unsigned long”的指针截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\menu.cpp(224): warning C4302: “类型强制转换”: 从“char *”到“unsigned long”截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\menu.cpp(225): warning C4311: “类型强制转换”: 从“char *”到“unsigned long”的指针截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\menu.cpp(225): warning C4302: “类型强制转换”: 从“char *”到“unsigned long”截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\menu.cpp(227): warning C4311: “类型强制转换”: 从“void (__cdecl *)(int,char *,char *,unsigned long)”到“unsigned long”的指针截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\menu.cpp(227): warning C4302: “类型强制转换”: 从“void (__cdecl *)(int,char *,char *,unsigned long)”到“unsigned long”截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\menu.cpp(228): warning C4311: “类型强制转换”: 从“void (__cdecl *)(int,char *,char *,unsigned long)”到“unsigned long”的指针截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\menu.cpp(228): warning C4302: “类型强制转换”: 从“void (__cdecl *)(int,char *,char *,unsigned long)”到“unsigned long”截断
+  ntfsDirs.cpp
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\NTFS\ntfsDirs.cpp(40): warning C4311: “类型强制转换”: 从“LPSTD_INDEX_ENTRY”到“unsigned int”的指针截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\NTFS\ntfsDirs.cpp(40): warning C4302: “类型强制转换”: 从“LPSTD_INDEX_ENTRY”到“unsigned int”截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\NTFS\ntfsDirs.cpp(40): warning C4311: “类型强制转换”: 从“char *”到“unsigned int”的指针截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\NTFS\ntfsDirs.cpp(40): warning C4302: “类型强制转换”: 从“char *”到“unsigned int”截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\NTFS\ntfsDirs.cpp(46): warning C4311: “类型强制转换”: 从“LPSTD_INDEX_ENTRY”到“unsigned int”的指针截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\NTFS\ntfsDirs.cpp(46): warning C4302: “类型强制转换”: 从“LPSTD_INDEX_ENTRY”到“unsigned int”截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\NTFS\ntfsDirs.cpp(75): warning C4311: “类型强制转换”: 从“LPSTD_INDEX_ENTRY”到“unsigned int”的指针截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\NTFS\ntfsDirs.cpp(75): warning C4302: “类型强制转换”: 从“LPSTD_INDEX_ENTRY”到“unsigned int”截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\NTFS\ntfsDirs.cpp(75): warning C4312: “类型强制转换”: 从“unsigned int”转换到更大的“LPSTD_INDEX_ENTRY”
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\NTFS\ntfsDirs.cpp(97): warning C4311: “类型强制转换”: 从“LPResidentAttributeHeader”到“unsigned int”的指针截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\NTFS\ntfsDirs.cpp(97): warning C4302: “类型强制转换”: 从“LPResidentAttributeHeader”到“unsigned int”截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\NTFS\ntfsDirs.cpp(97): warning C4312: “类型强制转换”: 从“unsigned int”转换到更大的“LPINDEX_ROOT”
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\NTFS\ntfsDirs.cpp(99): warning C4311: “类型强制转换”: 从“LPINDEX_HEADER”到“unsigned int”的指针截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\NTFS\ntfsDirs.cpp(99): warning C4302: “类型强制转换”: 从“LPINDEX_HEADER”到“unsigned int”截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\NTFS\ntfsDirs.cpp(99): warning C4312: “类型强制转换”: 从“unsigned int”转换到更大的“LPINDEX_ENTRY”
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\NTFS\ntfsDirs.cpp(109): warning C4311: “类型强制转换”: 从“LPINDEX_ENTRY”到“unsigned int”的指针截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\NTFS\ntfsDirs.cpp(109): warning C4302: “类型强制转换”: 从“LPINDEX_ENTRY”到“unsigned int”截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\NTFS\ntfsDirs.cpp(115): warning C4311: “类型强制转换”: 从“LPINDEX_ENTRY”到“unsigned int”的指针截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\NTFS\ntfsDirs.cpp(115): warning C4302: “类型强制转换”: 从“LPINDEX_ENTRY”到“unsigned int”截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\NTFS\ntfsDirs.cpp(137): warning C4311: “类型强制转换”: 从“LPINDEX_ENTRY”到“unsigned int”的指针截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\NTFS\ntfsDirs.cpp(137): warning C4302: “类型强制转换”: 从“LPINDEX_ENTRY”到“unsigned int”截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\NTFS\ntfsDirs.cpp(137): warning C4312: “类型强制转换”: 从“unsigned int”转换到更大的“LPINDEX_ENTRY”
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\NTFS\ntfsDirs.cpp(173): warning C4312: “类型强制转换”: 从“unsigned long”转换到更大的“char *”
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\NTFS\ntfsDirs.cpp(260): warning C4311: “类型强制转换”: 从“char *”到“unsigned long”的指针截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\NTFS\ntfsDirs.cpp(260): warning C4302: “类型强制转换”: 从“char *”到“unsigned long”截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\NTFS\ntfsDirs.cpp(276): warning C4311: “类型强制转换”: 从“LPCommonAttributeHeader”到“unsigned int”的指针截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\NTFS\ntfsDirs.cpp(276): warning C4302: “类型强制转换”: 从“LPCommonAttributeHeader”到“unsigned int”截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\NTFS\ntfsDirs.cpp(276): warning C4312: “类型强制转换”: 从“unsigned int”转换到更大的“LPCommonAttributeHeader”
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\NTFS\ntfsDirs.cpp(283): warning C4311: “类型强制转换”: 从“char *”到“unsigned long”的指针截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\NTFS\ntfsDirs.cpp(283): warning C4302: “类型强制转换”: 从“char *”到“unsigned long”截断
+  paint.cpp
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\paint.cpp(73): warning C4312: “类型强制转换”: 从“unsigned int”转换到更大的“unsigned int *”
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\paint.cpp(123): warning C4312: “类型强制转换”: 从“int”转换到更大的“unsigned char *”
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\paint.cpp(170): warning C4312: “类型强制转换”: 从“int”转换到更大的“unsigned char *”
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\paint.cpp(208): warning C4312: “类型强制转换”: 从“int”转换到更大的“unsigned char *”
+  taskBar.cpp
+  windowClass.cpp
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\windowClass.cpp(26): warning C4312: “类型强制转换”: 从“unsigned long”转换到更大的“LPTASKCMDPARAMS”
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\windowClass.cpp(53): warning C4312: “类型强制转换”: 从“unsigned long”转换到更大的“char *”
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\windowClass.cpp(80): warning C4312: “类型强制转换”: 从“unsigned long”转换到更大的“char *”
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\windowClass.cpp(90): warning C4311: “类型强制转换”: 从“char *”到“unsigned long”的指针截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\windowClass.cpp(90): warning C4302: “类型强制转换”: 从“char *”到“unsigned long”截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\windowClass.cpp(93): warning C4311: “类型强制转换”: 从“char *”到“unsigned long”的指针截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\windowClass.cpp(93): warning C4302: “类型强制转换”: 从“char *”到“unsigned long”截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\windowClass.cpp(98): warning C4312: “类型强制转换”: 从“unsigned long”转换到更大的“unsigned char *”
+  sysregs.cpp
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(34): error C4235: 使用了非标准扩展: 不支持在此结构上使用“__asm”关键字
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(35): error C2065: “mov”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(35): error C2146: 语法错误: 缺少“;”(在标识符“eax”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(35): error C2065: “eax”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(35): error C2065: “cr0”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(36): error C2146: 语法错误: 缺少“;”(在标识符“mov”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(36): error C2065: “mov”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(36): error C2146: 语法错误: 缺少“;”(在标识符“rcr0”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(36): error C2065: “eax”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(37): error C2146: 语法错误: 缺少“;”(在标识符“mov”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(37): error C2065: “mov”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(37): error C2146: 语法错误: 缺少“;”(在标识符“eax”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(37): error C2065: “eax”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(37): error C2065: “cr2”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(38): error C2146: 语法错误: 缺少“;”(在标识符“mov”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(38): error C2065: “mov”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(38): error C2146: 语法错误: 缺少“;”(在标识符“rcr2”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(38): error C2065: “eax”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(39): error C2146: 语法错误: 缺少“;”(在标识符“mov”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(39): error C2065: “mov”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(39): error C2146: 语法错误: 缺少“;”(在标识符“eax”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(39): error C2065: “eax”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(39): error C2065: “cr3”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(40): error C2146: 语法错误: 缺少“;”(在标识符“mov”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(40): error C2065: “mov”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(40): error C2146: 语法错误: 缺少“;”(在标识符“rcr3”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(40): error C2065: “eax”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(43): error C2146: 语法错误: 缺少“;”(在标识符“__emit”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(43): error C2065: “__emit”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(43): error C2143: 语法错误: 缺少“;”(在“常数”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(44): error C2146: 语法错误: 缺少“;”(在标识符“__emit”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(44): error C2065: “__emit”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(44): error C2143: 语法错误: 缺少“;”(在“常数”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(45): error C2146: 语法错误: 缺少“;”(在标识符“__emit”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(45): error C2065: “__emit”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(45): error C2143: 语法错误: 缺少“;”(在“常数”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(46): error C2146: 语法错误: 缺少“;”(在标识符“mov”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(46): error C2065: “mov”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(46): error C2146: 语法错误: 缺少“;”(在标识符“rcr4”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(46): error C2065: “eax”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(47): error C2143: 语法错误: 缺少“;”(在“}”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(132): error C4235: 使用了非标准扩展: 不支持在此结构上使用“__asm”关键字
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(133): error C2065: “mov”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(133): error C2146: 语法错误: 缺少“;”(在标识符“reax”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(133): error C2065: “eax”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(134): error C2146: 语法错误: 缺少“;”(在标识符“mov”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(134): error C2065: “mov”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(134): error C2146: 语法错误: 缺少“;”(在标识符“recx”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(134): error C2065: “ecx”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(135): error C2146: 语法错误: 缺少“;”(在标识符“mov”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(135): error C2065: “mov”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(135): error C2146: 语法错误: 缺少“;”(在标识符“redx”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(135): error C2065: “edx”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(136): error C2146: 语法错误: 缺少“;”(在标识符“mov”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(136): error C2065: “mov”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(136): error C2146: 语法错误: 缺少“;”(在标识符“rebx”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(136): error C2065: “ebx”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(138): error C2146: 语法错误: 缺少“;”(在标识符“mov”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(138): error C2065: “mov”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(138): error C2146: 语法错误: 缺少“;”(在标识符“rebp”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(138): error C2065: “ebp”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(139): error C2146: 语法错误: 缺少“;”(在标识符“mov”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(139): error C2065: “mov”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(139): error C2146: 语法错误: 缺少“;”(在标识符“resp”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(139): error C2065: “esp”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(140): error C2146: 语法错误: 缺少“;”(在标识符“mov”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(140): error C2065: “mov”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(140): error C2146: 语法错误: 缺少“;”(在标识符“resi”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(140): error C2065: “esi”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(141): error C2146: 语法错误: 缺少“;”(在标识符“mov”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(141): error C2065: “mov”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(141): error C2146: 语法错误: 缺少“;”(在标识符“redi”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(141): error C2065: “edi”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(142): error C2146: 语法错误: 缺少“;”(在标识符“call”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(142): error C2065: “call”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(142): error C2146: 语法错误: 缺少“;”(在标识符“_next”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(142): error C2065: “_next”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(144): error C2146: 语法错误: 缺少“;”(在标识符“_next”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(145): error C2065: “mov”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(145): error C2146: 语法错误: 缺少“;”(在标识符“eax”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(145): error C2065: “eax”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(145): error C2065: “dword”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(145): error C2146: 语法错误: 缺少“;”(在标识符“ptr”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(145): error C2065: “ptr”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(145): error C2146: 语法错误: 缺少“;”(在标识符“ss”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(145): warning C4467: 已弃用 ATL 属性的使用情况
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(145): error C2337: “esp”: 未找到特性
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(146): error C2059: 语法错误:“<default int type>”
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(184): error C4235: 使用了非标准扩展: 不支持在此结构上使用“__asm”关键字
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(185): error C2065: “sldt”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(185): error C2146: 语法错误: 缺少“;”(在标识符“ax”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(185): error C2065: “ax”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(186): error C2146: 语法错误: 缺少“;”(在标识符“mov”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(186): error C2065: “mov”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(186): error C2146: 语法错误: 缺少“;”(在标识符“ldt”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(186): error C2065: “ax”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(188): error C2143: 语法错误: 缺少“;”(在“}”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(203): warning C4312: “类型强制转换”: 从“int”转换到更大的“__int64 *”
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(220): error C4235: 使用了非标准扩展: 不支持在此结构上使用“__asm”关键字
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(221): error C2065: “sgdt”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(221): error C2146: 语法错误: 缺少“;”(在标识符“fword”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(221): error C2065: “fword”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(221): error C2146: 语法错误: 缺少“;”(在标识符“ptr”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(221): error C2065: “ptr”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(231): warning C4312: “类型强制转换”: 从“unsigned long”转换到更大的“__int64 *”
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(249): error C4235: 使用了非标准扩展: 不支持在此结构上使用“__asm”关键字
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(250): error C2065: “sidt”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(250): error C2146: 语法错误: 缺少“;”(在标识符“fword”的前面)
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(250): error C2065: “fword”: 未声明的标识符
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\sysregs.cpp(250): fatal error C1003: 错误计数超过 100；正在停止编译
+  userUtils.cpp
+E:\virtualbox\vmshare\liunux\liunuxos_c\main\userUtils.cpp(55): warning C4244: “初始化”: 从“__int64”转换到“int”，可能丢失数据

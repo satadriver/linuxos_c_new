@@ -152,6 +152,10 @@ void sleep(DWORD * params) {
 		times++;
 	}
 
+	if (times == 0) {
+		times = 1;
+	}
+
 	LPPROCESS_INFO tss = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
 	tss->sleep += times;
 

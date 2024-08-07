@@ -244,8 +244,8 @@ int __initProcess(LPPROCESS_INFO tss, int pid, DWORD filedata, char * filename, 
 		ret0->cs = tss->tss.cs;
 		ret0->eip = tss->tss.eip;
 		ret0->eflags = tss->tss.eflags;
-		tss->tss.esp = (DWORD)tss->espbase + KTASK_STACK_SIZE - STACK_TOP_DUMMY - sizeof(TASKPARAMS) - sizeof(RETUTN_ADDRESS_0);
-		tss->tss.ebp = (DWORD)tss->espbase + KTASK_STACK_SIZE - STACK_TOP_DUMMY - sizeof(TASKPARAMS) - sizeof(RETUTN_ADDRESS_0);
+		tss->tss.esp = (DWORD)ret0;
+		tss->tss.ebp = (DWORD)ret0;
 		//tss->tss.esp = (DWORD)vaddr + KTASK_STACK_SIZE - STACK_TOP_DUMMY - sizeof(TASKPARAMS) - sizeof(RETUTN_ADDRESS_0);
 		//tss->tss.ebp = (DWORD)vaddr + KTASK_STACK_SIZE - STACK_TOP_DUMMY - sizeof(TASKPARAMS) - sizeof(RETUTN_ADDRESS_0);
 #else
