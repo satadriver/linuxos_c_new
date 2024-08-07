@@ -7,6 +7,7 @@ ipch/
 *.ipch
 *.opendb
 *.tlog
+*.log
 
 # Object files
 *.o
@@ -22,6 +23,8 @@ ipch/
 # Precompiled Headers
 *.gch
 *.pch
+*.suo
+*.tlog
 
 # Libraries
 *.lib

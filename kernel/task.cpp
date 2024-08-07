@@ -15,7 +15,7 @@
 
 TASK_LIST_ENTRY *gTasksListPtr = 0;
 
-/*
+
 void __terminateTask(int tid, char * filename, char * funcname, DWORD lpparams) {
 	int retvalue = 0;
 	__asm {
@@ -24,7 +24,7 @@ void __terminateTask(int tid, char * filename, char * funcname, DWORD lpparams) 
 
 	removeTaskList(tid);
 	__sleep(-1);
-}*/
+}
 
 
 TASK_LIST_ENTRY* searchTaskList(int tid) {

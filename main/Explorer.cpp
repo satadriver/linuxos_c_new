@@ -45,19 +45,29 @@ int g_test1Cnt = 0;
 
 int g_test2Cnt = 0;
 
+int g_test3Cnt = 0;
+
 extern "C" __declspec(dllexport) void __taskTest1(unsigned int retaddr, int tid, char* filename, char* funcname, DWORD param) {
 	char szout[1024];
 	while (g_test1Cnt++ < 10) {
 		__printf(szout, "__taskTest1 tid:%d running %d!\r\n",tid, g_test1Cnt);
+		__sleep(100);
 	}
 }
-
 
 extern "C" __declspec(dllexport) void __taskTest2(unsigned int retaddr, int tid, char* filename, char* funcname, DWORD param) {
 	char szout[1024];
 	while (g_test2Cnt++ < 10) {
 		__printf(szout, "__taskTest2 tid:%d running %d!\r\n",tid, g_test2Cnt);
-		__sleep(0);
+		__sleep(100);
+	}
+}
+
+extern "C" __declspec(dllexport) void __taskTest3(unsigned int retaddr, int tid, char* filename, char* funcname, DWORD param) {
+	char szout[1024];
+	while (g_test3Cnt++ < 10) {
+		__printf(szout, "__taskTest3 tid:%d running %d!\r\n", tid, g_test3Cnt);
+		__sleep(100);
 	}
 }
 
@@ -108,9 +118,18 @@ int __kExplorer(unsigned int retaddr, int tid, char * filename, char * funcname,
 
 	//callgateEntry(0, 0);
 
-	//displayCCPoem();
+	displayCCPoem();
 
-
+	int imagesize = 0x10000;
+	DWORD address = getAddrFromName(MAIN_DLL_BASE, "__taskTest1");
+	//__kCreateThread((DWORD)address, MAIN_DLL_BASE, (DWORD)0, "__taskTest1");
+	__kCreateProcessFromAddrFunc(MAIN_DLL_SOURCE_BASE, imagesize, "__taskTest1", 3, 0);
+	DWORD address2 = getAddrFromName(MAIN_DLL_BASE, "__taskTest2");
+	//__kCreateThread((DWORD)address2, MAIN_DLL_BASE, (DWORD)0, "__taskTest2");
+	__kCreateProcessFromAddrFunc(MAIN_DLL_SOURCE_BASE, imagesize, "__taskTest2", 3, 0);
+	DWORD address3 = getAddrFromName(MAIN_DLL_BASE, "__taskTest3");
+	//__kCreateThread((DWORD)address3, MAIN_DLL_BASE, (DWORD)0, "__taskTest3");
+	__kCreateProcessFromAddrFunc(MAIN_DLL_SOURCE_BASE, imagesize, "__taskTest3", 3, 0);
 
 	//readAtapiSector(FLOPPY_DMA_BUFFER, 16, 1);
 	//readFloppySector(0, FLOPPY_DMA_BUFFER, 0, 4);

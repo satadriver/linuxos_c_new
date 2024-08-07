@@ -1059,12 +1059,12 @@ void __initSpinLock(DWORD * v) {
 
 WORD __enterSpinLock(DWORD * v) {
 	__asm {
-	__enterSpinLockLoop:
-			lock bts[v], 0
-			jnc __enterSpinLockEnd
-			pause
-			jmp __enterSpinLockLoop
-			__enterSpinLockEnd :
+		__enterSpinLockLoop:
+		lock bts[v], 0
+		jnc __enterSpinLockEnd
+		pause
+		jmp __enterSpinLockLoop
+		__enterSpinLockEnd :
 	}
 }
 
@@ -1107,7 +1107,7 @@ DWORD __leavelock(DWORD * lockvalue) {
 	DWORD result = 0;
 
 	__asm {
-	__leavelockLoop:
+		__leavelockLoop:
 		mov eax, 1
 		mov edx, 0
 		lock cmpxchg[lockvalue], edx
