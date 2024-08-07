@@ -1,2 +1,147 @@
-﻿C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Microsoft\VC\v150\Platforms\Win32\PlatformToolsets\v141_xp\Toolset.targets(39,5): warning MSB8051: 面向 Windows XP 的支持已被弃用，将来的 Visual Studio 版本不再提供该支持。请访问 https://go.microsoft.com/fwlink/?linkid=2023588，获取详细信息。
-  kernel.vcxproj -> D:\liunux\liunuxos_c\Release\kernel.dll
+﻿d:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Microsoft\VC\v150\Platforms\Win32\PlatformToolsets\v141_xp\Toolset.targets(39,5): warning MSB8051: 面向 Windows XP 的支持已被弃用，将来的 Visual Studio 版本不再提供该支持。请访问 https://go.microsoft.com/fwlink/?linkid=2023588，获取详细信息。
+  ATA.cpp
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\ATA.cpp(78): warning C4554: “&”: 检查运算符优先级是否存在的可能的错误；使用括号阐明优先级
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\ATA.cpp(81): warning C4554: “&”: 检查运算符优先级是否存在的可能的错误；使用括号阐明优先级
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\ATA.cpp(183): warning C4244: “=”: 从“unsigned long”转换到“unsigned short”，可能丢失数据
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\ATA.cpp(186): warning C4244: “=”: 从“unsigned long”转换到“unsigned short”，可能丢失数据
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\ATA.cpp(257): warning C4244: “参数”: 从“unsigned long”转换到“unsigned char”，可能丢失数据
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\ATA.cpp(277): warning C4244: “参数”: 从“unsigned long”转换到“unsigned char”，可能丢失数据
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\ATA.cpp(382): warning C4244: “参数”: 从“unsigned long”转换到“unsigned char”，可能丢失数据
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\ATA.cpp(418): warning C4244: “参数”: 从“unsigned long”转换到“unsigned char”，可能丢失数据
+  ntfs.cpp
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\NTFS\ntfs.cpp(165): warning C4146: 一元负运算符应用于无符号类型，结果仍为无符号类型
+  ntfsFile.cpp
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\NTFS\ntfsFile.cpp(290): warning C4018: “>=”: 有符号/无符号不匹配
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\NTFS\ntfsFile.cpp(434): warning C4018: “>=”: 有符号/无符号不匹配
+  acpi.cpp
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\acpi.cpp(384): warning C4244: “参数”: 从“const unsigned __int64”转换到“unsigned short”，可能丢失数据
+  apic.cpp
+  atapi.cpp
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\atapi.cpp(71): warning C4244: “参数”: 从“unsigned long”转换到“unsigned char”，可能丢失数据
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\atapi.cpp(73): warning C4244: “参数”: 从“unsigned short”转换到“unsigned char”，可能丢失数据
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\atapi.cpp(103): warning C4244: “参数”: 从“unsigned short”转换到“unsigned char”，可能丢失数据
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\atapi.cpp(146): warning C4244: “参数”: 从“unsigned short”转换到“unsigned char”，可能丢失数据
+  cmosAlarm.cpp
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\cmosAlarm.cpp(135): warning C4018: “>=”: 有符号/无符号不匹配
+  cmosExactTimer.cpp
+  cmosPeriodTimer.cpp
+  coprocessor.cpp
+  core.cpp
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\core.cpp(130): warning C4244: “=”: 从“unsigned long”转换到“unsigned short”，可能丢失数据
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\core.cpp(144): warning C4244: “=”: 从“unsigned long”转换到“unsigned short”，可能丢失数据
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\core.cpp(155): warning C4244: “=”: 从“unsigned long”转换到“unsigned short”，可能丢失数据
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\core.cpp(167): warning C4244: “=”: 从“unsigned long”转换到“unsigned short”，可能丢失数据
+  debugger.cpp
+  descriptor.cpp
+  device.cpp
+  elf.cpp
+  exception.cpp
+  ext.cpp
+  FAT32.cpp
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\fat32\FAT32.cpp(30): warning C4101: “szshow”: 未引用的局部变量
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\fat32\FAT32.cpp(252): warning C4018: “<”: 有符号/无符号不匹配
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\fat32\FAT32.cpp(276): warning C4018: “>=”: 有符号/无符号不匹配
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\fat32\FAT32.cpp(308): warning C4018: “>=”: 有符号/无符号不匹配
+  FAT32Utils.cpp
+  Fat32File.cpp
+  正在生成代码...
+  正在编译...
+  FileUtils.cpp
+  file.cpp
+  floppy.cpp
+  gdi.cpp
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\gdi.cpp(50): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\gdi.cpp(98): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\gdi.cpp(105): warning C4244: “参数”: 从“double”转换到“int”，可能丢失数据
+  hardware.cpp
+  ios9660.cpp
+  kernel.cpp
+  keyboard.cpp
+  listEntry.cpp
+  malloc.cpp
+  math.cpp
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\math.cpp(74): warning C4305: “初始化”: 从“double”到“float”截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\math.cpp(75): warning C4305: “初始化”: 从“double”到“float”截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\math.cpp(76): warning C4305: “初始化”: 从“double”到“float”截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\math.cpp(77): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\math.cpp(78): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\math.cpp(87): warning C4244: “+=”: 从“double”转换到“float”，可能丢失数据
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\math.cpp(89): warning C4305: “-=”: 从“double”到“float”截断
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\math.cpp(109): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+  memory.cpp
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\memory.cpp(65): warning C4018: “<”: 有符号/无符号不匹配
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\memory.cpp(95): warning C4018: “>=”: 有符号/无符号不匹配
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\memory.cpp(27): warning C4101: “szout”: 未引用的局部变量
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\memory.cpp(164): warning C4018: “<”: 有符号/无符号不匹配
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\memory.cpp(197): warning C4018: “<”: 有符号/无符号不匹配
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\memory.cpp(174): warning C4101: “szout”: 未引用的局部变量
+  mouse.cpp
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\mouse.cpp(196): warning C4018: “<”: 有符号/无符号不匹配
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\mouse.cpp(198): warning C4018: “<”: 有符号/无符号不匹配
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\mouse.cpp(233): warning C4018: “<”: 有符号/无符号不匹配
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\mouse.cpp(235): warning C4018: “<”: 有符号/无符号不匹配
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\mouse.cpp(260): warning C4018: “<”: 有符号/无符号不匹配
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\mouse.cpp(262): warning C4018: “<”: 有符号/无符号不匹配
+  page.cpp
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\page.cpp(99): warning C4018: “<=”: 有符号/无符号不匹配
+  parallel.cpp
+  pci.cpp
+  pe.cpp
+  peResource.cpp
+  peVirtual.cpp
+  process.cpp
+  正在生成代码...
+  正在编译...
+  processDOS.cpp
+  screenProtect.cpp
+  serialUART.cpp
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\serialUART.cpp(265): warning C4101: “szout”: 未引用的局部变量
+  servicesProc.cpp
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\servicesProc.cpp(37): warning C4537: “stack”:“.”应用于非 UDT 类型
+  E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\servicesProc.cpp(9): note: 参见“stack”的声明
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\servicesProc.cpp(69): warning C4244: “参数”: 从“unsigned long”转换到“unsigned char”，可能丢失数据
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\servicesProc.cpp(162): warning C4018: “<”: 有符号/无符号不匹配
+  sbPlay.cpp
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\soundBlaster\sbPlay.cpp(55): warning C4554: “&”: 检查运算符优先级是否存在的可能的错误；使用括号阐明优先级
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\soundBlaster\sbPlay.cpp(402): warning C4244: “参数”: 从“unsigned long”转换到“unsigned short”，可能丢失数据
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\soundBlaster\sbPlay.cpp(405): warning C4244: “参数”: 从“unsigned long”转换到“unsigned short”，可能丢失数据
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\soundBlaster\sbPlay.cpp(426): warning C4244: “参数”: 从“unsigned long”转换到“unsigned short”，可能丢失数据
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\soundBlaster\sbPlay.cpp(430): warning C4244: “参数”: 从“unsigned long”转换到“unsigned short”，可能丢失数据
+  speaker.cpp
+  task.cpp
+  textMode.cpp
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\textMode.cpp(39): warning C4101: “szout”: 未引用的局部变量
+  thread.cpp
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\thread.cpp(55): warning C4101: “szout”: 未引用的局部变量
+  timer8254.cpp
+  utils.cpp
+  v86.cpp
+  vectorRoutine.cpp
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\vectorRoutine.cpp(967): warning C4101: “szout”: 未引用的局部变量
+  video.cpp
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\video.cpp(1178): warning C4244: “初始化”: 从“int”转换到“float”，可能丢失数据
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\video.cpp(1181): warning C4244: “=”: 从“int”转换到“float”，可能丢失数据
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\video.cpp(1184): warning C4244: “初始化”: 从“int”转换到“float”，可能丢失数据
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\video.cpp(1185): warning C4244: “初始化”: 从“int”转换到“float”，可能丢失数据
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\video.cpp(1211): warning C4244: “参数”: 从“double”转换到“float”，可能丢失数据
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\video.cpp(1212): warning C4244: “参数”: 从“double”转换到“float”，可能丢失数据
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\video.cpp(1217): warning C4244: “参数”: 从“double”转换到“int”，可能丢失数据
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\video.cpp(1217): warning C4244: “参数”: 从“double”转换到“int”，可能丢失数据
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\video.cpp(1217): warning C4244: “参数”: 从“double”转换到“int”，可能丢失数据
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\video.cpp(1217): warning C4244: “参数”: 从“double”转换到“int”，可能丢失数据
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\video.cpp(1233): warning C4244: “参数”: 从“double”转换到“float”，可能丢失数据
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\video.cpp(1234): warning C4244: “参数”: 从“double”转换到“float”，可能丢失数据
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\video.cpp(1244): warning C4244: “参数”: 从“double”转换到“int”，可能丢失数据
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\video.cpp(1244): warning C4244: “参数”: 从“double”转换到“int”，可能丢失数据
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\video.cpp(1244): warning C4244: “参数”: 从“double”转换到“int”，可能丢失数据
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\video.cpp(1244): warning C4244: “参数”: 从“double”转换到“int”，可能丢失数据
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\video.cpp(1247): warning C4244: “参数”: 从“double”转换到“int”，可能丢失数据
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\video.cpp(1247): warning C4244: “参数”: 从“double”转换到“int”，可能丢失数据
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\video.cpp(1247): warning C4244: “参数”: 从“double”转换到“int”，可能丢失数据
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\video.cpp(1247): warning C4244: “参数”: 从“double”转换到“int”，可能丢失数据
+  window.cpp
+  正在生成代码...
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\window.cpp(314): warning C4700: 使用了未初始化的局部变量“b”
+E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\window.cpp(316): warning C4700: 使用了未初始化的局部变量“r”
+    正在创建库 E:\virtualbox\vmshare\liunux\liunuxos_c\Release\kernel.lib 和对象 E:\virtualbox\vmshare\liunux\liunuxos_c\Release\kernel.exp
+  kernel.vcxproj -> E:\virtualbox\vmshare\liunux\liunuxos_c\Release\kernel.dll

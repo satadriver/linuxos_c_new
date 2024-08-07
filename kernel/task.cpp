@@ -17,10 +17,6 @@ TASK_LIST_ENTRY *gTasksListPtr = 0;
 
 
 void __terminateTask(int tid, char * filename, char * funcname, DWORD lpparams) {
-	int retvalue = 0;
-	__asm {
-		mov retvalue, eax
-	}
 
 	removeTaskList(tid);
 	__sleep(-1);
