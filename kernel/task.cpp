@@ -368,14 +368,11 @@ extern "C"  __declspec(dllexport) DWORD __kTaskSchedule(LIGHT_ENVIRONMENT* regs)
 	LPPROCESS_INFO process = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
 	
 	//切换到新任务的cr3和ldt会被自动加载，但是iret也会加载cr3和ldt，因此不需要手动加载
-// 	DWORD nextcr3 = next->process->tss.cr3;
-// 	LPTSS timertss = (LPTSS)gAsmTsses;
-// 	timertss->cr3 = nextcr3;
-// 	short ldt = ((DWORD)glpLdt - (DWORD)glpGdt);
-// 	__asm {
-// 		mov ax,ldt
-// 		lldt ax
-// 	}
+	//DescriptTableReg ldtreg;
+	// 	__asm {
+	//		sldt ldtreg;
+	// 	}
+	//process->tss.ldt = ldtreg.addr;
 
 	process->counter++;
 	__memcpy((char*)(tss + prev->process->tid), (char*)process, sizeof(PROCESS_INFO));
@@ -480,6 +477,10 @@ extern "C"  __declspec(dllexport) DWORD __kTaskSchedule(LIGHT_ENVIRONMENT * env)
 	process->tss.ds = env->ds;
 	process->tss.es = env->es;
 
+	process->tss.eip = env->eip;
+	process->tss.cs = env->cs;
+	process->tss.eflags = env->eflags;
+
 	DWORD dwcr3 = 0;
 	__asm {
 		mov eax,cr3
@@ -495,15 +496,12 @@ extern "C"  __declspec(dllexport) DWORD __kTaskSchedule(LIGHT_ENVIRONMENT * env)
 		process->tss.ss = KERNEL_MODE_DATA;
 	}
 
-		//切换到新任务的cr3和ldt会被自动加载，但是iret也会加载cr3和ldt，因此不需要手动加载
-	// 	DWORD nextcr3 = next->process->tss.cr3;
-	// 	LPTSS timertss = (LPTSS)gAsmTsses;
-	// 	timertss->cr3 = nextcr3;
-	// 	short ldt = ((DWORD)glpLdt - (DWORD)glpGdt);
+	//切换到新任务的cr3和ldt会被自动加载，但是iret也会加载cr3和ldt，因此不需要手动加载
+	//DescriptTableReg ldtreg;
 	// 	__asm {
-	// 		mov ax,ldt
-	// 		lldt ax
+	//		sldt ldtreg;
 	// 	}
+	//process->tss.ldt = ldtreg.addr;
 
 	process->counter++;
 	__memcpy((char*)(tss + prev->process->tid), (char*)process, sizeof(PROCESS_INFO));
@@ -637,6 +635,25 @@ int __initTask() {
 	process0->vaddr = KERNEL_DLL_BASE;
 	process0->vasize = 0;
 	process0->espbase = KERNEL_TASK_STACK_TOP;
+
+	/*
+	LPTASKPARAMS params = (LPTASKPARAMS)(process0->espbase + KTASK_STACK_SIZE - STACK_TOP_DUMMY - sizeof(TASKPARAMS));
+	RETUTN_ADDRESS_0* ret0 = (RETUTN_ADDRESS_0*)((char*)params - sizeof(RETUTN_ADDRESS_0));
+	ret0->cs = process0->tss.cs;
+	ret0->eip = process0->tss.eip;
+	ret0->eflags = process0->tss.eflags;
+	process0->tss.esp = (DWORD)ret0;
+	process0->tss.ebp = (DWORD)ret0;
+
+	params->terminate = (DWORD)__terminateProcess;
+	params->terminate2 = (DWORD)__terminateProcess;
+	params->tid = 0;
+	__strcpy(params->szFileName, process0->filename);
+	params->filename = params->szFileName;
+	__strcpy(params->szFuncName, process0->funcname);
+	params->funcname = params->szFuncName;
+	params->lpcmdparams = &params->cmdparams;
+	*/
 
 	__memcpy((char*)TASKS_TSS_BASE, (char*)CURRENT_TASK_TSS_BASE, sizeof(PROCESS_INFO));
 

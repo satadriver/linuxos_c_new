@@ -122,11 +122,12 @@ int __kernelEntry(LPVESAINFORMATION vesa, DWORD fontbase,DWORD v86Proc,DWORD v86
 
 	DWORD address = getAddrFromName(MAIN_DLL_BASE, "__taskTest1");
 	//__kCreateThread((DWORD)address, MAIN_DLL_BASE, (DWORD)0, "__taskTest1");
-	//__kCreateProcess(MAIN_DLL_SOURCE_BASE, imagesize, "main.dll", "__taskTest1", 3, 0);
+
+	//__kCreateProcessFromAddrFunc(MAIN_DLL_SOURCE_BASE, imagesize, "__taskTest1", 3, 0);
 	DWORD address2 = getAddrFromName(MAIN_DLL_BASE, "__taskTest2");
 	//__kCreateThread((DWORD)address2, MAIN_DLL_BASE, (DWORD)0, "__taskTest2");
-	//__kCreateProcess(MAIN_DLL_SOURCE_BASE, imagesize, "main.dll", "__taskTest2", 3, 0);
- 	
+	//__kCreateProcessFromAddrFunc(MAIN_DLL_SOURCE_BASE, imagesize, "__taskTest2", 3, 0);
+
 	imagesize = getSizeOfImage((char*)MAIN_DLL_SOURCE_BASE);
 	//__kCreateProcessFromAddrFunc(MAIN_DLL_SOURCE_BASE, imagesize,  "__kExplorer", 3, 0);
 
