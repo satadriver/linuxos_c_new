@@ -110,7 +110,7 @@ int __kernelEntry(LPVESAINFORMATION vesa, DWORD fontbase,DWORD v86Proc,DWORD v86
 	{
 		TASKCMDPARAMS cmd;
 		__memset((char*)&cmd, 0, sizeof(TASKCMDPARAMS));
-		__kCreateThread((unsigned int)kernelMain, KERNEL_DLL_BASE,(DWORD)&cmd, "__kKernelMain");
+		//__kCreateThread((unsigned int)kernelMain, KERNEL_DLL_BASE,(DWORD)&cmd, "__kKernelMain");
 		//__kCreateProcess((unsigned int)KERNEL_DLL_SOURCE_BASE, imagesize, "kernel.dll", "__kKernelMain", 3, 0);
 	}
 
@@ -121,16 +121,16 @@ int __kernelEntry(LPVESAINFORMATION vesa, DWORD fontbase,DWORD v86Proc,DWORD v86
 // 	ret = loadLibRunFun("c:\\liunux\\main.dll", "__kMainProcess");
 
 	DWORD address = getAddrFromName(MAIN_DLL_BASE, "__taskTest1");
-	__kCreateThread((DWORD)address, MAIN_DLL_BASE, (DWORD)0, "__taskTest1");
+	//__kCreateThread((DWORD)address, MAIN_DLL_BASE, (DWORD)0, "__taskTest1");
 	//__kCreateProcessFromAddrFunc(MAIN_DLL_SOURCE_BASE, imagesize, "__taskTest1", 3, 0);
 	DWORD address2 = getAddrFromName(MAIN_DLL_BASE, "__taskTest2");
-	__kCreateThread((DWORD)address2, MAIN_DLL_BASE, (DWORD)0, "__taskTest2");
+	//__kCreateThread((DWORD)address2, MAIN_DLL_BASE, (DWORD)0, "__taskTest2");
 	//__kCreateProcessFromAddrFunc(MAIN_DLL_SOURCE_BASE, imagesize, "__taskTest2", 3, 0);
  	
 	imagesize = getSizeOfImage((char*)MAIN_DLL_SOURCE_BASE);
-	__kCreateProcessFromAddrFunc(MAIN_DLL_SOURCE_BASE, imagesize,  "__kExplorer", 3, 0);
+	//__kCreateProcessFromAddrFunc(MAIN_DLL_SOURCE_BASE, imagesize,  "__kExplorer", 3, 0);
 
-	__kGetKbd(0);
+	//__kGetKbd(0);
 
 	while (1)
 	{

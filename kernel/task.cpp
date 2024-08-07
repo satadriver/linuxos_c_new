@@ -638,6 +638,25 @@ int __initTask() {
 	process0->vasize = 0;
 	process0->espbase = KERNEL_TASK_STACK_TOP;
 
+	/*
+	LPTASKPARAMS params = (LPTASKPARAMS)(process0->espbase + KTASK_STACK_SIZE - STACK_TOP_DUMMY - sizeof(TASKPARAMS));
+	RETUTN_ADDRESS_0* ret0 = (RETUTN_ADDRESS_0*)((char*)params - sizeof(RETUTN_ADDRESS_0));
+	ret0->cs = process0->tss.cs;
+	ret0->eip = process0->tss.eip;
+	ret0->eflags = process0->tss.eflags;
+	process0->tss.esp = (DWORD)ret0;
+	process0->tss.ebp = (DWORD)ret0;
+
+	params->terminate = (DWORD)__terminateProcess;
+	params->terminate2 = (DWORD)__terminateProcess;
+	params->tid = 0;
+	__strcpy(params->szFileName, process0->filename);
+	params->filename = params->szFileName;
+	__strcpy(params->szFuncName, process0->funcname);
+	params->funcname = params->szFuncName;
+	params->lpcmdparams = &params->cmdparams;
+	*/
+
 	__memcpy((char*)TASKS_TSS_BASE, (char*)CURRENT_TASK_TSS_BASE, sizeof(PROCESS_INFO));
 
 	__memset((char*)TASKS_LIST_BASE, 0, TASK_LIMIT_TOTAL * sizeof(TASK_LIST_ENTRY));
