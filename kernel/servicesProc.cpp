@@ -224,6 +224,7 @@ DWORD	__cputype(unsigned long * params) {
 		mov eax, 0
 		; must use .586 or above
 		; dw 0a20fh
+		mov ecx,0
 		cpuid
 		; ebx:edx:ecx = intel or else
 		mov ds : [edi] , ebx
@@ -242,12 +243,14 @@ DWORD __cpuinfo(unsigned long* params) {
 		mov edi,params
 
 		mov     eax, 80000000h
+		mov ecx,0
 		; dw 0a20fh
 		cpuid
 		cmp     eax, 80000004h
 		jb      __cpuinfoEnd
 
 		mov     eax, 80000002h
+		mov ecx, 0
 		; dw 0a20fh
 		cpuid
 		mov     dword ptr[edi], eax
@@ -256,6 +259,7 @@ DWORD __cpuinfo(unsigned long* params) {
 		mov     dword ptr[edi + 12], edx
 
 		mov     eax, 80000003h
+		mov ecx, 0
 		; dw 0a20fh
 		cpuid
 		mov     dword ptr[edi + 16], eax
@@ -266,6 +270,7 @@ DWORD __cpuinfo(unsigned long* params) {
 		mov     eax, 80000004h
 		; dw 0a20fh
 		cpuid
+		mov ecx, 0
 		mov     dword ptr[edi + 32], eax
 		mov     dword ptr[edi + 36], ebx
 		mov     dword ptr[edi + 40], ecx
