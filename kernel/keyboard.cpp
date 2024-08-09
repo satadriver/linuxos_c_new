@@ -311,7 +311,8 @@ void __kKeyboardProc() {
 
 	else if (c == 0x53 )	//delete
 	{
-		if ( (data->kbdStatus & (CTRLLEFT_SET_FLAG | ALTLEFT_SET_FLAG)) || (data->kbdStatus & (CTRLRIGHT_SET_FLAG | ALTRIGHT_SET_FLAG))  )
+		if ( (data->kbdStatus & (CTRLLEFT_SET_FLAG | ALTLEFT_SET_FLAG)) || 
+			(data->kbdStatus & (CTRLRIGHT_SET_FLAG | ALTRIGHT_SET_FLAG))  )
 		{
 			__reset();
 		}

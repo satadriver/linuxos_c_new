@@ -169,8 +169,36 @@ void makeTrapGateDescriptor(DWORD base, DWORD selector, int dpl, IntTrapGateDesc
 	descriptor->baseHigh = (base >> 16) & 0xffff;
 }
 
+//http://www.rcollins.org/articles/vme1/
 
+/*
+The TSS has been extended to include a 32-byte interrupt redirection bit map. 
+32-bytes is exactly 256 bits, one bit for each software interrupt which can be invoked via the INT-n instruction. 
+This bit map resides immediately below the I/O permission bit map (see Figure 1). 
+The definition of the I/O Base field in the TSS is therefore extended and dual purpose.
+Not only does the I/O Base field point to the base of the I/O permission bit map, 
+but also to the end (tail) of the interrupt redirection bit map.
+This structure behaves exactly like the I/O permission bit map, except that it controls software interrupts.
+When its corresponding bit is set, an interrupt will fault to the Ev86 monitor. 
+When its bit is clear, the Ev86 task will service the interrupt without ever leaving Ev86 mode.
+*/
+/*
+Use "Virtual Mode Extensions", which will allow you to give the TSS a "interrupt redirection bitmap", 
+telling which interrupt should be processed in virtual mode using the IVT and 
+which should be processed in protected mode using the IDT. VME aren't available on QEMU, though.
+*/
 
+/*
+Enhanced v86 mode was designed to eliminate many of these problems, 
+and significantly enhance the performance of v86 tasks running at all IOPL levels. 
+When running in Enhanced virtual-8086 mode (Ev86) at IOPL=3, CLI and STI still modify IF. 
+This behavior hasn't changed. Running at IOPL<3 has changed. CLI, STI, 
+and all other IF-sensitive instructions no longer unconditionally fault to the Ev86 monitor. 
+Instead, IF-sensitive instructions clear and set a virtual version of the interrupt flag in the EFLAGS register 
+called VIF.[5] Clearing VIF does not block external interrupts, 
+as clearing IF does. Instead, IF-sensitive instructions clear and set a virtual version of the interrupt flag called VIF.
+VIF does not control external interrupts as IF does.
+*/
 
 void initV86Tss(TSS* tss, DWORD esp0, DWORD ip,DWORD cs, DWORD cr3,DWORD ldt) {
 
@@ -179,7 +207,7 @@ void initV86Tss(TSS* tss, DWORD esp0, DWORD ip,DWORD cs, DWORD cr3,DWORD ldt) {
 	tss->iomapEnd = 0xff;
 	tss->iomapOffset = OFFSETOF(TSS, iomapOffset) + SIZEOFMEMBER(TSS, intMap);
 
-	tss->eflags = 0x223212;
+	tss->eflags = 0x223202;
 
 	tss->ds = cs;
 	tss->es = cs;

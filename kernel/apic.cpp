@@ -9,7 +9,7 @@
 #include "cmosAlarm.h"
 #include "cmosExactTimer.h"
 #include "cmosPeriodTimer.h"
-
+#include "core.h"
 
 DWORD * gApicBase = 0;
 DWORD * gSvrBase = 0;
@@ -293,3 +293,53 @@ extern "C" void __declspec(naked) HpetInterrupt(LIGHT_ENVIRONMENT * stack) {
 		jmp HpetInterrupt
 	}
 }
+
+
+
+
+extern "C" void __declspec(dllexport) __apInitProc() {
+	DescriptTableReg idtbase;
+	idtbase.size = 256 * sizeof(SegDescriptor) - 1;
+	idtbase.addr = IDT_BASE;
+
+	DescriptTableReg gdtbase;
+	__asm {
+		sgdt gdtbase
+	}
+
+	gdtbase.addr = GDT_BASE;
+	__asm{
+		lgdt gdtbase
+
+		; mov ax, kTssTaskSelector
+		; ltr ax
+
+		mov ax, ldtSelector
+		lldt ax
+
+		lidt idtbase
+	}
+
+	char szout[1024];
+	__printf(szout, "idt base:%x,size:%x\r\n", idtbase.addr, idtbase.size);
+
+	enablePage();
+
+	__asm {
+		hlt
+	}
+}
+
+/*
+短跳转（Short Jmp，只能跳转到256字节的范围内），对应机器码：EB
+近跳转（Near Jmp，可跳至同一段范围内的地址），对应机器码：E9
+近跳转（Near call，可跳至同一段范围内的地址），对应机器码：E8
+远跳转（Far Jmp，可跳至任意地址），对应机器码： EA
+远跳转（Far call，可跳至任意地址），对应机器码： 9A
+ff 15 call
+ff 25 call
+*/
+
+
+
+
