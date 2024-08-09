@@ -30,8 +30,6 @@ extern "C" __declspec(dllexport) int __kernelEntry( LPVESAINFORMATION vesa, DWOR
 
 extern "C" __declspec(dllimport)  DWORD gV86VMIEntry;
 
-extern "C" __declspec(dllimport)  DWORD gV86VMLeave;
-
 extern "C" __declspec(dllimport)  DWORD gKernel16;
 extern "C" __declspec(dllimport)  DWORD gKernel32;
 extern "C" __declspec(dllimport)  DWORD gKernelData;

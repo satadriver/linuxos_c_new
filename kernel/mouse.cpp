@@ -88,11 +88,17 @@ void __kMouseProc() {
 			{
 				break;
 			}
+			else {
+				continue;
+			}
 		}
 		else {
 			if (counter >= 3)
 			{
 				break;
+			}
+			else {
+				continue;
 			}
 		}
 	}
@@ -111,7 +117,7 @@ void __kMouseProc() {
 		}
 	}
 
-	data->mintrData.y = - data->mintrData.y;
+	data->mintrData.y = (256 - data->mintrData.y)&0xff;
 
 	if (data->mintrData.x || data->mintrData.y)
 	{
@@ -123,7 +129,7 @@ void __kMouseProc() {
 		data->mouseX += data->mintrData.x;
 		if (data->mouseX > gVideoWidth)
 		{
-			data->mouseX = gVideoHeight;
+			data->mouseX = gVideoWidth;
 		}
 		else if (data->mouseX < 0)
 		{
@@ -147,7 +153,7 @@ void __kMouseProc() {
 	}
 	
 
-	if (data->mintrData.status & 7)
+	//if (data->mintrData.status & 7)
 	{
 		data->mouseBuf[data->mouseBufHdr].status = data->mintrData.status;
 		data->mouseBuf[data->mouseBufHdr].x = data->mouseX;

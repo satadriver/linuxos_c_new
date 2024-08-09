@@ -179,7 +179,7 @@ void initV86Tss(TSS* tss, DWORD esp0, DWORD ip,DWORD cs, DWORD cr3,DWORD ldt) {
 	tss->iomapEnd = 0xff;
 	tss->iomapOffset = OFFSETOF(TSS, iomapOffset) + SIZEOFMEMBER(TSS, intMap);
 
-	tss->eflags = 0x223202;
+	tss->eflags = 0x223212;
 
 	tss->ds = cs;
 	tss->es = cs;

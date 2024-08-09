@@ -32,11 +32,9 @@ void enableFerr() {
 
 void enableLocalAPIC() {
 
-<<<<<<< HEAD
+
 	//*gApicBase = *gApicBase | 0x0c00;
 
-=======
->>>>>>> 0fdda523ee12bbf4f641f59603f8683550e411c2
 	*gSvrBase = *gSvrBase | 0x100;
 }
 

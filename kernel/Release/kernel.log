@@ -1,13 +1,2 @@
-﻿d:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Microsoft\VC\v150\Platforms\Win32\PlatformToolsets\v141_xp\Toolset.targets(39,5): warning MSB8051: 面向 Windows XP 的支持已被弃用，将来的 Visual Studio 版本不再提供该支持。请访问 https://go.microsoft.com/fwlink/?linkid=2023588，获取详细信息。
-  apic.cpp
-E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\apic.cpp(127): warning C4244: “初始化”: 从“__int64”转换到“int”，可能丢失数据
-E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\apic.cpp(234): warning C4101: “szout”: 未引用的局部变量
-  servicesProc.cpp
-E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\servicesProc.cpp(37): warning C4537: “stack”:“.”应用于非 UDT 类型
-  E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\servicesProc.cpp(9): note: 参见“stack”的声明
-E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\servicesProc.cpp(69): warning C4244: “参数”: 从“unsigned long”转换到“unsigned char”，可能丢失数据
-E:\virtualbox\vmshare\liunux\liunuxos_c\kernel\servicesProc.cpp(162): warning C4018: “<”: 有符号/无符号不匹配
-  utils.cpp
-  正在生成代码...
-    正在创建库 E:\virtualbox\vmshare\liunux\liunuxos_c\Release\kernel.lib 和对象 E:\virtualbox\vmshare\liunux\liunuxos_c\Release\kernel.exp
-  kernel.vcxproj -> E:\virtualbox\vmshare\liunux\liunuxos_c\Release\kernel.dll
+﻿C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Microsoft\VC\v150\Platforms\Win32\PlatformToolsets\v141_xp\Toolset.targets(39,5): warning MSB8051: 面向 Windows XP 的支持已被弃用，将来的 Visual Studio 版本不再提供该支持。请访问 https://go.microsoft.com/fwlink/?linkid=2023588，获取详细信息。
+  kernel.vcxproj -> D:\liunux\liunuxos_c\Release\kernel.dll
