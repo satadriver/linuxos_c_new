@@ -29,7 +29,7 @@ void enableFerr() {
 
 void enableLocalAPIC() {
 
-	*gApicBase = *gApicBase | 0x0c00;
+	//*gApicBase = *gApicBase | 0x0c00;
 
 	*gSvrBase = *gSvrBase | 0x100;
 }
@@ -53,6 +53,9 @@ DWORD* getApicBase() {
 	DWORD low = 0;
 	int res = 0;
 	readmsr(0x1b,&low,&high);
+	low = low | 0x800;
+	writemsr(0x1b, low, high);
+
 	gApicBase = (DWORD*)(low & 0xfffff000);
 	gSvrBase = (DWORD*)((DWORD)gApicBase + 0xf0);
 	return gApicBase;
