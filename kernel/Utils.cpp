@@ -810,6 +810,7 @@ int getCpuType(char * name) {
 
 		; must use .586 or above
 		cpuid
+		mov ecx, 0
 		; ebx:edx:ecx = intel or else
 		mov ds : [edi], ebx
 		mov ds : [edi + 4], edx
@@ -833,11 +834,13 @@ int getCpuInfo(char * name) {
 		mov dword ptr [edi],0
 
 		mov     eax, 80000000h
+		mov ecx, 0
 		cpuid
 		cmp     eax, 80000004h
 		jb      __cpuinfoEnd
 
 		mov     eax, 80000002h
+		mov ecx, 0
 		cpuid
 		mov     dword ptr[edi], eax
 		mov     dword ptr[edi + 4], ebx
@@ -845,6 +848,7 @@ int getCpuInfo(char * name) {
 		mov     dword ptr[edi + 12], edx
 
 		mov     eax, 80000003h
+		mov ecx, 0
 		cpuid
 		mov     dword ptr[edi + 16], eax
 		mov     dword ptr[edi + 20], ebx
@@ -852,6 +856,7 @@ int getCpuInfo(char * name) {
 		mov     dword ptr[edi + 28], edx
 
 		mov     eax, 80000004h
+		mov ecx, 0
 		cpuid
 		mov     dword ptr[edi + 32], eax
 		mov     dword ptr[edi + 36], ebx

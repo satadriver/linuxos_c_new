@@ -14,7 +14,7 @@ typedef struct {
 	unsigned char count : 5;
 	unsigned char width : 1;
 	unsigned char reserved : 1;
-	unsigned char compablity : 1;
+	unsigned char compatable : 1;
 	unsigned short venderid;
 	DWORD tick;
 }HPET_GCAP_ID_REG;
@@ -37,7 +37,7 @@ DWORD* getHpetBase();
 
 DWORD* getRcbaBase();
 
-void initHpet();
+int initHpet();
 
 void enableRcba();
 
