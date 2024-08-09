@@ -117,7 +117,35 @@ void __kMouseProc() {
 		}
 	}
 
-	data->mintrData.y = (256 - data->mintrData.y)&0xff;
+	/*
+	if (data->mintrData.status & 0x40) {
+		data->mintrData.x = 0;
+	}
+	if (data->mintrData.status & 0x80) {
+		data->mintrData.y = 0;
+	}
+
+	if (data->mintrData.status & 0x10) {
+		data->mintrData.x = -data->mintrData.x;
+		if (data->mintrData.status & 0x20) {
+
+		}
+		else {
+			data->mintrData.y = - data->mintrData.y;
+		}
+	}
+	else {
+		if (data->mintrData.status & 0x20) {
+
+		}
+		else {
+			data->mintrData.y = - data->mintrData.y;
+		}
+	}
+	*/
+	//data->mintrData.y = (256 - data->mintrData.y)&0xff;
+
+	data->mintrData.y = -data->mintrData.y;
 
 	if (data->mintrData.x || data->mintrData.y)
 	{
@@ -153,7 +181,7 @@ void __kMouseProc() {
 	}
 	
 
-	//if (data->mintrData.status & 7)
+	if (data->mintrData.status & 7)
 	{
 		data->mouseBuf[data->mouseBufHdr].status = data->mintrData.status;
 		data->mouseBuf[data->mouseBufHdr].x = data->mouseX;

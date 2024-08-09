@@ -235,10 +235,7 @@ void initKernelTss(TSS* tss, DWORD esp0, DWORD reg_esp, DWORD eip, DWORD cr3, DW
 	tss->iomapEnd = 0xff;
 	tss->iomapOffset = OFFSETOF(TSS, iomapOffset) + SIZEOFMEMBER(TSS, intMap);
 
-	__asm {
-		//pushfd
-		//pop tss.eflags		//error segmantic
-	}
+	tss->eflags = 0x203202;
 
 	tss->ds = KERNEL_MODE_DATA;
 	tss->es = KERNEL_MODE_DATA;

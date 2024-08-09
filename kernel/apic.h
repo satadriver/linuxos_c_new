@@ -22,6 +22,8 @@ typedef struct {
 #pragma pack()
 
 
+extern "C" int g_ApNumber;
+
 
 void enableLocalAPIC();
 
@@ -44,3 +46,5 @@ void enableRcba();
 void enableFerr();
 
 void enableIMCR();
+
+extern "C" void __declspec(dllexport) __kApInitProc();

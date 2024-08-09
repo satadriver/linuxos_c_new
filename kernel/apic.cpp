@@ -17,7 +17,7 @@ DWORD * gOicBase = 0;
 DWORD * gHpetBase = 0;
 DWORD* gRcbaBase = 0;
 
-
+int g_ApNumber = 0;
 
 void enableRcba() {
 	*gRcbaBase = *gRcbaBase | 1;
@@ -297,28 +297,39 @@ extern "C" void __declspec(naked) HpetInterrupt(LIGHT_ENVIRONMENT * stack) {
 
 
 
-extern "C" void __declspec(dllexport) __apInitProc() {
+extern "C" void __declspec(dllexport) __kApInitProc() {
 	DescriptTableReg idtbase;
 	idtbase.size = 256 * sizeof(SegDescriptor) - 1;
 	idtbase.addr = IDT_BASE;
+
+	
+	initKernelTss((TSS*)AP_TSS_BASE + 0x4000*g_ApNumber, AP_STACK0_BASE + TASK_STACK0_SIZE* (g_ApNumber+1) - STACK_TOP_DUMMY,
+		TASKS_AP_STACK_BASE + KTASK_STACK_SIZE*(g_ApNumber + 1)- STACK_TOP_DUMMY, 0, PDE_ENTRY_VALUE, 0);
+	makeTssDescriptor(AP_TSS_BASE + 0x4000 * g_ApNumber, 3, sizeof(TSS) - 1, 
+		(TssDescriptor*)(GDT_BASE + AP_TSS_DESCRIPTOR + sizeof(TssDescriptor) * g_ApNumber));
 
 	DescriptTableReg gdtbase;
 	__asm {
 		sgdt gdtbase
 	}
 
+	DWORD lptssdesc = (DWORD)(AP_TSS_DESCRIPTOR + sizeof(TssDescriptor) * g_ApNumber);
+
 	gdtbase.addr = GDT_BASE;
+	gdtbase.size = AP_TSS_DESCRIPTOR + sizeof(TssDescriptor) * g_ApNumber - 1;
 	__asm{
 		lgdt gdtbase
 
-		; mov ax, kTssTaskSelector
-		; ltr ax
+		mov eax, lptssdesc
+		ltr ax
 
 		mov ax, ldtSelector
 		lldt ax
 
 		lidt idtbase
 	}
+
+	g_ApNumber++;
 
 	char szout[1024];
 	__printf(szout, "idt base:%x,size:%x\r\n", idtbase.addr, idtbase.size);
