@@ -11,13 +11,20 @@
 #include "cmosPeriodTimer.h"
 #include "core.h"
 
+#define APIC_CORE_MAX_COUNT	64
+
 DWORD * gApicBase = 0;
 DWORD * gSvrBase = 0;
 DWORD * gOicBase = 0;
 DWORD * gHpetBase = 0;
-DWORD* gRcbaBase = 0;
+DWORD * gRcbaBase = 0;
 
 int g_ApNumber = 0;
+
+int g_LocalApicID[APIC_CORE_MAX_COUNT];
+
+int g_IoApicID[APIC_CORE_MAX_COUNT];
+
 
 void enableRcba() {
 	*gRcbaBase = *gRcbaBase | 1;
@@ -28,19 +35,19 @@ void enableFerr() {
 	*gOicBase = *gOicBase | 0x200;
 }
 
-
-
-void enableLocalAPIC() {
-
-
-	//*gApicBase = *gApicBase | 0x0c00;
-
-	*gSvrBase = *gSvrBase | 0x100;
+void iomfence() {
+	__asm {
+		mfence
+	}
 }
 
 
+
+
 void setIoApicID(int id) {
+	iomfence();
 	*(DWORD*)(0xfee00000) = 0;
+	iomfence();
 	*(DWORD*)(0xfee00010) = (id & 0x0f) << 24 ;
 
 }
@@ -48,37 +55,28 @@ void setIoApicID(int id) {
 
 void setIoRedirect(int id,int idx,int vector,int mode) {
 	*(DWORD*)(0xfee00000) = idx ;
-	*(DWORD*)(0xfee00010) = ( (id & 0x0f) << 24 ) + vector;
-
+	iomfence();
+	*(DWORD*)(0xfee00010) = vector + ( mode << 8);
+	iomfence();
 	*(DWORD*)(0xfee00000) = idx + 1;
-	*(DWORD*)(0xfee00010) = 0;
+	iomfence();
+	*(DWORD*)(0xfee00010) = ((id & 0x0f) << 24) ;
 }
 
 
-void enableIOAPIC() {
+void enableIoApic() {
 
-	*gOicBase = *gOicBase | 0x100;
-	*gOicBase = *gOicBase & 0xffffff00;
+	outportd(0xcf8, 0x8000f8f0);
 
+	gRcbaBase = (DWORD*)(inportd(0xcfc) & 0xffffc000);
 
+	gOicBase = (DWORD*)((DWORD)gRcbaBase + 0x31fe);
 
-}
+	DWORD v = *gOicBase;
 
-DWORD* getApicBase() {
+	v = (v & 0xffffff00) | 0x100;
 
-	DWORD high = 0;
-	DWORD low = 0;
-	int res = 0;
-	readmsr(0x1b,&low,&high);
-	low = low | 0x800;
-	writemsr(0x1b, low, high);
-
-	gApicBase = (DWORD*)(low & 0xfffff000);
-	low = low | 0x800;
-	low = low | 0x1000;
-	writemsr(0x1b, low, high);
-	gSvrBase = (DWORD*)((DWORD)gApicBase + 0xf0);
-	return gApicBase;
+	*gOicBase = v;
 }
 
 //fec00000
@@ -93,23 +91,6 @@ DWORD* getOicBase() {
 	return gOicBase;
 }
 
-int enableHpet() {
-	*gHpetBase = *gHpetBase | 0x80;
-	*gHpetBase = *gHpetBase & 0xfffffffc;
-	return 0;
-}
-
-
-DWORD * getHpetBase() {
-	outportd(0xcf8, 0x8000f8f0);
-	DWORD addr = inportd(0xcfc) & 0xffffc000;
-
-	gHpetBase = (DWORD*)(addr + 0x3404);
-
-	return gHpetBase;
-}
-
-
 DWORD* getRcbaBase() {
 	outportd(0xcf8, 0x8000f8f0);
 	DWORD base = inportd(0xcfc) & 0xffffc000;
@@ -118,6 +99,48 @@ DWORD* getRcbaBase() {
 
 	return gRcbaBase;
 }
+
+int enableLocalApic() {
+
+	DWORD high = 0;
+	DWORD low = 0;
+	int res = 0;
+	readmsr(0x1b,&low,&high);
+	low = low | 0xc00;
+	writemsr(0x1b, low, high);
+
+	gApicBase = (DWORD*)(low & 0xfffff000);
+
+	gSvrBase = (DWORD*)((DWORD)gApicBase + 0xf0);
+	*gSvrBase = *gSvrBase | 0x100;
+
+	int id = getLocalApicID();
+
+	return id;
+}
+
+
+
+int enableHpet() {
+	outportd(0xcf8, 0x8000f8f0);
+
+	DWORD addr = inportd(0xcfc) & 0xffffc000;
+
+	gHpetBase = (DWORD*)(addr + 0x3404);
+
+	DWORD v = *gHpetBase;
+
+	v = (v | 0x80) & 0xfffffffc;
+
+	*gHpetBase = v;
+
+	return 0;
+}
+
+
+
+
+
 
 
 void enableIMCR() {
@@ -134,14 +157,14 @@ int getLVTCount(int n) {
 	return cnt;
 }
 
-int getLapicVersion() {
+int getLocalApicVersion() {
 	int ver = *(long long*)(0xfee00030) & 0xff;
 	return ver;
 }
 
 
 //cpuid.01h:ebx[31:24]
-int getBspID() {
+int getLocalApicID() {
 	__asm {
 		mov eax,1
 		mov ecx,0
@@ -152,7 +175,6 @@ int getBspID() {
 
 		shr ebx,24
 		movzx eax,bl
-
 		ret
 
 		_x2apic:
@@ -161,15 +183,64 @@ int getBspID() {
 		cpuid
 		mov eax,edx
 		ret
-
 	}
 }
 
 
+extern "C" void __declspec(dllexport) __kBspInitProc() {
+	enableLocalApic();
+
+	int id = getLocalApicID();
+
+	g_LocalApicID[g_ApNumber] = id;
+
+	enableIoApic();
+
+	setIoApicID(g_ApNumber);
+
+	setIoRedirect(0x12, id, INTR_8259_MASTER + 1, 0);
+	setIoRedirect(0x14, id, INTR_8259_MASTER , 0);
+	setIoRedirect(0x16, id, INTR_8259_MASTER + 3, 0);
+	setIoRedirect(0x18, id, INTR_8259_MASTER + 4, 0);
+	setIoRedirect(0x1a, id, INTR_8259_MASTER + 5, 0);
+	setIoRedirect(0x1c, id, INTR_8259_MASTER + 6, 0);
+	setIoRedirect(0x1e, id, INTR_8259_MASTER + 7, 0);
+
+	setIoRedirect(0x20, id, INTR_8259_SLAVE + 0, 0);
+	setIoRedirect(0x22, id, INTR_8259_SLAVE + 1, 0);
+	setIoRedirect(0x24, id, INTR_8259_SLAVE + 2, 0);
+	setIoRedirect(0x26, id, INTR_8259_SLAVE + 3, 0);
+	setIoRedirect(0x28, id, INTR_8259_SLAVE + 4, 0);
+	setIoRedirect(0x2a, id, INTR_8259_SLAVE + 5, 0);
+	setIoRedirect(0x2c, id, INTR_8259_SLAVE + 6, 0);
+	setIoRedirect(0x2e, id, INTR_8259_SLAVE + 7, 0);
+
+	setIoRedirect(0x30, id,0x60 , 0);
+	
+
+	*(DWORD*)0xfee00300 = 0xc4500;	//发送 INIT IPI, 使所有 processor 执行 INIT
+	iomfence();
+
+	DWORD addr = AP_INIT_ADDRESS >> 12;
+
+	*(DWORD*)0xfee00300 = 0xc4600 | addr;	//发送 Start - up IPI，AP的起始物理地址为0x1B000
+	iomfence();
+
+	*(DWORD*)0xfee00300 = 0xc4600 | addr;	//再次发送 Start - up IPI，AP的起始物理地址为0x1B000
+	iomfence();
+
+	enableIMCR();
+
+	outportb(0x21, 0xff);
+	outportb(0xa1, 0xff);
+
+	*(DWORD*)0xfee00350 = 0x10000;
+}
+
 
 int initHpet() {
 	int res = 0;
-	getHpetBase();
+
 	enableHpet();
 
 	long long id = *(long long*)APIC_HPET_BASE;
@@ -186,7 +257,7 @@ int initHpet() {
 
 		*(long long*)(APIC_HPET_BASE + 0x20) = 0;
 
-		*(long long*)(APIC_HPET_BASE + 0xf0) = total;
+		
 
 		long long* regs = (long long*)(APIC_HPET_BASE + 0x100);	
 
@@ -206,11 +277,17 @@ int initHpet() {
 			i += 2;
 		}
 
+		*(long long*)(APIC_HPET_BASE + 0xf0) = 0;
+
 		return TRUE;
 	}
 
 	return FALSE;
 }
+
+
+
+
 
 
 
@@ -258,10 +335,12 @@ extern "C" void __declspec(naked) HpetInterrupt(LIGHT_ENVIRONMENT * stack) {
 				__kPeriodTimer();
 			}
 
-			*(long long*)(APIC_HPET_BASE + 0x128) = 0;
+			//*(long long*)(APIC_HPET_BASE + 0x128) = 0;
 		}
 
-		*(long long*)(APIC_HPET_BASE + 0x20) = 0;
+		*(long long*)(APIC_HPET_BASE + 0xf0) = 0;
+
+		*(long *)0xFEE000B0 = 0;
 
 		outportb(0x20, 0x20);
 		outportb(0xa0, 0xa0);	
@@ -293,7 +372,6 @@ extern "C" void __declspec(naked) HpetInterrupt(LIGHT_ENVIRONMENT * stack) {
 		jmp HpetInterrupt
 	}
 }
-
 
 
 
@@ -329,6 +407,16 @@ extern "C" void __declspec(dllexport) __kApInitProc() {
 		lidt idtbase
 	}
 
+	enableLocalApic();
+
+	int id = getLocalApicID();
+
+	g_LocalApicID[g_ApNumber+1] = id;
+
+	enableIoApic();
+
+	setIoApicID(g_ApNumber+1);
+
 	g_ApNumber++;
 
 	char szout[1024];
@@ -336,7 +424,11 @@ extern "C" void __declspec(dllexport) __kApInitProc() {
 
 	enablePage();
 
+	*(DWORD*)0xFEE00310 = 0;
+	*(DWORD*)0xFEE00300 = 0x4030;
+
 	__asm {
+		sti
 		hlt
 	}
 }
@@ -354,3 +446,44 @@ ff 25 call
 
 
 
+extern "C" void __declspec(naked) IPIIntHandler(LIGHT_ENVIRONMENT * stack) {
+	__asm {
+		pushad
+		push ds
+		push es
+		push fs
+		push gs
+		push ss
+
+		push esp
+		sub esp, 4
+		push ebp
+		mov ebp, esp
+
+		mov eax, KERNEL_MODE_DATA
+		mov ds, ax
+		mov es, ax
+		MOV FS, ax
+		MOV GS, AX
+	}
+
+	{
+		*(DWORD*)0xFEE000B0 = 0;
+	}
+
+	__asm {
+		mov esp, ebp
+		pop ebp
+		add esp, 4
+		pop esp
+		pop ss
+		pop gs
+		pop fs
+		pop es
+		pop ds
+		popad
+
+		clts
+		iretd
+	}
+}

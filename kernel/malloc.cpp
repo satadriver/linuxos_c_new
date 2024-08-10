@@ -183,7 +183,7 @@ DWORD __kProcessMalloc(DWORD s,DWORD *retsize, int pid,DWORD vaddr) {
 		return FALSE;
 	}
 
-	__enterSpinLock(&gAllocLock);
+	__enterSpinlock(&gAllocLock);
 
 	while (TRUE)
 	{
@@ -304,7 +304,7 @@ DWORD __kProcessMalloc(DWORD s,DWORD *retsize, int pid,DWORD vaddr) {
 		} while (list != head);
 	}
 
-	__leaveSpinLock(&gAllocLock);
+	__leaveSpinlock(&gAllocLock);
 
 	return res;
 }
@@ -356,7 +356,7 @@ DWORD __malloc(DWORD s) {
 //__kMalloc返回的是物理地址，因此释放的也是物理地址,如果释放线性地址会出错
 int __kFree(DWORD physicalAddr) {
 
-	__enterSpinLock(&gAllocLock);
+	__enterSpinlock(&gAllocLock);
 
 	LPMEMALLOCINFO info = getExistAddr(physicalAddr,0);
 	if (info)
@@ -368,12 +368,12 @@ int __kFree(DWORD physicalAddr) {
 		info->pid = 0;
 		info->vaddr = 0;
 
-		__leaveSpinLock(&gAllocLock);
+		__leaveSpinlock(&gAllocLock);
 
 		return size;
 	}
 
-	__leaveSpinLock(&gAllocLock);
+	__leaveSpinlock(&gAllocLock);
 
 	char szout[1024];
 	int len = __printf(szout, "__kFree not found physical address:%x\n", physicalAddr);
@@ -391,7 +391,7 @@ int __free(DWORD linearAddr) {
 		return __heapFree(linearAddr);
 	}
 
-	__enterSpinLock(&gAllocLock);
+	__enterSpinlock(&gAllocLock);
 
 	DWORD phyaddr = linear2phy(linearAddr);
 	if (phyaddr)
@@ -407,13 +407,13 @@ int __free(DWORD linearAddr) {
 			info->vaddr = 0;
 			info->pid = 0;
 
-			__leaveSpinLock(&gAllocLock);
+			__leaveSpinlock(&gAllocLock);
 
 			return size;
 		}
 	}
 
-	__leaveSpinLock(&gAllocLock);
+	__leaveSpinlock(&gAllocLock);
 
 	char szout[1024];
 	int len = __printf(szout , "__free not found linear address:%x,physical address:%x\n", linearAddr,phyaddr);
@@ -448,7 +448,7 @@ int formatProcMem(int pid,char * szout) {
 
 //make sure the first in the list is not to be deleted,or else will be locked
 void freeProcessMemory() {
-	__enterSpinLock(&gAllocLock);
+	__enterSpinlock(&gAllocLock);
 
 	LPPROCESS_INFO tss = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
 	LPMEMALLOCINFO info = (LPMEMALLOCINFO)gMemAllocList;
@@ -472,7 +472,7 @@ void freeProcessMemory() {
 
 	} while (info != gMemAllocList);
 
-	__leaveSpinLock(&gAllocLock);
+	__leaveSpinlock(&gAllocLock);
 }
 
 

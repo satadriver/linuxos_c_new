@@ -74,7 +74,7 @@ extern "C"  __declspec(dllexport) DWORD __kPageAlloc(int size) {
 		return FALSE;
 	}
 
-	__enterSpinLock(&gPageAllocLock);
+	__enterSpinlock(&gPageAllocLock);
 
 	LPMEMALLOCINFO info = checkPageExist(addr);
 	if (info == 0)
@@ -144,7 +144,7 @@ extern "C"  __declspec(dllexport) DWORD __kPageAlloc(int size) {
 		}
 	}
 
-	__leaveSpinLock(&gPageAllocLock);
+	__leaveSpinlock(&gPageAllocLock);
 
 	if (res == -1) {
 		res = 0;
@@ -155,7 +155,7 @@ extern "C"  __declspec(dllexport) DWORD __kPageAlloc(int size) {
 
 extern "C"  __declspec(dllexport) int __kFreePage(DWORD addr) {
 
-	__enterSpinLock(&gPageAllocLock);
+	__enterSpinlock(&gPageAllocLock);
 
 	LPMEMALLOCINFO info = checkPageExist(addr);
 	if (info)
@@ -166,11 +166,11 @@ extern "C"  __declspec(dllexport) int __kFreePage(DWORD addr) {
 		info->size = 0;
 		info->vaddr = 0;
 		info->pid = 0;
-		__leaveSpinLock(&gPageAllocLock);
+		__leaveSpinlock(&gPageAllocLock);
 		return size;
 	}
 
-	__leaveSpinLock(&gPageAllocLock);
+	__leaveSpinlock(&gPageAllocLock);
 
 	char szout[1024];
 	int len = __printf(szout, "__kFreePage not found address:%x\n", addr);
@@ -202,7 +202,7 @@ extern "C"  __declspec(dllexport) void __kPageFaultProc() {
 //make sure the first in the list is not to be deleted,or else will be locked
 void freeProcessPages() {
 
-	__enterSpinLock(&gPageAllocLock);
+	__enterSpinlock(&gPageAllocLock);
 	
 	LPPROCESS_INFO tss = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
 
@@ -222,7 +222,7 @@ void freeProcessPages() {
 
 	} while (info != gPageAllocList);
 
-	__leaveSpinLock(&gPageAllocLock);
+	__leaveSpinlock(&gPageAllocLock);
 }
 
 

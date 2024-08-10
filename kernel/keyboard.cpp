@@ -69,7 +69,7 @@ unsigned int __kGetKbd(int wid) {
 
 	}
 	else {
-		//return FALSE;
+		return FALSE;
 	}
 
 	LPKBDBUFDATA data = (LPKBDBUFDATA)KEYBOARD_BUFFER;
@@ -157,7 +157,7 @@ void __kPutKbd(unsigned char c,int wid) {
 
 	}
 	else {
-		//return;
+		return;
 	}
 
 	LPKBDBUFDATA data = (LPKBDBUFDATA)KEYBOARD_BUFFER;

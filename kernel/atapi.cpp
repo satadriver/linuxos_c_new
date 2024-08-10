@@ -100,6 +100,9 @@ int readAtapiSector(char * buf,unsigned int secnum,unsigned char seccnt) {
 	outportb(gAtapiBasePort + 1, 0);	//dma = 1,pio = 0
 	outportb(gAtapiBasePort + 4, readsize& 0xff);
 	outportb(gAtapiBasePort + 5, (readsize >> 8)&0xff);
+	//outportb(gAtapiBasePort + 4, gAtapiPackSize);
+	//outportb(gAtapiBasePort + 5, 0);
+	
 	outportb(gAtapiBasePort + 6, gATAPIDev);
 	outportb(gAtapiBasePort + 7, 0xa0);
 

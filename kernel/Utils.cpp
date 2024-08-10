@@ -1047,8 +1047,11 @@ WORD __ntohs(WORD v) {
 }
 
 
+
+
+
 //xadd oprd1,oprd2,先将两个数交换，再将二者之和送给第一个数,oprd1:mem or reg,oprd2:reg
-DWORD __inc(DWORD *v) {
+DWORD __lockInc(DWORD *v) {
 	DWORD old = 0;
 	__asm {
 		mov eax, 1
@@ -1058,11 +1061,17 @@ DWORD __inc(DWORD *v) {
 	return old;
 }
 
-void __initSpinLock(DWORD * v) {
+
+void __initSpinlock(DWORD * v) {
 	*v = 0;
 }
 
-WORD __enterSpinLock(DWORD * v) {
+
+/*
+格式 ： bts dword ptr [ecx],0
+[ecx] 指向的内存的第0位赋值给 CF 位 ， 并且将[ecx]的第0位置为1
+*/
+DWORD __enterSpinlock(DWORD * v) {
 	__asm {
 		__enterSpinLockLoop:
 		lock bts[v], 0
@@ -1073,42 +1082,67 @@ WORD __enterSpinLock(DWORD * v) {
 	}
 }
 
-WORD __leaveSpinLock(DWORD * v) {
+
+DWORD __leaveSpinlock(DWORD * v) {
 	__asm {
-		//lock and[v], 0
 		lock btr[v], 0
-		jc __leaveSpinLockEnd
-		__leaveSpinLockEnd:
+		jnc __leaveSpinLockError
+		ret
+		__leaveSpinLockError :
 	}
+	char szout[1024];
+	__printf(szout,"__leaveSpinLock errpr\r\n");
 }
 
-//cmpxchg oprd1,oprd2.	oprd1:mem or reg,oprd2:reg
+
+extern "C"  __declspec(dllexport) int __spinlockEntry(void* lockv) {
+	__asm {
+		__spinlock_xchg:
+		mov eax, 1
+		lock xchg[lockv], eax
+		cmp eax, 0
+		jnz __spinlock_xchg
+	}
+	return TRUE;
+}
+
+
+extern "C"  __declspec(dllexport) int __spinlockLeave(void* lockv) {
+	DWORD result = 0;
+	__asm {
+		mov eax, 0
+		lock xchg[lockv], eax
+		mov[result], eax
+	}
+	return result;
+}
+
+//cmpxchg oprd1,oprd2  oprd1:mem or reg,oprd2:reg
 //CMPXCHG r/m,r
-//CMPXCHG r/m, r 将累加器AL/AX/EAX/RAX中的值与首操作数（目的操作数）比较
-// 如果相等，第2操作数（源操作数）的值装载到首操作数，zf置1。
-// 如果不等， 首操作数的值装载到AL/AX/EAX/RAX并将zf清0
-DWORD __enterlock(DWORD * lockvalue) {
+//CMPXCHG r/m, r 
+// 将累加器AL/AX/EAX/RAX中的值与首操作数（目的操作数）比较
+// 如果相等，第2操作数（源操作数）的值装载到首操作数，zf置1。如果不等， 首操作数的值装载到AL/AX/EAX/RAX并将zf清0
+DWORD __enterLock(DWORD * lockvalue) {
 	DWORD result = 0;
 
 	__asm {
-		__enterlockLoop:
+		__waitZeroValue:
 		mov eax, 0
 		mov edx, 1
 		lock cmpxchg[lockvalue], edx
-		jz _over
-		//here the eax is the current value of the lock
-		inc dword ptr [result]
+		jz __entryFree
+		mov result,eax
+		nop
 		pause
-		jmp __enterlockLoop
-
-		_over :
+		jmp __waitZeroValue
+		__entryFree :
 	}
 	
 	return result;
 }
 
 
-DWORD __leavelock(DWORD * lockvalue) {
+DWORD __leaveLock(DWORD * lockvalue) {
 	DWORD result = 0;
 
 	__asm {
@@ -1117,9 +1151,8 @@ DWORD __leavelock(DWORD * lockvalue) {
 		mov edx, 0
 		lock cmpxchg[lockvalue], edx
 		jz _over
-		//here the eax is the current value of the lock
-		pause
-		inc dword ptr[result]
+		mov result,eax
+		pause	
 		jmp __leavelockLoop
 		_over :
 	}
@@ -1154,25 +1187,4 @@ extern "C"  __declspec(dllexport) int __getDateTimeStr(void * str) {
 
 
 
-extern "C"  __declspec(dllexport) int __spinlock_xchg_entry(void* lockv) {
-	__asm {
-		__spinlock_xchg:
-		mov eax,1
-		lock xchg [lockv],eax
-		cmp eax,0
-		jnz __spinlock_xchg
-	}
-	return TRUE;
-}
-
-
-extern "C"  __declspec(dllexport) int __spinlock_xchg_leave(void* lockv) {
-	DWORD result = 0;
-	__asm {
-		mov eax, 0
-		lock xchg[lockv], eax
-		mov [result],eax
-	}
-	return result;
-}
 

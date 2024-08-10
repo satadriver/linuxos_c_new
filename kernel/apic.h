@@ -22,20 +22,20 @@ typedef struct {
 #pragma pack()
 
 
+
 extern "C" int g_ApNumber;
 
+int getLocalApicID();
 
-void enableLocalAPIC();
+int enableLocalApic();
 
-void enableIOAPIC();
-
-DWORD * getApicBase();
+void enableIoApic();
 
 DWORD * getOicBase();
 
 int enableHpet();
 
-DWORD* getHpetBase();
+
 
 DWORD* getRcbaBase();
 
@@ -48,3 +48,9 @@ void enableFerr();
 void enableIMCR();
 
 extern "C" void __declspec(dllexport) __kApInitProc();
+
+void iomfence();
+
+void setIoRedirect(int id, int idx, int vector, int mode);
+
+void setIoApicID(int id);
