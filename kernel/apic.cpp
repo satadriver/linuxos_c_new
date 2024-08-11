@@ -41,9 +41,6 @@ void iomfence() {
 	}
 }
 
-
-
-
 void setIoApicID(int id) {
 	iomfence();
 	*(DWORD*)(0xfee00000) = 0;
@@ -51,7 +48,6 @@ void setIoApicID(int id) {
 	*(DWORD*)(0xfee00010) = (id & 0x0f) << 24 ;
 
 }
-
 
 void setIoRedirect(int id,int idx,int vector,int mode) {
 	*(DWORD*)(0xfee00000) = idx ;
@@ -78,6 +74,7 @@ void enableIoApic() {
 
 	*gOicBase = v;
 }
+
 
 //fec00000
 //fed00000
@@ -112,14 +109,12 @@ int enableLocalApic() {
 	gApicBase = (DWORD*)(low & 0xfffff000);
 
 	gSvrBase = (DWORD*)((DWORD)gApicBase + 0xf0);
-	*gSvrBase = *gSvrBase | 0x100;
+	*gSvrBase = *gSvrBase | 0x1100;
 
 	int id = getLocalApicID();
 
 	return id;
 }
-
-
 
 int enableHpet() {
 	outportd(0xcf8, 0x8000f8f0);
@@ -139,17 +134,10 @@ int enableHpet() {
 
 
 
-
-
-
-
 void enableIMCR() {
 	outportb(0x22, 0x70);
 	outportb(0x23, 0x01);
 }
-
-
-
 
 
 int getLVTCount(int n) {
@@ -188,6 +176,7 @@ int getLocalApicID() {
 
 
 extern "C" void __declspec(dllexport) __kBspInitProc() {
+
 	enableLocalApic();
 
 	int id = getLocalApicID();
@@ -215,8 +204,7 @@ extern "C" void __declspec(dllexport) __kBspInitProc() {
 	setIoRedirect(0x2c, id, INTR_8259_SLAVE + 6, 0);
 	setIoRedirect(0x2e, id, INTR_8259_SLAVE + 7, 0);
 
-	setIoRedirect(0x30, id,0x60 , 0);
-	
+	setIoRedirect(0x30, id, INTR_8259_SLAVE + 8, 0);
 
 	*(DWORD*)0xfee00300 = 0xc4500;	//发送 INIT IPI, 使所有 processor 执行 INIT
 	iomfence();
@@ -235,6 +223,8 @@ extern "C" void __declspec(dllexport) __kBspInitProc() {
 	outportb(0xa1, 0xff);
 
 	*(DWORD*)0xfee00350 = 0x10000;
+
+	initHpet();
 }
 
 
@@ -256,8 +246,6 @@ int initHpet() {
 		*(long long*)(APIC_HPET_BASE + 0x10) = 3;
 
 		*(long long*)(APIC_HPET_BASE + 0x20) = 0;
-
-		
 
 		long long* regs = (long long*)(APIC_HPET_BASE + 0x100);	
 
@@ -316,34 +304,17 @@ extern "C" void __declspec(naked) HpetInterrupt(LIGHT_ENVIRONMENT * stack) {
 		LPPROCESS_INFO process = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
 		char szout[1024];
 
-		int tag = *(int*)(APIC_HPET_BASE + 0x20) ;
+		int tag = *(int*)(APIC_HPET_BASE + 0x20);
 		if (tag & 1) {
 			__kTaskSchedule((LIGHT_ENVIRONMENT*)stack);
-			*(long long*)(APIC_HPET_BASE + 0x108) = 0;
+			*(long*)(APIC_HPET_BASE + 0x108) = 0;
 		}
 		else if (tag & 2) {
-			outportb(0x70, 0x0c);
-			int flag = inportb(0x71);
-			//IRQF = (PF * PIE) + (AF * AIE) + (UF * UFE), if double interruptions, will not be 1
-			if (flag & 0x20) {
-				__kAlarmTimerProc();
-			}
-			else if (flag & 0x40) {
-				__kExactTimerProc();
-			}
-			else if (flag & 0x10) {
-				__kPeriodTimer();
-			}
-
-			//*(long long*)(APIC_HPET_BASE + 0x128) = 0;
+			DWORD c = *(long*)(APIC_HPET_BASE + 0xf0);
+			DWORD cmp = *(long*)(APIC_HPET_BASE + 0x128);
 		}
 
-		*(long long*)(APIC_HPET_BASE + 0xf0) = 0;
-
 		*(long *)0xFEE000B0 = 0;
-
-		outportb(0x20, 0x20);
-		outportb(0xa0, 0xa0);	
 	}
 
 	__asm {
@@ -380,7 +351,6 @@ extern "C" void __declspec(dllexport) __kApInitProc() {
 	idtbase.size = 256 * sizeof(SegDescriptor) - 1;
 	idtbase.addr = IDT_BASE;
 
-	
 	initKernelTss((TSS*)AP_TSS_BASE + 0x4000*g_ApNumber, AP_STACK0_BASE + TASK_STACK0_SIZE* (g_ApNumber+1) - STACK_TOP_DUMMY,
 		TASKS_AP_STACK_BASE + KTASK_STACK_SIZE*(g_ApNumber + 1)- STACK_TOP_DUMMY, 0, PDE_ENTRY_VALUE, 0);
 	makeTssDescriptor(AP_TSS_BASE + 0x4000 * g_ApNumber, 3, sizeof(TSS) - 1, 

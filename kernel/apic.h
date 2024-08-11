@@ -2,6 +2,7 @@
 
 
 #include "def.h"
+#include "task.h"
 
 #define APIC_HPET_BASE  0XFED00000
 
@@ -54,3 +55,5 @@ void iomfence();
 void setIoRedirect(int id, int idx, int vector, int mode);
 
 void setIoApicID(int id);
+
+extern "C" void __declspec(dllexport) IPIIntHandler(LIGHT_ENVIRONMENT * stack);

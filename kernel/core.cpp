@@ -21,6 +21,7 @@
 #include "floppy.h"
 #include "parallel.h"
 #include "soundBlaster/sbPlay.h"
+#include "apic.h"
 
 
 void makeDataSegDescriptor(DWORD base, int dpl, int bit, int direction, int w, SegDescriptor* descriptor) {
@@ -260,11 +261,9 @@ void initKernelTss(TSS* tss, DWORD esp0, DWORD reg_esp, DWORD eip, DWORD cr3, DW
 void initGdt() {
 
 	DescriptTableReg gdtbase;
-
 	__asm {
-
 		sgdt gdtbase;
-}
+	}
 
 	char szout[1024];
 	__printf(szout, "gdt base:%x,size:%x\r\n", gdtbase.addr, gdtbase.size);
@@ -391,6 +390,8 @@ void initIDT() {
 	makeIntGateDescriptor((DWORD)CoprocessorIntProc, KERNEL_MODE_CODE, 3, descriptor + INTR_8259_SLAVE + 5);
 	makeIntGateDescriptor((DWORD)IDEMasterIntProc, KERNEL_MODE_CODE, 3, descriptor + INTR_8259_SLAVE + 6);
 	makeIntGateDescriptor((DWORD)IDESlaveIntProc, KERNEL_MODE_CODE, 3, descriptor + INTR_8259_SLAVE + 7);
+
+	makeTrapGateDescriptor((DWORD)IPIIntHandler, KERNEL_MODE_CODE, 3, descriptor + INTR_8259_SLAVE + 8);
 
 	DescriptTableReg idtbase;
 	idtbase.size = 256 * sizeof(SegDescriptor) - 1;

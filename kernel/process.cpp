@@ -61,7 +61,7 @@ void __terminateProcess(int dwtid, char * filename, char * funcname, DWORD lppar
 
 	__asm
 	{
-		//cli
+		cli
 	}
 
 	TASK_LIST_ENTRY* list = (TASK_LIST_ENTRY*)TASKS_LIST_BASE;
@@ -87,7 +87,7 @@ void __terminateProcess(int dwtid, char * filename, char * funcname, DWORD lppar
 	tasks[process->pid].status = TASK_OVER;
 
 	__asm {
-		//sti
+		sti
 	}
 
 	if (dwtid & 0x80000000)
@@ -101,12 +101,14 @@ void __terminateProcess(int dwtid, char * filename, char * funcname, DWORD lppar
 
 
 
-int __initProcess(LPPROCESS_INFO tss, int pid, DWORD filedata, char * filename, char * funcname,DWORD level, DWORD runparam) 
+int __initProcess(LPPROCESS_INFO tss, int tid, DWORD filedata, char * filename, char * funcname,DWORD level, DWORD runparam) 
 {
 	int result = 0;
 
 	char szout[1024];
 
+	tss->pid = tid;
+	tss->tid = tid;
 	tss->tss.trap = 0;
 	tss->tss.ldt = 0;
 
@@ -120,7 +122,7 @@ int __initProcess(LPPROCESS_INFO tss, int pid, DWORD filedata, char * filename, 
 	DWORD vaddr = tss->vaddr + tss->vasize;
 	DWORD imagesize = getSizeOfImage((char*)filedata);
 	DWORD alignsize = 0;
-	DWORD pemap = (DWORD)__kProcessMalloc(imagesize,&alignsize,pid, vaddr);
+	DWORD pemap = (DWORD)__kProcessMalloc(imagesize,&alignsize, tss->pid, vaddr);
 	if (pemap <= 0) {
 		tss->status = TASK_OVER;
 		__printf(szout, "__initProcess %s %s __kProcessMalloc ERROR\n", funcname, filename);
@@ -200,7 +202,7 @@ int __initProcess(LPPROCESS_INFO tss, int pid, DWORD filedata, char * filename, 
 	tss->tss.esi = 0;
 	tss->tss.edi = 0;
 
-	tss->tss.esp0 = TASKS_STACK0_BASE + (pid + 1) * TASK_STACK0_SIZE - STACK_TOP_DUMMY;
+	tss->tss.esp0 = TASKS_STACK0_BASE + (tid + 1) * TASK_STACK0_SIZE - STACK_TOP_DUMMY;
 	tss->tss.ss0 = KERNEL_MODE_STACK;
 
 	DWORD espsize = 0;
@@ -216,7 +218,7 @@ int __initProcess(LPPROCESS_INFO tss, int pid, DWORD filedata, char * filename, 
 		tss->tss.cs = KERNEL_MODE_CODE;
 		tss->tss.ss = KERNEL_MODE_STACK;
 
-		tss->espbase = __kProcessMalloc(KTASK_STACK_SIZE, &espsize,pid, vaddr);
+		tss->espbase = __kProcessMalloc(KTASK_STACK_SIZE, &espsize, tss->pid, vaddr);
 		if (tss->espbase == FALSE)
 		{
 			__kFreeProcess(tss->pid);
@@ -262,7 +264,7 @@ int __initProcess(LPPROCESS_INFO tss, int pid, DWORD filedata, char * filename, 
 		tss->tss.cs = USER_MODE_CODE | syslevel ;
 		tss->tss.ss = USER_MODE_STACK | syslevel ;
 
-		tss->espbase = __kProcessMalloc(UTASK_STACK_SIZE,&espsize,pid, vaddr);
+		tss->espbase = __kProcessMalloc(UTASK_STACK_SIZE,&espsize, tss->pid, vaddr);
 		if (tss->espbase == FALSE)
 		{
 			__kFreeProcess(tss->pid);
@@ -310,7 +312,7 @@ int __initProcess(LPPROCESS_INFO tss, int pid, DWORD filedata, char * filename, 
 	tss->vasize += espsize;
 	vaddr = tss->vaddr + tss->vasize;
 
-	DWORD heapbase = __kProcessMalloc(heapsize, &heapsize, pid, vaddr);	
+	DWORD heapbase = __kProcessMalloc(heapsize, &heapsize, tss->pid, vaddr);
 #ifndef DISABLE_PAGE_REDIRECTION
 	result = mapPhyToLinear(vaddr, heapbase, heapsize, (DWORD*)tss->tss.cr3);
 	tss->heapbase = vaddr;
@@ -322,7 +324,7 @@ int __initProcess(LPPROCESS_INFO tss, int pid, DWORD filedata, char * filename, 
 	
 	params->terminate = (DWORD)__terminateProcess;
 	params->terminate2 = (DWORD)__terminateProcess;
-	params->tid = pid;
+	params->tid = tid;
 	__strcpy(params->szFileName, filename);
 	params->filename = params->szFileName;
 	__strcpy(params->szFuncName, funcname);
@@ -336,8 +338,8 @@ int __initProcess(LPPROCESS_INFO tss, int pid, DWORD filedata, char * filename, 
 	tss->counter = 0;
 	tss->errorno = 0;
 
-	tss->pid = pid;
-	tss->tid = pid;
+	tss->pid = tid;
+	tss->tid = tid;
 	__strcpy(tss->filename, filename);
 	__strcpy(tss->funcname, funcname);
 

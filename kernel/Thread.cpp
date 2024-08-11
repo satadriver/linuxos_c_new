@@ -25,6 +25,10 @@ DWORD __kTerminateThread(int dwtid, char * filename, char * funcname, DWORD lppa
 	__printf(szout, "__kTerminateThread pid:%x,filename:%s,funcname:%s,current pid:%x\r\n",
 		tid, filename, funcname, current->pid);
 
+	__asm {
+		cli
+	}
+
 	if (current->tid == tid)
 	{
 		current->status = TASK_OVER;
@@ -33,9 +37,15 @@ DWORD __kTerminateThread(int dwtid, char * filename, char * funcname, DWORD lppa
 
 	}
 
-	removeTaskList(tid);
-
 	tss[tid].status = TASK_OVER;
+
+	removeTaskList(tid);	
+
+	__kFree(tss[tid].espbase);
+
+	__asm {
+		sti
+	}
 
 	if (dwtid & 0x80000000)
 	{
@@ -61,7 +71,7 @@ DWORD __kCreateThread(DWORD addr, DWORD module, DWORD runparam,char * funcname) 
 		return FALSE;
 	}
 
-	DWORD imagesize = getSizeOfImage((char*)addr);
+	DWORD imagesize = getSizeOfImage((char*)module);
 	DWORD alignsize = getAlignedSize(imagesize, PAGE_SIZE);
 	
 	//如果想要修改父进程的信息，必须在CURRENT_TASK_TSS_BASE中修改，否则线程切换时信息还是会被替换
