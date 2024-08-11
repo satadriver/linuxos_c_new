@@ -9,11 +9,11 @@ void initListEntry(LIST_ENTRY * list) {
 
 //add after head
 void addlistTail(LIST_ENTRY * head, LIST_ENTRY * list) {
-	if (head == list)
+	if (head->next == 0 || head->prev == 0 || list == head) 
 	{
 		head->next = list;
 		head->prev = list;
-		return;	
+		return;
 	}
 
 	LIST_ENTRY * headnext = head->next;
@@ -27,7 +27,7 @@ void addlistTail(LIST_ENTRY * head, LIST_ENTRY * list) {
 
 //add to head
 void addlistHead(LIST_ENTRY * head, LIST_ENTRY * list) {
-	if (head == list)
+	if (head->next == 0 || head->prev == 0 || list == head)
 	{
 		head->next = list;
 		head->prev = list;
@@ -49,16 +49,19 @@ int searchList(LIST_ENTRY * head, LPLIST_ENTRY list) {
 	}
 
 	LPLIST_ENTRY e = head->next;
-	while (e && (e != head))
+	do
 	{
-		if (e == list)
+		if (e == 0) {
+			break;
+		}
+		if ( e == list)
 		{
 			return TRUE;
 		}
-		else {
-			e = e->next;
-		}
-	}
+
+		e = e->next;
+		
+	} while (TRUE);
 
 	return FALSE;
 }
@@ -68,21 +71,30 @@ void removelist(LPLIST_ENTRY list) {
 
 	if (list->next == 0 && list->prev == 0)
 	{
+		//error
 		return;
 	}
 	else if (list->next == 0 && list->prev)
 	{
-		list->prev->next = 0;
+		//error
+		return;
 	}
 	else if (list->prev == 0 && list->next)
 	{
-		list->next->prev = 0;
+		//error
+		return;
 	}
 	else {
-		LPLIST_ENTRY next = list->next;
-		LPLIST_ENTRY prev = list->prev;
-		list->prev->next = next;
-		list->next->prev = prev;
+		if (list->next == list && list->prev == list) {
+			list->next = 0;
+			list->prev = 0;
+		}
+		else {
+			LPLIST_ENTRY next = list->next;
+			LPLIST_ENTRY prev = list->prev;
+			list->prev->next = next;
+			list->next->prev = prev;
+		}
 	}
 }
 

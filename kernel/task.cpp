@@ -65,6 +65,10 @@ TASK_LIST_ENTRY* removeTaskList(int tid) {
 	{
 		if (list->valid && list->process && list->process->tid == tid)
 		{
+			if (gTasksListPtr == list) {
+				gTasksListPtr = (TASK_LIST_ENTRY*)list->list.next;
+			}
+
 			removelist((LIST_ENTRY*)&list->list);
 
 			list->process->status = TASK_OVER;
@@ -371,7 +375,13 @@ extern "C"  __declspec(dllexport) DWORD __kTaskSchedule(LIGHT_ENVIRONMENT* regs)
 	//process->tss.ldt = ldtreg.addr;
 
 	process->counter++;
-	__memcpy((char*)(tss + prev->process->tid), (char*)process, sizeof(PROCESS_INFO));
+	if (process->status == TASK_RUN) {
+		__memcpy((char*)(tss + prev->process->tid), (char*)process, sizeof(PROCESS_INFO));
+	}
+	else {
+
+	}
+	
 	__memcpy((char*)process, (char*)(next->process->tid + tss), sizeof(PROCESS_INFO));
 	
 	//tasktest();

@@ -39,7 +39,7 @@ DWORD __kTerminateThread(int dwtid, char * filename, char * funcname, DWORD lppa
 
 	tss[tid].status = TASK_OVER;
 
-	removeTaskList(tid);	
+	removeTaskList(tid);
 
 	__kFree(tss[tid].espbase);
 
