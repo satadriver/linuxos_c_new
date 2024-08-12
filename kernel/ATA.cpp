@@ -75,10 +75,10 @@ int checkIDEPort(unsigned short port) {
 			r = identifyDevice(port , 0xa1 , buffer);
 			if (r) {
 				WORD gc = *(WORD*)buffer;
-				if (gc & 3 == 1) {
+				if ( (gc & 3) == 1) {
 					gAtapiPackSize = 16;
 				}
-				else if (gc & 3 == 0) {
+				else if ((gc & 3) == 0) {
 					gAtapiPackSize = 12;
 				}
 

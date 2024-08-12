@@ -52,7 +52,7 @@ int readdsp() {
 	int v = 0;
 	do {
 		v = inportb(SOUNDBLASTER_BASE_PORT + 0x0e);
-		if (v & 0x80 == 0) {
+		if ((v & 0x80) == 0) {
 			__sleep(0);
 			continue;
 		}

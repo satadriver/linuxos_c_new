@@ -66,7 +66,7 @@ TASK_LIST_ENTRY* removeTaskList(int tid) {
 		if (list->valid && list->process && list->process->tid == tid)
 		{
 			if (gTasksListPtr == list) {
-				gTasksListPtr = (TASK_LIST_ENTRY*)list->list.next;
+				//gTasksListPtr = (TASK_LIST_ENTRY*)list->list.next;
 			}
 
 			removelist((LIST_ENTRY*)&list->list);
@@ -335,6 +335,18 @@ extern "C"  __declspec(dllexport) DWORD __kTaskSchedule(LIGHT_ENVIRONMENT* regs)
 // 	}
 
 	TASK_LIST_ENTRY * prev = gTasksListPtr;
+	if (prev->process->status == TASK_TERMINATE) {
+		prev->process->status = TASK_OVER;
+		if (prev->process->pid == prev->process->tid) {
+			__kFreeProcess(prev->process->pid);
+		}
+		else {
+			__kFree(prev->process->espbase);
+		}
+		
+		removeTaskList(prev->process->pid);
+	}
+
 	TASK_LIST_ENTRY* next = (TASK_LIST_ENTRY*)gTasksListPtr->list.next;
 	do
 	{
@@ -343,7 +355,24 @@ extern "C"  __declspec(dllexport) DWORD __kTaskSchedule(LIGHT_ENVIRONMENT* regs)
 			return FALSE;
 		}
 
-		if (next->process->status != TASK_RUN)
+		if (next->process->status == TASK_OVER) {
+			next = (TASK_LIST_ENTRY*)next->list.next;
+		}
+		else if (next->process->status == TASK_TERMINATE) {
+			next->process->status = TASK_OVER;
+
+			if (next->process->pid == next->process->tid) {
+				__kFreeProcess(next->process->pid);
+			}
+			else {
+				__kFree(next->process->espbase);
+			}
+
+			removeTaskList(prev->process->pid);
+
+			next = (TASK_LIST_ENTRY*)next->list.next;
+		}
+		else if (next->process->status == TASK_SUSPEND)
 		{
 			next = (TASK_LIST_ENTRY*)next->list.next;
 			continue;
@@ -375,13 +404,7 @@ extern "C"  __declspec(dllexport) DWORD __kTaskSchedule(LIGHT_ENVIRONMENT* regs)
 	//process->tss.ldt = ldtreg.addr;
 
 	process->counter++;
-	if (process->status == TASK_RUN) {
-		__memcpy((char*)(tss + prev->process->tid), (char*)process, sizeof(PROCESS_INFO));
-	}
-	else {
-
-	}
-	
+	__memcpy((char*)(tss + prev->process->tid), (char*)process, sizeof(PROCESS_INFO));
 	__memcpy((char*)process, (char*)(next->process->tid + tss), sizeof(PROCESS_INFO));
 	
 	//tasktest();

@@ -61,7 +61,7 @@ void __terminateProcess(int dwtid, char * filename, char * funcname, DWORD lppar
 
 	__asm
 	{
-		cli
+		//cli
 	}
 
 	TASK_LIST_ENTRY* list = (TASK_LIST_ENTRY*)TASKS_LIST_BASE;
@@ -70,24 +70,27 @@ void __terminateProcess(int dwtid, char * filename, char * funcname, DWORD lppar
 		if ( (list->process->status == TASK_RUN) && (list->process->pid == pid) )
 		{
 			if (list->process->pid != list->process->tid ) {
-				TASK_LIST_ENTRY* list = removeTaskList(list->process->tid);
-				tasks[list->process->tid].status = TASK_OVER;
+				//TASK_LIST_ENTRY* list = removeTaskList(list->process->tid);
+				tasks[list->process->tid].status = TASK_TERMINATE;
 			}
 			else {
 				process = list->process;
 			}
 		}	
 		list = (TASK_LIST_ENTRY*)list->list.next;
+		if (list == 0) {
+			break;
+		}
 	} while (list != (TASK_LIST_ENTRY*)TASKS_LIST_BASE);
 
-	__kFreeProcess(process->pid);
+	//__kFreeProcess(process->pid);
 
-	removeTaskList(process->pid);
+	//removeTaskList(process->pid);
 
-	tasks[process->pid].status = TASK_OVER;
+	tasks[process->pid].status = TASK_TERMINATE;
 
 	__asm {
-		sti
+		//sti
 	}
 
 	if (dwtid & 0x80000000)

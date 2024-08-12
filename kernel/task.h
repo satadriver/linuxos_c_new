@@ -49,7 +49,7 @@ typedef struct {
 #define TASK_OVER				0
 #define TASK_RUN				1
 #define TASK_SUSPEND			2
-
+#define TASK_TERMINATE			3
 
 
 void clearTssBuf(LPPROCESS_INFO tss);

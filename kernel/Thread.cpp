@@ -26,25 +26,25 @@ DWORD __kTerminateThread(int dwtid, char * filename, char * funcname, DWORD lppa
 		tid, filename, funcname, current->pid);
 
 	__asm {
-		cli
+		//cli
 	}
 
 	if (current->tid == tid)
 	{
-		current->status = TASK_OVER;
+		current->status = TASK_TERMINATE;
 	}
 	else {
 
 	}
 
-	tss[tid].status = TASK_OVER;
+	tss[tid].status = TASK_TERMINATE;
 
-	removeTaskList(tid);
+	//removeTaskList(tid);
 
-	__kFree(tss[tid].espbase);
+	//__kFree(tss[tid].espbase);
 
 	__asm {
-		sti
+		//sti
 	}
 
 	if (dwtid & 0x80000000)
