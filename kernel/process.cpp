@@ -83,8 +83,6 @@ void __terminateProcess(int dwtid, char * filename, char * funcname, DWORD lppar
 		}
 	} while (list != (TASK_LIST_ENTRY*)TASKS_LIST_BASE);
 
-	//__kFreeProcess(process->pid);
-
 	//removeTaskList(process->pid);
 
 	tasks[process->pid].status = TASK_TERMINATE;
@@ -354,7 +352,8 @@ int __initProcess(LPPROCESS_INFO tss, int tid, DWORD filedata, char * filename, 
 
 	__printf(szout, "imagebase:%x,imagesize:%x,map base:%x,entry:%x,cr3:%x,esp:%x\n",getImageBase((char*)pemap), imagesize, pemap, entry, tss->tss.cr3,tss->espbase);
 
-	addTaskList(tss->tid);
+	//addTaskList(tss->tid);
+	tss->status = TASK_RUN;
 
 	return TRUE;
 }

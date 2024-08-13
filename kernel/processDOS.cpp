@@ -253,7 +253,7 @@ int __initDosTss(LPPROCESS_INFO tss, int pid, DWORD addr, char * filename, char 
 
 	__strcpy(tss->funcname, funcname);
 
-	addTaskList(tss->tid);
-
+	//addTaskList(tss->tid);
+	tss->status = TASK_RUN;
 	return TRUE;
 }

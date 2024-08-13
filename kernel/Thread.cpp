@@ -41,8 +41,6 @@ DWORD __kTerminateThread(int dwtid, char * filename, char * funcname, DWORD lppa
 
 	//removeTaskList(tid);
 
-	//__kFree(tss[tid].espbase);
-
 	__asm {
 		//sti
 	}
@@ -235,7 +233,8 @@ DWORD __kCreateThread(DWORD addr, DWORD module, DWORD runparam,char * funcname) 
 
 	tss->window = 0;
 
-	addTaskList(tss->tid);
+	//addTaskList(tss->tid);
+	tss->status = TASK_RUN;
 
 	return TRUE;
 }

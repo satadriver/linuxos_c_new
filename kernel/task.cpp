@@ -315,86 +315,56 @@ int __createDosInFileTask(DWORD addr, char* filename) {
 	return __kCreateProcess(addr, 0x1000, filename, filename, DOS_PROCESS_RUNCODE | 3, 0);
 }
 
+
+
 #ifndef SINGLE_TASK_TSS
 extern "C"  __declspec(dllexport) DWORD __kTaskSchedule(LIGHT_ENVIRONMENT* regs) {
 
 	__k8254TimerProc();
 
-// 	LPDOS_PE_CONTROL dos_status = (LPDOS_PE_CONTROL)V86_TASKCONTROL_ADDRESS;
-// 	for (int i = 0; i < LIMIT_V86_PROC_COUNT; i++)
-// 	{
-// 		if (dos_status[i].status == DOS_TASK_OVER)
-// 		{
-// 			LPPROCESS_INFO p = __findProcessByPid(dos_status[i].pid);
-// 			if (p)
-// 			{
-// 				p->status = TASK_OVER;
-// 				removeTaskList(dos_status[i].pid);
-// 			}
-// 		}
-// 	}
+	LPPROCESS_INFO tss = (LPPROCESS_INFO)TASKS_TSS_BASE;
+	LPPROCESS_INFO process = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
 
-	TASK_LIST_ENTRY * prev = gTasksListPtr;
-	if (prev->process->status == TASK_TERMINATE) {
-		prev->process->status = TASK_OVER;
-		if (prev->process->pid == prev->process->tid) {
-			__kFreeProcess(prev->process->pid);
+	LPPROCESS_INFO prev = (LPPROCESS_INFO)(tss + process->tid);
+	if (prev->status == TASK_TERMINATE) {
+		prev->status = TASK_OVER;
+		if (prev->tid == prev->pid) {
+			//__kFreeProcess(prev->pid);
 		}
 		else {
-			__kFree(prev->process->espbase);
-		}
-		
-		removeTaskList(prev->process->pid);
+			//__kFree(prev->espbase);
+		}		
 	}
+	LPPROCESS_INFO next = prev;
+	do {
+		next++;
+		if (next - tss >= TASK_LIMIT_TOTAL) {
+			next = tss;
+		}
 
-	TASK_LIST_ENTRY* next = (TASK_LIST_ENTRY*)gTasksListPtr->list.next;
-	do
-	{
-		if (next == 0 || next == prev)
-		{
+		if (next == prev) {
 			return FALSE;
 		}
 
-		if (next->process->status == TASK_OVER) {
-			next = (TASK_LIST_ENTRY*)next->list.next;
-		}
-		else if (next->process->status == TASK_TERMINATE) {
-			next->process->status = TASK_OVER;
-
-			if (next->process->pid == next->process->tid) {
-				__kFreeProcess(next->process->pid);
+		if (next->status == TASK_TERMINATE) {
+			next->status = TASK_OVER;
+			if (next->tid == next->pid) {
+				//__kFreeProcess(next->pid);
 			}
 			else {
-				__kFree(next->process->espbase);
+				//__kFree(next->espbase);
 			}
-
-			removeTaskList(prev->process->pid);
-
-			next = (TASK_LIST_ENTRY*)next->list.next;
 		}
-		else if (next->process->status == TASK_SUSPEND)
-		{
-			next = (TASK_LIST_ENTRY*)next->list.next;
-			continue;
-		}
-		else {
-			if (next->process->sleep)
-			{
-				next->process->sleep--;
 
-				next = (TASK_LIST_ENTRY*)next->list.next;
-				continue;
+		if (next->status == TASK_RUN) {
+			if (next->sleep) {
+				next->sleep--;
 			}
 			else {
 				break;
 			}
 		}
-	} while (TRUE);
-	
-	gTasksListPtr = (TASK_LIST_ENTRY*)next;
-
-	LPPROCESS_INFO tss = (LPPROCESS_INFO)TASKS_TSS_BASE;
-	LPPROCESS_INFO process = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
+	} while (next != prev);
 	
 	//切换到新任务的cr3和ldt会被自动加载，但是iret也会加载cr3和ldt，因此不需要手动加载
 	//DescriptTableReg ldtreg;
@@ -404,12 +374,12 @@ extern "C"  __declspec(dllexport) DWORD __kTaskSchedule(LIGHT_ENVIRONMENT* regs)
 	//process->tss.ldt = ldtreg.addr;
 
 	process->counter++;
-	__memcpy((char*)(tss + prev->process->tid), (char*)process, sizeof(PROCESS_INFO));
-	__memcpy((char*)process, (char*)(next->process->tid + tss), sizeof(PROCESS_INFO));
+	__memcpy((char*)(tss + prev->tid), (char*)process, sizeof(PROCESS_INFO));
+	__memcpy((char*)process, (char*)(next->tid + tss), sizeof(PROCESS_INFO));
 	
 	//tasktest();
 
- 	char * fenvprev = (char*)FPU_STATUS_BUFFER + (prev->process->tid << 9);
+ 	char * fenvprev = (char*)FPU_STATUS_BUFFER + (prev->tid << 9);
 	//If a memory operand is not aligned on a 16-byte boundary, regardless of segment
 	//The assembler issues two instructions for the FSAVE instruction (an FWAIT instruction followed by an FNSAVE instruction), 
 	//and the processor executes each of these instructions separately.
@@ -422,11 +392,11 @@ extern "C"  __declspec(dllexport) DWORD __kTaskSchedule(LIGHT_ENVIRONMENT* regs)
 		//fsave [fenv]
 		//FNCLEX
 	}
-	prev->process->fpu = 1;
+	prev->fpu = 1;
 
-	if (next->process->fpu)
+	if (next->fpu)
 	{
-		char * fenvnext = (char*)FPU_STATUS_BUFFER + (next->process->tid << 9);
+		char * fenvnext = (char*)FPU_STATUS_BUFFER + (next->tid << 9);
 		__asm {
 			clts
 			fwait
@@ -444,53 +414,49 @@ extern "C"  __declspec(dllexport) DWORD __kTaskSchedule(LIGHT_ENVIRONMENT * env)
 
 	__k8254TimerProc();
 
-	// 	LPDOS_PE_CONTROL dos_status = (LPDOS_PE_CONTROL)V86_TASKCONTROL_ADDRESS;
-	// 	for (int i = 0; i < LIMIT_V86_PROC_COUNT; i++)
-	// 	{
-	// 		if (dos_status[i].status == DOS_TASK_OVER)
-	// 		{
-	// 			LPPROCESS_INFO p = __findProcessByPid(dos_status[i].pid);
-	// 			if (p)
-	// 			{
-	// 				p->status = TASK_OVER;
-	// 				removeTaskList(dos_status[i].pid);
-	// 			}
-	// 		}
-	// 	}
+	LPPROCESS_INFO tss = (LPPROCESS_INFO)TASKS_TSS_BASE;
+	LPPROCESS_INFO process = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
 
-	TASK_LIST_ENTRY* prev = gTasksListPtr;
+	LPPROCESS_INFO prev = (LPPROCESS_INFO)(tss + process->tid);
+	if (prev->status == TASK_TERMINATE) {
+		prev->status = TASK_OVER;
+		if (prev->tid == prev->pid) {
+			__kFreeProcess(prev->pid);
+		}
+		else {
+			__kFree(prev->espbase);
+		}
+	}
+	LPPROCESS_INFO next = prev;
+	do {
+		next++;
+		if (next - tss >= TASK_LIMIT_TOTAL) {
+			next = tss;
+		}
 
-	TASK_LIST_ENTRY* next = (TASK_LIST_ENTRY*)gTasksListPtr->list.next;
-	do
-	{
-		if (next == 0 || next == prev)
-		{
+		if (next == prev) {
 			return FALSE;
 		}
 
-		if (next->process->status != TASK_RUN)
-		{
-			next = (TASK_LIST_ENTRY*)next->list.next;
-			continue;
+		if (next->status == TASK_TERMINATE) {
+			next->status = TASK_OVER;
+			if (next->tid == next->pid) {
+				__kFreeProcess(next->pid);
+			}
+			else {
+				__kFree(next->espbase);
+			}
 		}
-		else {
-			if (next->process->sleep)
-			{
-				next->process->sleep--;
 
-				next = (TASK_LIST_ENTRY*)next->list.next;
-				continue;
+		if (next->status == TASK_RUN) {
+			if (next->sleep) {
+				next->sleep--;
 			}
 			else {
 				break;
 			}
 		}
-	} while (TRUE);
-
-	gTasksListPtr = (TASK_LIST_ENTRY*)next;
-
-	LPPROCESS_INFO tss = (LPPROCESS_INFO)TASKS_TSS_BASE;
-	LPPROCESS_INFO process = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
+	} while (next != prev);
 
 	process->tss.eax = env->eax;
 	process->tss.ecx = env->ecx;
@@ -533,8 +499,8 @@ extern "C"  __declspec(dllexport) DWORD __kTaskSchedule(LIGHT_ENVIRONMENT * env)
 	//process->tss.ldt = ldtreg.addr;
 
 	process->counter++;
-	__memcpy((char*)(tss + prev->process->tid), (char*)process, sizeof(PROCESS_INFO));
-	__memcpy((char*)process, (char*)(next->process->tid + tss), sizeof(PROCESS_INFO));
+	__memcpy((char*)(tss + prev->tid), (char*)process, sizeof(PROCESS_INFO));
+	__memcpy((char*)process, (char*)(next->tid + tss), sizeof(PROCESS_INFO));
 
 	if (process->tss.eflags & 0x20000) {
 
@@ -548,7 +514,7 @@ extern "C"  __declspec(dllexport) DWORD __kTaskSchedule(LIGHT_ENVIRONMENT * env)
 
 	//tasktest();
 
-	char* fenvprev = (char*)FPU_STATUS_BUFFER + (prev->process->tid << 9);
+	char* fenvprev = (char*)FPU_STATUS_BUFFER + (prev->tid << 9);
 	//If a memory operand is not aligned on a 16-byte boundary, regardless of segment
 	//The assembler issues two instructions for the FSAVE instruction (an FWAIT instruction followed by an FNSAVE instruction), 
 	//and the processor executes each of these instructions separately.
@@ -561,11 +527,11 @@ extern "C"  __declspec(dllexport) DWORD __kTaskSchedule(LIGHT_ENVIRONMENT * env)
 		//fsave [fenv]
 		//FNCLEX
 	}
-	prev->process->fpu = 1;
+	prev->fpu = 1;
 
-	if (next->process->fpu)
+	if (next->fpu)
 	{
-		char* fenvnext = (char*)FPU_STATUS_BUFFER + (next->process->tid << 9);
+		char* fenvnext = (char*)FPU_STATUS_BUFFER + (next->tid << 9);
 		__asm {
 			clts
 			fwait
