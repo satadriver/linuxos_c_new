@@ -54,18 +54,15 @@ int getpids(char * szout) {
 	int outlen = 0;
 	int len = 0;
 
-	TASK_LIST_ENTRY * list = (TASK_LIST_ENTRY*)TASKS_LIST_BASE;
-	do
-	{
-		if (list->valid && list->process )
+	LPPROCESS_INFO tss = (LPPROCESS_INFO)TASKS_TSS_BASE;
+	for (int i = 0; i < TASK_LIMIT_TOTAL; i++) {
+		if (tss[i].status == TASK_RUN)
 		{
 			len = __sprintf(szout + outlen, "filename:%s funcname:%s address:%x pid:%d,tid:%d,level:%d\r\n",
-				list->process->filename, list->process->funcname, list->process->moduleaddr, 
-				list->process->pid, list->process->tid, list->process->level);
+				tss[i].filename, tss[i].funcname, tss[i].moduleaddr,tss[i].pid, tss[i].tid, tss[i].level);
 			outlen += len;
 		}
-		list = (TASK_LIST_ENTRY *)list->list.next;
-	} while (list != (TASK_LIST_ENTRY*)TASKS_LIST_BASE);
+	}
 
 // 	LPPROCESS_INFO tss = (LPPROCESS_INFO)TASKS_TSS_BASE;
 // 	for (int i = 0;i < TASK_LIMIT_TOTAL;i ++)
@@ -89,18 +86,15 @@ int getmemmap(int pid,char * szout) {
 
 
 int getpid(int pid,char * szout) {
-	TASK_LIST_ENTRY * list = (TASK_LIST_ENTRY*)TASKS_LIST_BASE;
-	do
-	{
-		if (list->valid && list->process && list->process->tid == pid)
+	LPPROCESS_INFO tss = (LPPROCESS_INFO)TASKS_TSS_BASE;
+	for (int i = 0; i < TASK_LIMIT_TOTAL; i++) {
+		if (tss[i].status == TASK_RUN)
 		{
 			int len = __sprintf(szout, "filename:%s funcname:%s address:%x pid:%d,tid:%d,level:%d\r\n",
-				list->process->filename, list->process->funcname, list->process->moduleaddr, 
-				list->process->pid, list->process->tid, list->process->level);
+				tss[i].filename, tss[i].funcname, tss[i].moduleaddr,tss[i].pid, tss[i].tid, tss[i].level);
 			return len;
 		}
-		list = (TASK_LIST_ENTRY *)list->list.next;
-	} while (list != (TASK_LIST_ENTRY*)TASKS_LIST_BASE);
+}
 
 // 	LPPROCESS_INFO tss = (LPPROCESS_INFO)TASKS_TSS_BASE;
 // 	for (int i = 0; i < TASK_LIMIT_TOTAL; i++)

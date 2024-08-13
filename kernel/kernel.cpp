@@ -110,7 +110,7 @@ int __kernelEntry(LPVESAINFORMATION vesa, DWORD fontbase,DWORD v86Proc,DWORD v86
 	{
 		TASKCMDPARAMS cmd;
 		__memset((char*)&cmd, 0, sizeof(TASKCMDPARAMS));
-		//__kCreateThread((unsigned int)kernelMain, KERNEL_DLL_BASE,(DWORD)&cmd, "__kKernelMain");
+		__kCreateThread((unsigned int)kernelMain, KERNEL_DLL_BASE,(DWORD)&cmd, "__kKernelMain");
 		//__kCreateProcess((unsigned int)KERNEL_DLL_SOURCE_BASE, imagesize, "kernel.dll", "__kKernelMain", 3, 0);
 	}
 
@@ -138,7 +138,7 @@ int __kernelEntry(LPVESAINFORMATION vesa, DWORD fontbase,DWORD v86Proc,DWORD v86
 
 	while (1)
 	{
-		//if (__findProcessFuncName("__kExplorer") == FALSE)
+		if (__findProcessFuncName("__kExplorer") == FALSE)
 		{
 
 		}

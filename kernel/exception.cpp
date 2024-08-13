@@ -125,8 +125,7 @@ void __kException(DWORD param) {
 	gExceptionCounter2++;
 	//if (gExceptionCounter < 3)
 	{
-		TASK_LIST_ENTRY * list = __findProcessByTid(tid);
-		LPPROCESS_INFO taskinfo = list->process;
+		LPPROCESS_INFO taskinfo = __findProcessByTid(tid);
 		if (taskinfo)
 		{
 			__sprintf(showinfo, "task pid:%d,level:%d,status:%x,counter:%d,entry:%x,delay:%d,function:%s,file:%s\n",

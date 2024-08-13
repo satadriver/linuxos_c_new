@@ -292,16 +292,13 @@ DWORD __kProcessMalloc(DWORD s,DWORD *retsize, int pid,DWORD vaddr) {
 			//process->vasize += size;
 		}
 
-		TASK_LIST_ENTRY* head = (TASK_LIST_ENTRY*)TASKS_LIST_BASE;
-		TASK_LIST_ENTRY* list = head;
-		do
-		{
-			if (list->valid && list->process->pid == pid && list->process->status == TASK_RUN)
+		LPPROCESS_INFO tss = (LPPROCESS_INFO)TASKS_TSS_BASE;
+		for (int i = 0; i < TASK_LIMIT_TOTAL; i++) {
+			if (tss[i].pid == pid && tss[i].status == TASK_RUN)
 			{
-				list->process->vasize += size;
+				tss[i].vasize += size;
 			}
-			list = (TASK_LIST_ENTRY*)list->list.next;
-		} while (list != head);
+		}
 	}
 
 	__leaveSpinlock(&gAllocLock);

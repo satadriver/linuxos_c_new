@@ -9,12 +9,13 @@ typedef struct {
 	char name[256];
 }DLLMODULEINFO,*LPDLLMODULEINFO;
 
-
+/*
 typedef struct {
 	LIST_ENTRY list;
 	LPPROCESS_INFO process;
 	DWORD valid;
 }TASK_LIST_ENTRY;
+*/
 
 typedef struct {
 	DWORD ss;	//0
@@ -56,9 +57,9 @@ void clearTssBuf(LPPROCESS_INFO tss);
 
 void tasktest();
 
-TASK_LIST_ENTRY* addTaskList(int tid);
+//TASK_LIST_ENTRY* addTaskList(int tid);
 
-TASK_LIST_ENTRY* removeTaskList(int tid);
+//TASK_LIST_ENTRY* removeTaskList(int tid);
 
 //void __terminateTask(int pid, char * pname, char * funcname, DWORD lpparams);
 
@@ -79,13 +80,13 @@ extern "C"  __declspec(dllexport) int __terminateByFileName(char * filename);
 extern "C"  __declspec(dllexport) int __terminateByFuncName(char * funcname);
 
 
-extern "C"  __declspec(dllexport) TASK_LIST_ENTRY*  __findProcessByTid(int tid);
+extern "C"  __declspec(dllexport) PROCESS_INFO *  __findProcessByTid(int tid);
 
-extern "C"  __declspec(dllexport) TASK_LIST_ENTRY*  __findProcessByPid(int pid);
+extern "C"  __declspec(dllexport) PROCESS_INFO *  __findProcessByPid(int pid);
 
-extern "C"  __declspec(dllexport) TASK_LIST_ENTRY*  __findProcessFileName(char * filename);
+extern "C"  __declspec(dllexport) PROCESS_INFO *  __findProcessFileName(char * filename);
 
-extern "C"  __declspec(dllexport) TASK_LIST_ENTRY*  __findProcessFuncName(char * funcname);
+extern "C"  __declspec(dllexport) PROCESS_INFO *  __findProcessFuncName(char * funcname);
 
 extern "C"  __declspec(dllexport) int __createDosInFileTask(DWORD addr, char * filename);
 
@@ -101,13 +102,13 @@ extern "C"  __declspec(dllimport) int __terminateByFileName(char * filename);
 
 extern "C"  __declspec(dllimport) int __terminateByFuncName(char * funcname);
 
-extern "C"  __declspec(dllimport) TASK_LIST_ENTRY* __findProcessByTid(int tid);
+extern "C"  __declspec(dllimport) PROCESS_INFO * __findProcessByTid(int tid);
 
-extern "C"  __declspec(dllimport) TASK_LIST_ENTRY*  __findProcessByPid(int pid);
+extern "C"  __declspec(dllimport) PROCESS_INFO *  __findProcessByPid(int pid);
 
-extern "C"  __declspec(dllimport) TASK_LIST_ENTRY*  __findProcessFileName(char * filename);
+extern "C"  __declspec(dllimport) PROCESS_INFO *  __findProcessFileName(char * filename);
 
-extern "C"  __declspec(dllimport) TASK_LIST_ENTRY*  __findProcessFuncName(char * funcname);
+extern "C"  __declspec(dllimport) PROCESS_INFO *  __findProcessFuncName(char * funcname);
 
 extern "C"  __declspec(dllimport) int __createDosInFileTask(DWORD addr, char * filename);
 #endif

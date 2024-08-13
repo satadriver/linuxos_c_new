@@ -64,26 +64,21 @@ void __terminateProcess(int dwtid, char * filename, char * funcname, DWORD lppar
 		//cli
 	}
 
-	TASK_LIST_ENTRY* list = (TASK_LIST_ENTRY*)TASKS_LIST_BASE;
-	do
-	{
-		if ( (list->process->status == TASK_RUN) && (list->process->pid == pid) )
+	LPPROCESS_INFO tss = (LPPROCESS_INFO)TASKS_TSS_BASE;
+	for (int i = 0; i < TASK_LIMIT_TOTAL; i++) {
+
+		if ( (tss[i].status == TASK_RUN) && (tss[i].pid == pid) )
 		{
-			if (list->process->pid != list->process->tid ) {
-				//TASK_LIST_ENTRY* list = removeTaskList(list->process->tid);
-				tasks[list->process->tid].status = TASK_TERMINATE;
+			if (tss[i].pid != tss[i].tid ) {
+
+				tasks[tss[i].tid].status = TASK_TERMINATE;
 			}
 			else {
-				process = list->process;
+				process = &tss[i];
 			}
 		}	
-		list = (TASK_LIST_ENTRY*)list->list.next;
-		if (list == 0) {
-			break;
-		}
-	} while (list != (TASK_LIST_ENTRY*)TASKS_LIST_BASE);
 
-	//removeTaskList(process->pid);
+	} 
 
 	tasks[process->pid].status = TASK_TERMINATE;
 

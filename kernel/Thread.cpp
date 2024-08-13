@@ -39,8 +39,6 @@ DWORD __kTerminateThread(int dwtid, char * filename, char * funcname, DWORD lppa
 
 	tss[tid].status = TASK_TERMINATE;
 
-	//removeTaskList(tid);
-
 	__asm {
 		//sti
 	}

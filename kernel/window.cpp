@@ -197,12 +197,12 @@ int destroyWindows() {
 
 LPWINDOWCLASS getWindowFromName(char * winname) {
 
-	TASK_LIST_ENTRY * list = (TASK_LIST_ENTRY*)TASKS_LIST_BASE;
-	do
-	{
-		if (list->valid && list->process)
+	LPPROCESS_INFO tss = (LPPROCESS_INFO)TASKS_TSS_BASE;
+	for (int i = 0; i < TASK_LIMIT_TOTAL; i++) {
+
+		if ((tss[i].status == TASK_RUN))
 		{
-			LPWINDOWCLASS window = list->process->window;
+			LPWINDOWCLASS window = tss[i].window;
 			while (window)
 			{
 				if (__strcmp(window->caption, winname) == 0)
@@ -212,12 +212,7 @@ LPWINDOWCLASS getWindowFromName(char * winname) {
 				window = window->next;
 			}
 		}
-		list = (TASK_LIST_ENTRY *)list->list.next;
-		if (list == 0)
-		{
-			break;
-		}
-	} while (list != (TASK_LIST_ENTRY*)TASKS_LIST_BASE);
+	}
 
 	return 0;
 }
