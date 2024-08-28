@@ -12,13 +12,21 @@ int gFpuStatus = 0;
 //TS = 1时，浮点指令将产生设备不可用(DNA)异常。 
 //MP位控制WAIT指令在TS = 1时，是否产生DNA异常。MP = 1和TS = 1时，WAIT产生异常；MP = 0时，WAIT指令忽略TS条件，不产生异常。
 
+//Numeric Error（数值错误）是CR0寄存器的第5位（bit 5）。当设置了NE标志时，启用内部的机制来报告x87 FPU错误；
+//当清除NE标志时，启用PC风格的x87 FPU错误报告机制。
+//当NE标志被清除并且IGNNE#输入被触发时，x87 FPU错误会被忽略。
+//当NE标志被清除并且IGNNE#输入未触发时，未屏蔽的x87 FPU错误会导致处理器断言FERR#引脚以生成外部中断，
+//并在执行下一个等待的浮点指令或WAIT/FWAIT指令之前立即停止指令执行。
+
+
 void initCoprocessor() {
 
 	enableIRQ13();
 
 	__asm {
 		mov eax,cr0
-		or eax,0x10
+		or eax,0x10		//et = 1
+		or eax,0x20		//ne = 1, trap not interrupt
 		mov cr0,eax
 
 		//mov eax,cr4
@@ -26,7 +34,7 @@ void initCoprocessor() {
 		__emit 0x20
 		__emit 0xe0
 
-		or eax,0x40600
+		or eax,0x40600 //osxsave = 0x40000,osfxsr = 0x400, osxmmexcpt = 0x100
 
 		//mov cr4,eax
 		__emit 0x0f

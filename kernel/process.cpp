@@ -49,13 +49,13 @@ void __terminateProcess(int dwtid, char * filename, char * funcname, DWORD lppar
 		mov retvalue, eax
 	}
 
-	LPPROCESS_INFO tasks = (LPPROCESS_INFO)TASKS_TSS_BASE;
+	LPPROCESS_INFO tss = (LPPROCESS_INFO)TASKS_TSS_BASE;
 
 	LPPROCESS_INFO current = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
 
 	__printf(szout, "__terminateProcess pid:%x,filename:%s,funcname:%s,current pid:%x\n",tid, filename, funcname, current->pid);
 
-	int pid = tasks[tid].pid;
+	int pid = tss[tid].pid;
 
 	LPPROCESS_INFO process = 0;
 
@@ -64,14 +64,14 @@ void __terminateProcess(int dwtid, char * filename, char * funcname, DWORD lppar
 		//cli
 	}
 
-	LPPROCESS_INFO tss = (LPPROCESS_INFO)TASKS_TSS_BASE;
+	
 	for (int i = 0; i < TASK_LIMIT_TOTAL; i++) {
 
 		if ( (tss[i].status == TASK_RUN) && (tss[i].pid == pid) )
 		{
 			if (tss[i].pid != tss[i].tid ) {
 
-				tasks[tss[i].tid].status = TASK_TERMINATE;
+				tss[i].status = TASK_TERMINATE;
 			}
 			else {
 				process = &tss[i];
@@ -80,7 +80,7 @@ void __terminateProcess(int dwtid, char * filename, char * funcname, DWORD lppar
 
 	} 
 
-	tasks[process->pid].status = TASK_TERMINATE;
+	tss[process->pid].status = TASK_TERMINATE;
 
 	__asm {
 		//sti

@@ -12,7 +12,16 @@ void init8259();
 
 void initTextModeDevices();
 
+void enableVME();
 
+void enablePVI();
+
+void enableTSD();
+
+void enableDE();
+
+void enableMCE();
+void enablePCE();
 
 void enableSpeaker();
 void getKeyboardID();

@@ -21,7 +21,7 @@ void __kException(DWORD param) {
 	DWORD rcr0 = 0;
 	DWORD rcr2 = 0;
 	DWORD rcr3 = 0;
-	DWORD rcr4 = 0;
+	DWORD r = 0;
 	
 	__asm {
 		mov eax, cr0
@@ -34,7 +34,7 @@ void __kException(DWORD param) {
 		__emit 0x0f
 		__emit 0x20
 		__emit 0xe0
-		mov rcr4, eax	
+		mov r, eax	
 	}
 
 
@@ -55,10 +55,10 @@ void __kException(DWORD param) {
 
 			__printf(showinfo,
 				"v86 Exception type:%d,pid:%d,error code:%x,EIP RVA:%x,esp0:%x,ss0:%x,eip:%x,cs:%x,eflags:%x,esp3:%x,ss3:%x,"
-				"ds:%x,es:%x,fs:%x,gs:%x,eax:%x,ecx:%x,edx:%x,ebx:%x,ebp:%x,esi:%x,edi:%x,cr0:%x,cr2:%x,cr3:%x,cr4:%x\n",
+				"ds:%x,es:%x,fs:%x,gs:%x,eax:%x,ecx:%x,edx:%x,ebx:%x,ebp:%x,esi:%x,edi:%x,cr0:%x,cr2:%x,cr3:%x,:%x\n",
 				tss->no, tid, tss->errcode, rva, tss->esp0, tss->ss0, tss->eip, tss->cs, tss->eflags, tss->esp3, tss->ss3,
 				tss->ds, tss->es, tss->fs, tss->gs, tss->eax, tss->ecx, tss->edx, tss->ebx, tss->ebp, tss->esi, tss->edi,
-				rcr0, rcr2, rcr3, rcr4);
+				rcr0, rcr2, rcr3, r);
 		}
 		else if (level & 3)
 		{
@@ -66,20 +66,20 @@ void __kException(DWORD param) {
 
 			__printf(showinfo,
 				"Exception type:%d,pid:%d,error code:%x,EIP RVA:%x,esp0:%x,ss0:%x,eip:%x,cs:%x,eflags:%x,esp3:%x,ss3:%x,"
-				"ds:%x,es:%x,fs:%x,gs:%x,eax:%x,ecx:%x,edx:%x,ebx:%x,ebp:%x,esi:%x,edi:%x,cr0:%x,cr2:%x,cr3:%x,cr4:%x\n",
+				"ds:%x,es:%x,fs:%x,gs:%x,eax:%x,ecx:%x,edx:%x,ebx:%x,ebp:%x,esi:%x,edi:%x,cr0:%x,cr2:%x,cr3:%x,:%x\n",
 				tss->no,tid, tss->errcode,rva, tss->esp0, tss->ss0, tss->eip, tss->cs, tss->eflags, tss->esp3, tss->ss3,
 				tss->ds, tss->es, tss->fs, tss->gs, tss->eax, tss->ecx, tss->edx, tss->ebx, tss->ebp, tss->esi, tss->edi,
-				rcr0,rcr2,rcr3,rcr4);
+				rcr0,rcr2,rcr3,r);
 		}
 		else {
 			DWORD rva = rvaInFile(module, tss->eip );
 
 			__printf(showinfo,
 				"Exception type:%d,pid:%d,error code:%x,EIP RVA:%x,esp0:%x,ss0:%x,eip:%x,cs:%x,eflags:%x,"
-				"ds:%x,es:%x,fs:%x,gs:%x,eax:%x,ecx:%x,edx:%x,ebx:%x,ebp:%x,esi:%x,edi:%x,cr0:%x,cr2:%x,cr3:%x,cr4:%x\n",
+				"ds:%x,es:%x,fs:%x,gs:%x,eax:%x,ecx:%x,edx:%x,ebx:%x,ebp:%x,esi:%x,edi:%x,cr0:%x,cr2:%x,cr3:%x,:%x\n",
 				tss->no,tid, tss->errcode,rva, tss->esp0, tss->ss0, tss->eip, tss->cs, tss->eflags,
 				tss->ds, tss->es, tss->fs, tss->gs, tss->eax, tss->ecx, tss->edx, tss->ebx, tss->ebp, tss->esi, tss->edi,
-				rcr0, rcr2, rcr3, rcr4);
+				rcr0, rcr2, rcr3, r);
 		}
 	}
 	else {
@@ -91,10 +91,10 @@ void __kException(DWORD param) {
 
 			__printf(showinfo,
 				"v86 Exception type:%d,pid:%d,EIP RVA:%x,esp0:%x,ss0:%x,eip:%x,cs:%x,eflags:%x,esp3:%x,ss3:%x,"
-				"ds:%x,es:%x,fs:%x,gs:%x,eax:%x,ecx:%x,edx:%x,ebx:%x,ebp:%x,esi:%x,edi:%x,cr0:%x,cr2:%x,cr3:%x,cr4:%x\n",
+				"ds:%x,es:%x,fs:%x,gs:%x,eax:%x,ecx:%x,edx:%x,ebx:%x,ebp:%x,esi:%x,edi:%x,cr0:%x,cr2:%x,cr3:%x,:%x\n",
 				tss->no, tid, rva, tss->esp0, tss->ss0, tss->eip, tss->cs, tss->eflags, tss->esp3, tss->ss3,
 				tss->ds, tss->es, tss->fs, tss->gs, tss->eax, tss->ecx, tss->edx, tss->ebx, tss->ebp, tss->esi, tss->edi,
-				rcr0, rcr2, rcr3, rcr4);
+				rcr0, rcr2, rcr3, r);
 		}
 		else if (level & 3)
 		{
@@ -103,20 +103,20 @@ void __kException(DWORD param) {
 
 			__printf(showinfo,
 				"Exception type:%d,pid:%d,EIP RVA:%x,esp0:%x,ss0:%x,eip:%x,cs:%x,eflags:%x,esp3:%x,ss3:%x,"
-				"ds:%x,es:%x,fs:%x,gs:%x,eax:%x,ecx:%x,edx:%x,ebx:%x,ebp:%x,esi:%x,edi:%x,cr0:%x,cr2:%x,cr3:%x,cr4:%x\n",
+				"ds:%x,es:%x,fs:%x,gs:%x,eax:%x,ecx:%x,edx:%x,ebx:%x,ebp:%x,esi:%x,edi:%x,cr0:%x,cr2:%x,cr3:%x,:%x\n",
 				tss->no,tid, rva,tss->esp0, tss->ss0, tss->eip, tss->cs, tss->eflags, tss->esp3, tss->ss3,
 				tss->ds, tss->es, tss->fs, tss->gs, tss->eax, tss->ecx, tss->edx, tss->ebx, tss->ebp, tss->esi, tss->edi,
-				rcr0, rcr2, rcr3, rcr4);
+				rcr0, rcr2, rcr3, r);
 		}
 		else {
 			DWORD rva = rvaInFile(module, tss->eip );
 
 			__printf(showinfo,
 				"Exception type:%d,pid:%d,EIP RVA:%x,esp0:%x,ss0:%x,eip:%x,cs:%x,eflags:%x,"
-				"ds:%x,es:%x,fs:%x,gs:%x,eax:%x,ecx:%x,edx:%x,ebx:%x,ebp:%x,esi:%x,edi:%x,cr0:%x,cr2:%x,cr3:%x,cr4:%x\n",
+				"ds:%x,es:%x,fs:%x,gs:%x,eax:%x,ecx:%x,edx:%x,ebx:%x,ebp:%x,esi:%x,edi:%x,cr0:%x,cr2:%x,cr3:%x,:%x\n",
 				tss->no,tid,rva, tss->esp0, tss->ss0, tss->eip, tss->cs, tss->eflags,
 				tss->ds, tss->es, tss->fs, tss->gs, tss->eax, tss->ecx, tss->edx, tss->ebx, tss->ebp, tss->esi, tss->edi,
-				rcr0, rcr2, rcr3, rcr4);
+				rcr0, rcr2, rcr3, r);
 		}
 	}
 

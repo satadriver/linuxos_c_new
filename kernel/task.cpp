@@ -305,10 +305,10 @@ extern "C"  __declspec(dllexport) DWORD __kTaskSchedule(LIGHT_ENVIRONMENT* regs)
 	if (prev->status == TASK_TERMINATE) {
 		prev->status = TASK_OVER;
 		if (prev->tid == prev->pid) {
-			__kFreeProcess(prev->pid);
+			//__kFreeProcess(prev->pid);
 		}
 		else {
-			__kFree(prev->espbase);
+			//__kFree(prev->espbase);
 		}		
 	}
 	LPPROCESS_INFO next = prev;
@@ -325,10 +325,10 @@ extern "C"  __declspec(dllexport) DWORD __kTaskSchedule(LIGHT_ENVIRONMENT* regs)
 		if (next->status == TASK_TERMINATE) {
 			next->status = TASK_OVER;
 			if (next->tid == next->pid) {
-				__kFreeProcess(next->pid);
+				//__kFreeProcess(next->pid);
 			}
 			else {
-				__kFree(next->espbase);
+				//__kFree(next->espbase);
 			}
 		}
 
@@ -397,10 +397,10 @@ extern "C"  __declspec(dllexport) DWORD __kTaskSchedule(LIGHT_ENVIRONMENT * env)
 	if (prev->status == TASK_TERMINATE) {
 		prev->status = TASK_OVER;
 		if (prev->tid == prev->pid) {
-			__kFreeProcess(prev->pid);
+			//__kFreeProcess(prev->pid);
 		}
 		else {
-			__kFree(prev->espbase);
+			//__kFree(prev->espbase);
 		}
 	}
 	LPPROCESS_INFO next = prev;
@@ -417,10 +417,10 @@ extern "C"  __declspec(dllexport) DWORD __kTaskSchedule(LIGHT_ENVIRONMENT * env)
 		if (next->status == TASK_TERMINATE) {
 			next->status = TASK_OVER;
 			if (next->tid == next->pid) {
-				__kFreeProcess(next->pid);
+				//__kFreeProcess(next->pid);
 			}
 			else {
-				__kFree(next->espbase);
+				//__kFree(next->espbase);
 			}
 		}
 

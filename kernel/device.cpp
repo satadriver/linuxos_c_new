@@ -16,6 +16,108 @@
 
 
 
+//tr6,tr7
+//https://www.kancloud.cn/wizardforcel/intel-80386-ref-manual/123864
+
+void enableVME() {
+	__asm {
+		//mov eax,cr4
+		__emit 0x0f
+		__emit 0x20
+		__emit 0xe0
+
+		or eax,1
+
+		__emit 0x0f
+		__emit 0x22
+		__emit 0xe0
+		//mov cr4 ,eax
+	}
+}
+
+void enablePVI() {
+	__asm {
+		//mov eax, cr4
+		__emit 0x0f
+		__emit 0x20
+		__emit 0xe0
+
+		or eax, 2
+
+		__emit 0x0f
+		__emit 0x22
+		__emit 0xe0
+		//mov cr4 , eax
+	}
+}
+
+
+void enableTSD() {
+	__asm {
+		//mov eax, cr4
+		__emit 0x0f
+		__emit 0x20
+		__emit 0xe0
+
+		or eax, 4
+
+		__emit 0x0f
+		__emit 0x22
+		__emit 0xe0
+		//mov cr4, eax
+	}
+}
+
+void enableDE() {
+	__asm {
+		//mov eax, cr4
+		__emit 0x0f
+		__emit 0x20
+		__emit 0xe0
+
+		or eax, 8
+
+		__emit 0x0f
+		__emit 0x22
+		__emit 0xe0
+		//mov cr4, eax
+	}
+}
+
+void enableMCE() {
+	__asm {
+		//mov eax,cr4
+		__emit 0x0f
+		__emit 0x20
+		__emit 0xe0
+
+		or eax, 0x40
+
+		__emit 0x0f
+		__emit 0x22
+		__emit 0xe0
+		//mov cr4,eax
+	}
+}
+
+
+void enablePCE() {
+	__asm {
+		//mov eax, cr4
+		__emit 0x0f
+		__emit 0x20
+		__emit 0xe0
+
+		or eax, 0x100		//pce enable rdpmc
+
+		__emit 0x0f
+		__emit 0x22
+		__emit 0xe0
+		//mov cr4, eax
+	}
+}
+	
+
 
 void waitPs2Out() {
 	unsigned char status = 0;

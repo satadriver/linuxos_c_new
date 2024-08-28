@@ -29,7 +29,7 @@ int getcrs(char * szout) {
 	DWORD rcr0 = 0;
 	DWORD rcr2 = 0;
 	DWORD rcr3 = 0;
-	DWORD rcr4 = 0;
+	DWORD r = 0;
 
 	__asm {
 		mov eax, cr0
@@ -43,10 +43,10 @@ int getcrs(char * szout) {
 		__emit 0xf
 		__emit 0x20
 		__emit 0xe0
-		mov rcr4, eax
+		mov r, eax
 	}
 
-	int len = __printf(szout, "cr0:%x,cr2:%x,cr3:%x,cr4:%x\n", rcr0, rcr2, rcr3, rcr4);
+	int len = __printf(szout, "cr0:%x,cr2:%x,cr3:%x,:%x\n", rcr0, rcr2, rcr3, r);
 	return len;
 }
 
@@ -94,7 +94,7 @@ int getpid(int pid,char * szout) {
 				tss[i].filename, tss[i].funcname, tss[i].moduleaddr,tss[i].pid, tss[i].tid, tss[i].level);
 			return len;
 		}
-}
+	}
 
 // 	LPPROCESS_INFO tss = (LPPROCESS_INFO)TASKS_TSS_BASE;
 // 	for (int i = 0; i < TASK_LIMIT_TOTAL; i++)
