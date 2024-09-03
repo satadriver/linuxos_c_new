@@ -362,7 +362,7 @@ extern "C"  __declspec(dllexport) DWORD __kTaskSchedule(LIGHT_ENVIRONMENT* regs)
 	//If an exception is generated for either of these instructions, the save EIP points to the instruction that caused the exception.
 	__asm {
 		clts			//before all fpu instructions
-		fwait
+		//fwait
 		mov eax, fenvprev
 		FxSAVE[eax]
 		//fsave [fenv]
@@ -375,7 +375,7 @@ extern "C"  __declspec(dllexport) DWORD __kTaskSchedule(LIGHT_ENVIRONMENT* regs)
 		char * fenvnext = (char*)FPU_STATUS_BUFFER + (next->tid << 9);
 		__asm {
 			clts
-			fwait
+			//fwait
 			finit
 			mov eax, fenvnext
 			//frstor [fenv]
@@ -497,7 +497,7 @@ extern "C"  __declspec(dllexport) DWORD __kTaskSchedule(LIGHT_ENVIRONMENT * env)
 	//If an exception is generated for either of these instructions, the save EIP points to the instruction that caused the exception.
 	__asm {
 		clts			//before all fpu instructions
-		fwait
+		//fwait
 		mov eax, fenvprev
 		FxSAVE[eax]
 		//fsave [fenv]
@@ -510,7 +510,7 @@ extern "C"  __declspec(dllexport) DWORD __kTaskSchedule(LIGHT_ENVIRONMENT * env)
 		char* fenvnext = (char*)FPU_STATUS_BUFFER + (next->tid << 9);
 		__asm {
 			clts
-			fwait
+			//fwait
 			finit
 			mov eax, fenvnext
 			//frstor [fenv]

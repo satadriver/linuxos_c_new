@@ -2,6 +2,9 @@
 
 #include "def.h"
 
+void enableSSE();
+
+void enableAVX();
 
 void initCoprocessor();
 

@@ -19,6 +19,10 @@
 //tr6,tr7
 //https://www.kancloud.cn/wizardforcel/intel-80386-ref-manual/123864
 
+
+//cr4
+//https://www.cnblogs.com/ck1020/p/6115200.html
+
 void enableVME() {
 	__asm {
 		//mov eax,cr4

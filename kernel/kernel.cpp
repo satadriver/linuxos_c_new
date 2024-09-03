@@ -101,7 +101,7 @@ int __kernelEntry(LPVESAINFORMATION vesa, DWORD fontbase,DWORD v86Proc,DWORD v86
 #ifdef SINGLE_TASK_TSS
 	//__createDosInFileTask(gV86VMIEntry, "V86VMIEntry");
 #else
-	__createDosInFileTask(gV86VMIEntry, "V86VMIEntry");
+	//__createDosInFileTask(gV86VMIEntry, "V86VMIEntry");
 #endif
 
 // 	TASKCMDPARAMS cmd;

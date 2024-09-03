@@ -2,6 +2,7 @@
 #include "Utils.h"
 #include "video.h"
 #include "task.h"
+#include "device.h"
 
 //VME bit0
 //虚拟8086模式扩展（中的位0）置1时则在虚拟8086模式下，启用中断和异常处理扩展。置0时禁用扩展功能。
@@ -85,13 +86,15 @@
 
 
 void initDebugger() {
+	enableDE();
+
 	__asm {
 		//mov eax,cr4
 		__emit 0x0f
 		__emit 0x20
 		__emit 0xe0
 
-		or eax, 8		//DE
+		//or eax, 8		//DE
 
 		//mov cr4,eax
 		__emit 0x0f
