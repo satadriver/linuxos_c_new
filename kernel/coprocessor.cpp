@@ -13,7 +13,6 @@ int gFpuStatus = 0;
 //MP位控制WAIT指令在TS = 1时，是否产生DNA异常。MP = 1和TS = 1时，WAIT产生异常；MP = 0时，WAIT指令忽略TS条件，不产生异常。
 
 //Numeric Error（数值错误）是CR0寄存器的第5位（bit 5）。当设置了NE标志时，启用内部的机制来报告x87 FPU错误；
-//当清除NE标志时，启用PC风格的x87 FPU错误报告机制。
 //当NE标志被清除并且IGNNE#输入被触发时，x87 FPU错误会被忽略。
 //当NE标志被清除并且IGNNE#输入未触发时，未屏蔽的x87 FPU错误会导致处理器断言FERR#引脚以生成外部中断，
 //并在执行下一个等待的浮点指令或WAIT/FWAIT指令之前立即停止指令执行。
@@ -36,6 +35,7 @@ int gFpuStatus = 0;
 //fsave保存mm0-mm7,fstenv不保存mm0-mm7
 //MMX: 将8个FPU寄存器重命名为8个64位MMX寄存器，即mm0到mm7。[多媒体]
 //SSE: 8个128位寄存器（从xmm0到xmm7）
+
 void initFPU() {
 	WORD fpu_status = 0x37f;
 	__asm {
@@ -73,9 +73,10 @@ void enableAVX() {
 
 //https://blog.csdn.net/qq_43401808/article/details/86677863
 void enableSSE() {
-	DWORD mxcsr_reg = 0x1fbf;
+	//DWORD mxcsr_reg = 0x1fbf;
+	DWORD mxcsr_reg = 0x1f80;
 	__asm {
-		; now enable SSEand the like
+
 		mov eax, cr0
 		and ax, 0xFFFB		; clear coprocessor emulation CR0.EM
 		or ax, 0x2			; set coprocessor monitoring  CR0.MP
@@ -91,8 +92,8 @@ void enableSSE() {
 		__emit 0x22
 		__emit 0xe0
 
-		ldmxcsr mxcsr_reg
-		stmxcsr mxcsr_reg
+		ldmxcsr [mxcsr_reg]
+		stmxcsr [mxcsr_reg]
 	}
 }
 
@@ -100,9 +101,14 @@ void enableSSE() {
 void initCoprocessor() {
 
 	__asm {
+		clts
+		FNCLEX
+		//fwait
+		fninit
+
 		mov eax, cr0
 		or eax, 0x10		//et = 1
-		or eax, 0x20		//ne = 1, trap not interrupt
+		or eax, 0x20		//ne = 1, trap but not interrupt IRQ13
 		mov cr0, eax
 
 		//mov eax,cr4
@@ -110,17 +116,12 @@ void initCoprocessor() {
 		__emit 0x20
 		__emit 0xe0
 
-		or eax,0x40600
+		//or eax,0x40600
 		
 		//mov cr4,eax
 		__emit 0x0f
 		__emit 0x22
 		__emit 0xe0
-
-		clts
-		FNCLEX
-		//fwait
-		fninit
 	}
 
 	enableFloatIRQ();
@@ -143,7 +144,6 @@ void __kCoprocessor() {
 			fnclex
 			//fwait
 			fninit
-			//load_mxcsr(0x1f80)
 		}
 
 		gFpuStatus = 1;
