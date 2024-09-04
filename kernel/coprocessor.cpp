@@ -39,6 +39,8 @@ int gFpuStatus = 0;
 void initFPU() {
 	WORD fpu_status = 0x37f;
 	__asm {
+		clts
+		fninit
 		fnclex
 		FLDCW[fpu_status]	// writes 0x37f into the control word: the value written by F(N)INIT
 	}
@@ -59,9 +61,9 @@ void enableAVX() {
 		__emit 0x22
 		__emit 0xe0
 
-		xgetbv		; Load XCR0 register
-		or eax, 7	; Set AVX, SSE, X87 bits
-		xsetbv		; Save back to XCR0
+		//xgetbv		; Load XCR0 register
+		//or eax, 7	; Set AVX, SSE, X87 bits
+		//xsetbv		; Save back to XCR0
 
 		//To enable AVX - 512, set the OPMASK(bit 5), ZMM_Hi256(bit 6), Hi16_ZMM(bit 7) of XCR0.
 		//You must ensure that these bits are valid first(see above).
@@ -89,15 +91,13 @@ void enableSSE() {
 		__emit 0x22
 		__emit 0xe0
 
-		//ldmxcsr mxcsr_reg
-		//stmxcsr mxcsr_reg
+		ldmxcsr mxcsr_reg
+		stmxcsr mxcsr_reg
 	}
 }
 
 
 void initCoprocessor() {
-
-	enableIRQ13();
 
 	__asm {
 		mov eax, cr0
@@ -110,7 +110,7 @@ void initCoprocessor() {
 		__emit 0x20
 		__emit 0xe0
 
-		//or eax,0x40600
+		or eax,0x40600
 		
 		//mov cr4,eax
 		__emit 0x0f
@@ -118,14 +118,16 @@ void initCoprocessor() {
 		__emit 0xe0
 
 		clts
-		//FNCLEX
+		FNCLEX
 		//fwait
-		finit
+		fninit
 	}
+
+	enableFloatIRQ();
 
 	enableSSE();
 
-	//enableAVX();
+	enableAVX();
 }
 
 
@@ -134,16 +136,13 @@ void initCoprocessor() {
 //MP=1 or TS = 1,float instruction exception
 void __kCoprocessor() {
 	
-// 	char szout[1024];
-// 	__printf(szout, "coprocessor exceiton\n");
-
 	if (gFpuStatus == 0)
 	{
 		__asm {
 			clts
 			fnclex
 			//fwait
-			finit
+			fninit
 			//load_mxcsr(0x1f80)
 		}
 
@@ -156,7 +155,7 @@ void __kCoprocessor() {
 			clts
 			fnclex
 			//fwait
-			finit
+			fninit
 			mov eax,fenv
 			//frstor [fenv]
 			fxrstor [eax]

@@ -123,38 +123,6 @@ void enablePCE() {
 	
 
 
-void waitPs2Out() {
-	unsigned char status = 0;
-	do
-	{
-		status = inportb(0x64);
-	} while ((status & 1) == 0);
-}
-
-void waitPs2In() {
-	unsigned char status = 0;
-	do
-	{
-		status = inportb(0x64);
-	} while (status & 2);
-}
-
-void __waitPs2Out() {
-	unsigned char status = 0;
-	do
-	{
-		status = inportb(0x64);
-	} while ((status & 1) == 0);
-}
-
-void __waitPs2In() {
-	unsigned char status = 0;
-	do
-	{
-		status = inportb(0x64);
-	} while (status & 2);
-}
-
 void __wait8042Full() {
 	unsigned char status = 0;
 	do

@@ -87,7 +87,7 @@ DWORD getRCBA() {
 
 //bit 9:enable irq 13
 //bit 8:enable apic io
-DWORD enableIRQ13() {
+DWORD enableFloatIRQ() {
 	outportd(0xcf8, 0x8000f8f0);
 	DWORD addr = inportd(0xcfc);
 	addr = addr & 0xffffc000;

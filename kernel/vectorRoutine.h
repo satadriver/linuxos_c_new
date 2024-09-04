@@ -87,41 +87,42 @@ extern "C" void TimerInterrupt(LIGHT_ENVIRONMENT * stack);
 
 extern "C" void  CmosInterrupt(LIGHT_ENVIRONMENT * stack);
 
+void DivideError(LIGHT_ENVIRONMENT* stack);
 
-void div0Exception(LIGHT_ENVIRONMENT* stack);
+void NmiInterrupt(LIGHT_ENVIRONMENT* stack);
 
-void NmiException(LIGHT_ENVIRONMENT* stack);
+void  OverflowException(LIGHT_ENVIRONMENT* stack);
 
-void  overflowException(LIGHT_ENVIRONMENT* stack);
+void BoundRangeExceed(LIGHT_ENVIRONMENT* stack);
 
-void boundCheckException(LIGHT_ENVIRONMENT* stack);
+void UndefinedOpcode(LIGHT_ENVIRONMENT* stack);
 
-void illegalOperandException(LIGHT_ENVIRONMENT* stack);
+void  DeviceUnavailable(LIGHT_ENVIRONMENT* stack);
 
-void  deviceUnavailableException(LIGHT_ENVIRONMENT* stack);
+void  DoubleFault(LIGHT_ENVIRONMENT* stack);
 
-void  doubleFaultException(LIGHT_ENVIRONMENT* stack);
+void  CoprocSegOverrun(LIGHT_ENVIRONMENT* stack);
 
-void  coprocCrossBorderException(LIGHT_ENVIRONMENT* stack);
+void  InvalidTss(LIGHT_ENVIRONMENT* stack);
 
-void  invalidTssException(LIGHT_ENVIRONMENT* stack);
+void  SegmentUnpresent(LIGHT_ENVIRONMENT* stack);
 
-void  segmentInexistException(LIGHT_ENVIRONMENT* stack);
+void  StackSegFault(LIGHT_ENVIRONMENT* stack);
 
-void  stackException(LIGHT_ENVIRONMENT* stack);
+void  GeneralProtection(LIGHT_ENVIRONMENT* stack);
 
-void  generalProtectException(LIGHT_ENVIRONMENT* stack);
+void  PageFault(LIGHT_ENVIRONMENT* stack);
 
-void  pageException(LIGHT_ENVIRONMENT* stack);
+void AnonymousException(LIGHT_ENVIRONMENT* stack);
 
-void anonymousException(LIGHT_ENVIRONMENT* stack);
+void FloatPointError(LIGHT_ENVIRONMENT* stack);
 
-void coprocessorException(LIGHT_ENVIRONMENT* stack);
+void  AlignmentCheck(LIGHT_ENVIRONMENT* stack);
 
-void  alignCheckException(LIGHT_ENVIRONMENT* stack);
+void  MachineCheck(LIGHT_ENVIRONMENT* stack);
 
-void  machineCheckException(LIGHT_ENVIRONMENT* stack);
+void SIMDException(LIGHT_ENVIRONMENT* stack);
 
-void simdException(LIGHT_ENVIRONMENT* stack);
+void VirtualizationException(LIGHT_ENVIRONMENT* stack);
 
-void virtualException(LIGHT_ENVIRONMENT* stack);
+void CtrlProtectException(LIGHT_ENVIRONMENT* stack);

@@ -147,6 +147,6 @@ extern "C"  __declspec(dllexport) int doPowerOff(void);
 
 extern "C"  __declspec(dllexport) DWORD getRCBA();
 
-extern "C"  __declspec(dllexport) DWORD enableIRQ13();
+extern "C"  __declspec(dllexport) DWORD enableFloatIRQ();
 
 int initACPI(void);

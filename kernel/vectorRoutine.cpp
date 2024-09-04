@@ -13,6 +13,9 @@
 #include "cmosAlarm.h"
 #include "cmosExactTimer.h"
 #include "ata.h"
+#include "coprocessor.h"
+
+
 
 #define EXCEPTION_TIPS_COLOR 0X9F3F00
 
@@ -24,7 +27,7 @@ int gExceptionCounter = 0;
 
 
 
-__declspec(naked) void div0Exception(LIGHT_ENVIRONMENT* stack) {
+__declspec(naked) void DivideError(LIGHT_ENVIRONMENT* stack) {
 	__asm {
 		pushad
 		push ds
@@ -47,7 +50,7 @@ __declspec(naked) void div0Exception(LIGHT_ENVIRONMENT* stack) {
 	{
 		LPPROCESS_INFO process = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
 		char szout[1024];
-		__printf(szout, "div0Exception! pid:%d\r\n", process->pid);
+		__printf(szout, "DivideError! pid:%d\r\n", process->pid);
 	}
 
 	__asm {
@@ -116,7 +119,7 @@ Bit	Description
 7*	Parity check
 */
 
-void __declspec(naked) NmiException(LIGHT_ENVIRONMENT* stack) {
+void __declspec(naked) NmiInterrupt(LIGHT_ENVIRONMENT* stack) {
 	__asm {
 
 		pushad
@@ -144,7 +147,7 @@ void __declspec(naked) NmiException(LIGHT_ENVIRONMENT* stack) {
 
 		LPPROCESS_INFO process = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
 		char szout[1024];
-		__printf(szout, "NmiException! pid:%d\r\n", process->pid);
+		__printf(szout, "NmiInterrupt! pid:%d\r\n", process->pid);
 	}
 	__asm {
 		mov esp, ebp
@@ -164,7 +167,7 @@ void __declspec(naked) NmiException(LIGHT_ENVIRONMENT* stack) {
 }
 
 
-void __declspec(naked) overflowException(LIGHT_ENVIRONMENT* stack) {
+void __declspec(naked) OverflowException(LIGHT_ENVIRONMENT* stack) {
 	__asm {
 		pushad
 		push ds
@@ -187,7 +190,7 @@ void __declspec(naked) overflowException(LIGHT_ENVIRONMENT* stack) {
 	{
 		LPPROCESS_INFO process = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
 		char szout[1024];
-		__printf(szout, "overflowException! pid:%d\r\n", process->pid);
+		__printf(szout, "OverflowException! pid:%d\r\n", process->pid);
 	}
 
 	__asm {
@@ -208,52 +211,7 @@ void __declspec(naked) overflowException(LIGHT_ENVIRONMENT* stack) {
 
 
 
-void __declspec(naked) boundCheckException(LIGHT_ENVIRONMENT* stack) {
-	__asm {
-
-		pushad
-		push ds
-		push es
-		push fs
-		push gs
-		push ss
-
-		push esp
-		sub esp, 4
-		push ebp
-		mov ebp, esp
-
-		mov eax, KERNEL_MODE_DATA
-		mov ds, ax
-		mov es, ax
-		MOV FS, ax
-		MOV GS, AX
-	}
-	{
-		LPPROCESS_INFO process = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
-		char szout[1024];
-		__printf(szout, "boundCheckException! pid:%d\r\n", process->pid);
-	}
-
-	__asm {
-		mov esp, ebp
-		pop ebp
-		add esp, 4
-		pop esp
-		pop ss
-		pop gs
-		pop fs
-		pop es
-		pop ds
-		popad
-
-		iretd
-	}
-}
-
-
-
-void __declspec(naked) illegalOperandException(LIGHT_ENVIRONMENT* stack) {
+void __declspec(naked) BoundRangeExceed(LIGHT_ENVIRONMENT* stack) {
 	__asm {
 
 		pushad
@@ -277,11 +235,10 @@ void __declspec(naked) illegalOperandException(LIGHT_ENVIRONMENT* stack) {
 	{
 		LPPROCESS_INFO process = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
 		char szout[1024];
-		__printf(szout, "illegalOperandException! pid:%d\r\n", process->pid);
+		__printf(szout, "BoundRangeExceed! pid:%d\r\n", process->pid);
 	}
 
 	__asm {
-
 		mov esp, ebp
 		pop ebp
 		add esp, 4
@@ -298,7 +255,8 @@ void __declspec(naked) illegalOperandException(LIGHT_ENVIRONMENT* stack) {
 }
 
 
-void __declspec(naked) deviceUnavailableException(LIGHT_ENVIRONMENT* stack) {
+
+void __declspec(naked) UndefinedOpcode(LIGHT_ENVIRONMENT* stack) {
 	__asm {
 
 		pushad
@@ -313,17 +271,66 @@ void __declspec(naked) deviceUnavailableException(LIGHT_ENVIRONMENT* stack) {
 		push ebp
 		mov ebp, esp
 
-
 		mov eax, KERNEL_MODE_DATA
 		mov ds, ax
 		mov es, ax
 		MOV FS, ax
 		MOV GS, AX
 	}
+
 	{
 		LPPROCESS_INFO process = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
 		char szout[1024];
-		__printf(szout, "deviceUnavailableException! pid:%d\r\n", process->pid);
+		__printf(szout, "UndefinedOpcode! pid:%d\r\n", process->pid);
+	}
+
+	__asm {
+
+		mov esp, ebp
+		pop ebp
+		add esp, 4
+		pop esp
+		pop ss
+		pop gs
+		pop fs
+		pop es
+		pop ds
+		popad
+
+		iretd
+	}
+}
+
+
+void __declspec(naked) DeviceUnavailable(LIGHT_ENVIRONMENT* stack) {
+	__asm {
+
+		pushad
+		push ds
+		push es
+		push fs
+		push gs
+		push ss
+
+		push esp
+		sub esp, 4
+		push ebp
+		mov ebp, esp
+
+		mov eax, KERNEL_MODE_DATA
+		mov ds, ax
+		mov es, ax
+		MOV FS, ax
+		MOV GS, AX
+
+	}
+
+	__kCoprocessor();
+
+	{
+		LPPROCESS_INFO process = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
+		char szout[1024];
+		__printf(szout, "DeviceUnavailable! pid:%d\r\n", process->pid);
 	}
 
 	__asm {
@@ -338,7 +345,6 @@ void __declspec(naked) deviceUnavailableException(LIGHT_ENVIRONMENT* stack) {
 		pop ds
 		popad
 
-		CLTS
 		iretd
 	}
 }
@@ -346,7 +352,7 @@ void __declspec(naked) deviceUnavailableException(LIGHT_ENVIRONMENT* stack) {
 
 
 
-void __declspec(naked) doubleFaultException(LIGHT_ENVIRONMENT* stack) {
+void __declspec(naked) DoubleFault(LIGHT_ENVIRONMENT* stack) {
 	__asm {
 
 		pushad
@@ -373,7 +379,7 @@ void __declspec(naked) doubleFaultException(LIGHT_ENVIRONMENT* stack) {
 		if (gExceptionCounter <= 10) {
 			LPPROCESS_INFO process = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
 			char szout[1024];
-			__printf(szout, "doubleFaultException! pid:%d\r\n", process->pid);
+			__printf(szout, "DoubleFault! pid:%d\r\n", process->pid);
 		}
 	}
 
@@ -394,7 +400,7 @@ void __declspec(naked) doubleFaultException(LIGHT_ENVIRONMENT* stack) {
 	}
 }
 
-void __declspec(naked) coprocCrossBorderException(LIGHT_ENVIRONMENT* stack) {
+void __declspec(naked) CoprocSegOverrun(LIGHT_ENVIRONMENT* stack) {
 	__asm {
 
 		pushad
@@ -414,11 +420,16 @@ void __declspec(naked) coprocCrossBorderException(LIGHT_ENVIRONMENT* stack) {
 		mov es, ax
 		MOV FS, ax
 		MOV GS, AX
+
+		clts
+		fnclex
+		FNINIT
 	}
+
 	{
 		LPPROCESS_INFO process = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
 		char szout[1024];
-		__printf(szout, "coprocCrossBorderException! pid:%d\r\n", process->pid);
+		__printf(szout, "CoprocSegOverrun! pid:%d\r\n", process->pid);
 	}
 
 	__asm {
@@ -437,7 +448,7 @@ void __declspec(naked) coprocCrossBorderException(LIGHT_ENVIRONMENT* stack) {
 	}
 }
 
-void __declspec(naked) invalidTssException(LIGHT_ENVIRONMENT* stack) {
+void __declspec(naked) InvalidTss(LIGHT_ENVIRONMENT* stack) {
 	__asm {
 
 		pushad
@@ -463,7 +474,7 @@ void __declspec(naked) invalidTssException(LIGHT_ENVIRONMENT* stack) {
 		if (gExceptionCounter < 10) {
 			LPPROCESS_INFO process = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
 			char szout[1024];
-			__printf(szout, "invalidTssException! pid:%d\r\n", process->pid);
+			__printf(szout, "InvalidTss! pid:%d\r\n", process->pid);
 		}
 	}
 
@@ -484,11 +495,11 @@ void __declspec(naked) invalidTssException(LIGHT_ENVIRONMENT* stack) {
 
 		clts
 		iretd
-		jmp invalidTssException
+		jmp InvalidTss
 	}
 }
 
-void __declspec(naked) segmentInexistException(LIGHT_ENVIRONMENT* stack) {
+void __declspec(naked) SegmentUnpresent(LIGHT_ENVIRONMENT* stack) {
 	__asm {
 
 		pushad
@@ -512,7 +523,7 @@ void __declspec(naked) segmentInexistException(LIGHT_ENVIRONMENT* stack) {
 	{
 		LPPROCESS_INFO process = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
 		char szout[1024];
-		__printf(szout, "segInexistException! pid:%d\r\n", process->pid);
+		__printf(szout, "SegmentUnpresent! pid:%d\r\n", process->pid);
 	}
 
 	__asm {
@@ -533,7 +544,7 @@ void __declspec(naked) segmentInexistException(LIGHT_ENVIRONMENT* stack) {
 	}
 }
 
-void __declspec(naked) stackException(LIGHT_ENVIRONMENT* stack) {
+void __declspec(naked) StackSegFault(LIGHT_ENVIRONMENT* stack) {
 	__asm {
 
 		pushad
@@ -557,7 +568,7 @@ void __declspec(naked) stackException(LIGHT_ENVIRONMENT* stack) {
 	{
 		LPPROCESS_INFO process = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
 		char szout[1024];
-		__printf(szout, "stackException! pid:%d\r\n", process->pid);
+		__printf(szout, "StackSegFault! pid:%d\r\n", process->pid);
 	}
 
 	__asm {
@@ -577,7 +588,7 @@ void __declspec(naked) stackException(LIGHT_ENVIRONMENT* stack) {
 	}
 }
 
-void __declspec(naked) generalProtectException(LIGHT_ENVIRONMENT* stack) {
+void __declspec(naked) GeneralProtection(LIGHT_ENVIRONMENT* stack) {
 	__asm {
 
 		pushad
@@ -603,7 +614,7 @@ void __declspec(naked) generalProtectException(LIGHT_ENVIRONMENT* stack) {
 		if (gExceptionCounter <= 10) {
 			LPPROCESS_INFO process = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
 			char szout[1024];
-			__printf(szout, "generalProtectException! pid:%d\r\n", process->pid);
+			__printf(szout, "GeneralProtection! pid:%d\r\n", process->pid);
 		}
 	}
 
@@ -625,7 +636,7 @@ void __declspec(naked) generalProtectException(LIGHT_ENVIRONMENT* stack) {
 	}
 }
 
-void __declspec(naked) pageException(LIGHT_ENVIRONMENT* stack) {
+void __declspec(naked) PageFault(LIGHT_ENVIRONMENT* stack) {
 	__asm {
 
 		pushad
@@ -649,7 +660,7 @@ void __declspec(naked) pageException(LIGHT_ENVIRONMENT* stack) {
 	{
 		LPPROCESS_INFO process = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
 		char szout[1024];
-		__printf(szout, "pageException! pid:%d\r\n", process->pid);
+		__printf(szout, "PageFault! pid:%d\r\n", process->pid);
 	}
 
 	__asm {
@@ -671,7 +682,7 @@ void __declspec(naked) pageException(LIGHT_ENVIRONMENT* stack) {
 }
 
 
-void __declspec(naked) anonymousException(LIGHT_ENVIRONMENT* stack) {
+void __declspec(naked) AnonymousException(LIGHT_ENVIRONMENT* stack) {
 	__asm {
 
 		pushad
@@ -696,7 +707,7 @@ void __declspec(naked) anonymousException(LIGHT_ENVIRONMENT* stack) {
 	{
 		LPPROCESS_INFO process = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
 		char szout[1024];
-		__printf(szout, "anonymousException! pid:%d\r\n", process->pid);
+		__printf(szout, "AnonymousException! pid:%d\r\n", process->pid);
 	}
 
 	__asm {
@@ -716,7 +727,57 @@ void __declspec(naked) anonymousException(LIGHT_ENVIRONMENT* stack) {
 }
 
 
-void __declspec(naked) coprocessorException(LIGHT_ENVIRONMENT* stack) {
+void __declspec(naked) FloatPointError(LIGHT_ENVIRONMENT* stack) {
+	__asm {
+
+		pushad
+		push ds
+		push es
+		push fs
+		push gs
+		push ss
+
+		push esp
+		sub esp, 4
+		push ebp
+		mov ebp, esp
+
+		mov eax, KERNEL_MODE_DATA
+		mov ds, ax
+		mov es, ax
+		MOV FS, ax
+		MOV GS, AX
+	}
+
+	__kCoprocessor();
+
+	{
+		LPPROCESS_INFO process = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
+		char szout[1024];
+		__printf(szout, "FloatPointError! pid:%d\r\n", process->pid);
+	}
+
+	__asm {
+		mov esp, ebp
+		pop ebp
+		add esp, 4
+		pop esp
+		pop ss
+		pop gs
+		pop fs
+		pop es
+		pop ds
+		popad
+
+		iretd
+	}
+}
+
+
+
+
+
+void __declspec(naked) AlignmentCheck(LIGHT_ENVIRONMENT* stack) {
 	__asm {
 
 		pushad
@@ -740,7 +801,7 @@ void __declspec(naked) coprocessorException(LIGHT_ENVIRONMENT* stack) {
 	{
 		LPPROCESS_INFO process = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
 		char szout[1024];
-		__printf(szout, "coprocessorException! pid:%d\r\n", process->pid);
+		__printf(szout, "AlignmentCheck Exception! pid:%d\r\n", process->pid);
 	}
 
 	__asm {
@@ -760,10 +821,7 @@ void __declspec(naked) coprocessorException(LIGHT_ENVIRONMENT* stack) {
 }
 
 
-
-
-
-void __declspec(naked) alignCheckException(LIGHT_ENVIRONMENT* stack) {
+void __declspec(naked) MachineCheck(LIGHT_ENVIRONMENT* stack) {
 	__asm {
 
 		pushad
@@ -787,7 +845,7 @@ void __declspec(naked) alignCheckException(LIGHT_ENVIRONMENT* stack) {
 	{
 		LPPROCESS_INFO process = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
 		char szout[1024];
-		__printf(szout, "alighCheckException! pid:%d\r\n", process->pid);
+		__printf(szout, "MachineCheck Exception! pid:%d\r\n", process->pid);
 	}
 
 	__asm {
@@ -806,8 +864,7 @@ void __declspec(naked) alignCheckException(LIGHT_ENVIRONMENT* stack) {
 	}
 }
 
-
-void __declspec(naked) machineCheckException(LIGHT_ENVIRONMENT* stack) {
+__declspec(naked) void SIMDException(LIGHT_ENVIRONMENT* stack) {
 	__asm {
 
 		pushad
@@ -831,7 +888,7 @@ void __declspec(naked) machineCheckException(LIGHT_ENVIRONMENT* stack) {
 	{
 		LPPROCESS_INFO process = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
 		char szout[1024];
-		__printf(szout, "machineCheckException! pid:%d\r\n", process->pid);
+		__printf(szout, "SIMDException! pid:%d\r\n", process->pid);
 	}
 
 	__asm {
@@ -850,7 +907,7 @@ void __declspec(naked) machineCheckException(LIGHT_ENVIRONMENT* stack) {
 	}
 }
 
-__declspec(naked) void simdException(LIGHT_ENVIRONMENT* stack) {
+__declspec(naked) void VirtualizationException(LIGHT_ENVIRONMENT* stack) {
 	__asm {
 
 		pushad
@@ -874,7 +931,7 @@ __declspec(naked) void simdException(LIGHT_ENVIRONMENT* stack) {
 	{
 		LPPROCESS_INFO process = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
 		char szout[1024];
-		__printf(szout, "simdException! pid:%d\r\n", process->pid);
+		__printf(szout, "VirtualizationException! pid:%d\r\n", process->pid);
 	}
 
 	__asm {
@@ -882,6 +939,7 @@ __declspec(naked) void simdException(LIGHT_ENVIRONMENT* stack) {
 		pop ebp
 		add esp, 4
 		pop esp
+
 		pop ss
 		pop gs
 		pop fs
@@ -893,7 +951,8 @@ __declspec(naked) void simdException(LIGHT_ENVIRONMENT* stack) {
 	}
 }
 
-__declspec(naked) void virtualException(LIGHT_ENVIRONMENT* stack) {
+
+__declspec(naked) void CtrlProtectException(LIGHT_ENVIRONMENT* stack) {
 	__asm {
 
 		pushad
@@ -917,7 +976,7 @@ __declspec(naked) void virtualException(LIGHT_ENVIRONMENT* stack) {
 	{
 		LPPROCESS_INFO process = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
 		char szout[1024];
-		__printf(szout, "virtualException! pid:%d\r\n", process->pid);
+		__printf(szout, "CtrlProtectException! pid:%d\r\n", process->pid);
 	}
 
 	__asm {
@@ -936,9 +995,6 @@ __declspec(naked) void virtualException(LIGHT_ENVIRONMENT* stack) {
 		iretd
 	}
 }
-
-
-
 
 
 extern "C" void __declspec(naked) TimerInterrupt(LIGHT_ENVIRONMENT * stack) {

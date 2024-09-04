@@ -292,7 +292,7 @@ void initGdt() {
 	initKernelTss((TSS*)CURRENT_TASK_TSS_BASE,TASKS_STACK0_BASE + TASK_STACK0_SIZE - STACK_TOP_DUMMY,KERNEL_TASK_STACK_TOP, 0, PDE_ENTRY_VALUE, 0);
 	makeTssDescriptor(CURRENT_TASK_TSS_BASE, 3, sizeof(TSS) - 1, (TssDescriptor*)(GDT_BASE + kTssTaskSelector));
 
-	initKernelTss((TSS*)INVALID_TSS_BASE, TSSEXP_STACK0_TOP, TSSEXP_STACK_TOP, (DWORD)invalidTssException, PDE_ENTRY_VALUE, 0);
+	initKernelTss((TSS*)INVALID_TSS_BASE, TSSEXP_STACK0_TOP, TSSEXP_STACK_TOP, (DWORD)InvalidTss, PDE_ENTRY_VALUE, 0);
 	makeTssDescriptor((DWORD)INVALID_TSS_BASE, 3, sizeof(TSS) - 1, (TssDescriptor*)(GDT_BASE + kTssExceptSelector));
 
 	initKernelTss((TSS*)TIMER_TSS_BASE, TSSTIMER_STACK0_TOP, TSSTIMER_STACK_TOP, (DWORD)TimerInterrupt, PDE_ENTRY_VALUE, 0);
@@ -328,36 +328,37 @@ void initIDT() {
 
 	for (int i = 0; i < 256; i++)
 	{
-		makeTrapGateDescriptor((DWORD)anonymousException, KERNEL_MODE_CODE, 3, descriptor + i);
+		makeTrapGateDescriptor((DWORD)AnonymousException, KERNEL_MODE_CODE, 3, descriptor + i);
 	}
 
-	makeTrapGateDescriptor((DWORD)div0Exception, KERNEL_MODE_CODE, 3, descriptor + 0);
+	makeTrapGateDescriptor((DWORD)DivideError, KERNEL_MODE_CODE, 3, descriptor + 0);
 	makeTrapGateDescriptor((DWORD)debugger, KERNEL_MODE_CODE, 3, descriptor + 1);
 
-	makeTrapGateDescriptor((DWORD)NmiException, KERNEL_MODE_CODE, 3, descriptor + 2);
+	makeTrapGateDescriptor((DWORD)NmiInterrupt, KERNEL_MODE_CODE, 3, descriptor + 2);
 
 	makeTrapGateDescriptor((DWORD)breakPoint, KERNEL_MODE_CODE, 3, descriptor + 3);
 
-	makeTrapGateDescriptor((DWORD)overflowException, KERNEL_MODE_CODE, 3, descriptor + 4);
-	makeTrapGateDescriptor((DWORD)boundCheckException, KERNEL_MODE_CODE, 3, descriptor + 5);
-	makeTrapGateDescriptor((DWORD)illegalOperandException, KERNEL_MODE_CODE, 3, descriptor + 6);
-	makeTrapGateDescriptor((DWORD)deviceUnavailableException, KERNEL_MODE_CODE, 3, descriptor + 7);
-	makeTrapGateDescriptor((DWORD)doubleFaultException, KERNEL_MODE_CODE, 3, descriptor + 8);
+	makeTrapGateDescriptor((DWORD)OverflowException, KERNEL_MODE_CODE, 3, descriptor + 4);
+	makeTrapGateDescriptor((DWORD)BoundRangeExceed, KERNEL_MODE_CODE, 3, descriptor + 5);
+	makeTrapGateDescriptor((DWORD)UndefinedOpcode, KERNEL_MODE_CODE, 3, descriptor + 6);
+	makeTrapGateDescriptor((DWORD)DeviceUnavailable, KERNEL_MODE_CODE, 3, descriptor + 7);
+	makeTrapGateDescriptor((DWORD)DoubleFault, KERNEL_MODE_CODE, 3, descriptor + 8);
 
-	makeTrapGateDescriptor((DWORD)coprocCrossBorderException, KERNEL_MODE_CODE, 3, (descriptor + 9));
+	makeTrapGateDescriptor((DWORD)CoprocSegOverrun, KERNEL_MODE_CODE, 3, (descriptor + 9));
 
 	makeTaskGateDescriptor((DWORD)kTssExceptSelector, 3, (TaskGateDescriptor*)(descriptor + 10));
 
-	makeTrapGateDescriptor((DWORD)segmentInexistException, KERNEL_MODE_CODE, 3, descriptor + 11);
-	makeTrapGateDescriptor((DWORD)stackException, KERNEL_MODE_CODE, 3, descriptor + 12);
-	makeTrapGateDescriptor((DWORD)generalProtectException, KERNEL_MODE_CODE, 3, descriptor + 13);
-	makeTrapGateDescriptor((DWORD)pageException, KERNEL_MODE_CODE, 3, descriptor + 14);
-	makeTrapGateDescriptor((DWORD)anonymousException, KERNEL_MODE_CODE, 3, descriptor + 15);
-	makeTrapGateDescriptor((DWORD)coprocessorException, KERNEL_MODE_CODE, 3, descriptor + 16);
-	makeTrapGateDescriptor((DWORD)alignCheckException, KERNEL_MODE_CODE, 3, descriptor + 17);
-	makeTrapGateDescriptor((DWORD)machineCheckException, KERNEL_MODE_CODE, 3, descriptor + 18);
-	makeTrapGateDescriptor((DWORD)simdException, KERNEL_MODE_CODE, 3, descriptor + 19);
-	makeTrapGateDescriptor((DWORD)virtualException, KERNEL_MODE_CODE, 3, descriptor + 20);
+	makeTrapGateDescriptor((DWORD)SegmentUnpresent, KERNEL_MODE_CODE, 3, descriptor + 11);
+	makeTrapGateDescriptor((DWORD)StackSegFault, KERNEL_MODE_CODE, 3, descriptor + 12);
+	makeTrapGateDescriptor((DWORD)GeneralProtection, KERNEL_MODE_CODE, 3, descriptor + 13);
+	makeTrapGateDescriptor((DWORD)PageFault, KERNEL_MODE_CODE, 3, descriptor + 14);
+	makeTrapGateDescriptor((DWORD)AnonymousException, KERNEL_MODE_CODE, 3, descriptor + 15);
+	makeTrapGateDescriptor((DWORD)FloatPointError, KERNEL_MODE_CODE, 3, descriptor + 16);
+	makeTrapGateDescriptor((DWORD)AlignmentCheck, KERNEL_MODE_CODE, 3, descriptor + 17);
+	makeTrapGateDescriptor((DWORD)MachineCheck, KERNEL_MODE_CODE, 3, descriptor + 18);
+	makeTrapGateDescriptor((DWORD)SIMDException, KERNEL_MODE_CODE, 3, descriptor + 19);
+	makeTrapGateDescriptor((DWORD)VirtualizationException, KERNEL_MODE_CODE, 3, descriptor + 20);
+	makeTrapGateDescriptor((DWORD)CtrlProtectException, KERNEL_MODE_CODE, 3, descriptor + 21);
 
 #ifdef SINGLE_TASK_TSS
 	makeIntGateDescriptor((DWORD)TimerInterrupt, KERNEL_MODE_CODE, 3, descriptor + INTR_8259_MASTER + 0);

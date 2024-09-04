@@ -29,7 +29,7 @@ void sphere(int x,int y,int raduis,DWORD color,unsigned char * backup) {
 // 	__asm {
 // 		clts
 // 		fwait
-// 		finit
+// 		fninit
 // 	}
 	unsigned int pos = __getpos(x - raduis, y - raduis);
 	unsigned char * showpos = pos + (unsigned char *)gGraphBase;
@@ -78,7 +78,7 @@ void sphere7(int x, int y, int raduis,DWORD color,unsigned char *backup) {
 // 	__asm {
 // 		clts
 // 		fwait
-// 		finit
+// 		fninit
 // 	}
 	unsigned int pos = __getpos(x-raduis, y-raduis);
 	unsigned char * showpos = pos + (unsigned char *)gGraphBase;

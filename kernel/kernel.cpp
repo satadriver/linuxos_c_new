@@ -101,7 +101,7 @@ int __kernelEntry(LPVESAINFORMATION vesa, DWORD fontbase,DWORD v86Proc,DWORD v86
 #ifdef SINGLE_TASK_TSS
 	//__createDosInFileTask(gV86VMIEntry, "V86VMIEntry");
 #else
-	//__createDosInFileTask(gV86VMIEntry, "V86VMIEntry");
+	__createDosInFileTask(gV86VMIEntry, "V86VMIEntry");
 #endif
 
 // 	TASKCMDPARAMS cmd;
@@ -139,14 +139,12 @@ int __kernelEntry(LPVESAINFORMATION vesa, DWORD fontbase,DWORD v86Proc,DWORD v86
 
 	//__kGetKbd(0);
 
-	__kCreateProcess(MAIN_DLL_SOURCE_BASE, imagesize, "main.dll", "__kExplorer", 3, 0);
-	__printf(szout, "create process __kExplorer\r\n");
-
 	while (1)
 	{
 		if (__findProcessFuncName("__kExplorer") == FALSE)
 		{
-
+			__kCreateProcess(MAIN_DLL_SOURCE_BASE, imagesize, "main.dll", "__kExplorer", 3, 0);
+			__printf(szout, "create process __kExplorer\r\n");
 		}
 
 		__asm {
