@@ -9,6 +9,8 @@ ipch/
 *.tlog
 *.log
 *.1.tlog
+*.VC.db-shm
+*.VC.db-wal
 
 # Object files
 *.o
