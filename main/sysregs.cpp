@@ -81,7 +81,7 @@ int getpids(char * szout) {
 
 
 int getmemmap(int pid,char * szout) {
-	return formatProcMem(pid, szout);
+	return getProcMemory(pid, szout);
 }
 
 

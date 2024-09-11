@@ -103,6 +103,7 @@ TASK_LIST_ENTRY* removeTaskList(int tid) {
 //这些指令被称为I/O敏感指令，如果特权级低的指令视图访问这些I/O敏感指令将会导致常规保护错误(#GP)
 //可以改变IOPL的指令只有popfl和iret指令，但只有运行在特权级0的程序才能将其改变
 
+int g_tagMsg = 0;
 
 void clearTssBuf(LPPROCESS_INFO tss) {
 	__memset((CHAR*)tss, 0, sizeof(PROCESS_INFO));
@@ -145,7 +146,7 @@ LPPROCESS_INFO __findProcessFuncName(char * funcname) {
 
 	LPPROCESS_INFO p = (LPPROCESS_INFO)TASKS_TSS_BASE;
 	for (int i = 0; i < TASK_LIMIT_TOTAL; i++) {
-		if (p[i].status == TASK_RUN && __strcmp(p->funcname, funcname) == 0) {
+		if (p[i].status == TASK_RUN && __strcmp(p[i].funcname, funcname) == 0) {
 			return & p[i];
 		}
 	}
@@ -155,7 +156,7 @@ LPPROCESS_INFO __findProcessFuncName(char * funcname) {
 LPPROCESS_INFO __findProcessFileName(char * filename) {
 	LPPROCESS_INFO p = (LPPROCESS_INFO)TASKS_TSS_BASE;
 	for (int i = 0; i < TASK_LIMIT_TOTAL; i++) {
-		if (p[i].status == TASK_RUN && __strcmp(p->filename, filename) == 0) {
+		if (p[i].status == TASK_RUN && __strcmp(p[i].filename, filename) == 0) {
 			return &p[i];
 		}
 	}
@@ -167,7 +168,7 @@ LPPROCESS_INFO __findProcessFileName(char * filename) {
 LPPROCESS_INFO __findProcessByPid(int pid) {
 	LPPROCESS_INFO p = (LPPROCESS_INFO)TASKS_TSS_BASE;
 	for (int i = 0; i < TASK_LIMIT_TOTAL; i++) {
-		if (p[i].status == TASK_RUN && p->pid == pid ) {
+		if (p[i].status == TASK_RUN && p[i].pid == pid ) {
 			return &p[i];
 		}
 	}
@@ -178,7 +179,7 @@ LPPROCESS_INFO __findProcessByPid(int pid) {
 LPPROCESS_INFO __findProcessByTid(int tid) {
 	LPPROCESS_INFO p = (LPPROCESS_INFO)TASKS_TSS_BASE;
 	for (int i = 0; i < TASK_LIMIT_TOTAL; i++) {
-		if (p[i].status == TASK_RUN && p->tid == tid) {
+		if (p[i].status == TASK_RUN && p[i].tid == tid) {
 			return &p[i];
 		}
 	}
@@ -296,22 +297,55 @@ int __createDosInFileTask(DWORD addr, char* filename) {
 #ifndef SINGLE_TASK_TSS
 extern "C"  __declspec(dllexport) DWORD __kTaskSchedule(LIGHT_ENVIRONMENT* regs) {
 
+	char szout[1024];
+
 	__k8254TimerProc();
+
+	__asm {
+		clts			//before all fpu instructions
+	}
+
+	//__printf(szout, "__kTaskSchedule entry\r\n");
 
 	LPPROCESS_INFO tss = (LPPROCESS_INFO)TASKS_TSS_BASE;
 	LPPROCESS_INFO process = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
-
 	LPPROCESS_INFO prev = (LPPROCESS_INFO)(tss + process->tid);
-	if (prev->status == TASK_TERMINATE) {
+
+	LPPROCESS_INFO next = prev;
+
+	if (process->tid != prev->tid) {
+		__printf(szout, "__kTaskSchedule error\r\n");
+		return 0;
+	}
+
+	if (prev->status == TASK_TERMINATE || process->status == TASK_TERMINATE) {
 		prev->status = TASK_OVER;
+		process->status = TASK_OVER;
 		if (prev->tid == prev->pid) {
 			//__kFreeProcess(prev->pid);
 		}
 		else {
 			//__kFree(prev->espbase);
-		}		
+		}
 	}
-	LPPROCESS_INFO next = prev;
+	else if (prev->status == TASK_OVER || process->status == TASK_OVER) {
+		__printf(szout, "__kTaskSchedule error\r\n");
+		return 0;		
+	}
+	else if ( process->status == TASK_RUN || prev->status == TASK_RUN)
+	{
+		if (prev->sleep) {
+			prev->sleep--;
+		}
+	}
+	else if (process->status == TASK_SUSPEND || prev->status == TASK_SUSPEND ) {
+
+	}
+	else {
+		__printf(szout, "__kTaskSchedule error\r\n");
+		return 0;
+	}
+
 	do {
 		next++;
 		if (next - tss >= TASK_LIMIT_TOTAL) {
@@ -330,17 +364,24 @@ extern "C"  __declspec(dllexport) DWORD __kTaskSchedule(LIGHT_ENVIRONMENT* regs)
 			else {
 				//__kFree(next->espbase);
 			}
+			continue;
 		}
-
-		if (next->status == TASK_RUN) {
+		else if (next->status == TASK_RUN ) {
 			if (next->sleep) {
 				next->sleep--;
 			}
 			else {
 				break;
 			}
+			continue;
 		}
-	} while (next != prev);
+		else if (next->status == TASK_OVER) {
+			continue;
+		}
+		else if (next->status == TASK_SUSPEND) {
+			continue;
+		}
+	} while (TRUE);
 	
 	//切换到新任务的cr3和ldt会被自动加载，但是iret也会加载cr3和ldt，因此不需要手动加载
 	//DescriptTableReg ldtreg;
@@ -350,8 +391,8 @@ extern "C"  __declspec(dllexport) DWORD __kTaskSchedule(LIGHT_ENVIRONMENT* regs)
 	//process->tss.ldt = ldtreg.addr;
 
 	process->counter++;
-	__memcpy((char*)(tss + prev->tid), (char*)process, sizeof(PROCESS_INFO));
-	__memcpy((char*)process, (char*)(next->tid + tss), sizeof(PROCESS_INFO));
+	__memcpy((char*)prev, (char*)process, sizeof(PROCESS_INFO));
+	__memcpy((char*)process, (char*)next, sizeof(PROCESS_INFO));
 	
 	//tasktest();
 
@@ -360,33 +401,35 @@ extern "C"  __declspec(dllexport) DWORD __kTaskSchedule(LIGHT_ENVIRONMENT* regs)
 	//The assembler issues two instructions for the FSAVE instruction (an FWAIT instruction followed by an FNSAVE instruction), 
 	//and the processor executes each of these instructions separately.
 	//If an exception is generated for either of these instructions, the save EIP points to the instruction that caused the exception.
-	__asm {
-		clts			//before all fpu instructions
+	__asm {	
 		FNCLEX
 		//fwait
+		fninit
 		mov eax, fenvprev
 		FxSAVE[eax]
 		//fsave [fenv]
-
 	}
-	prev->fpu = 1;
-
-	if (next->fpu)
+	
 	{
 		char * fenvnext = (char*)FPU_STATUS_BUFFER + (next->tid << 9);
 		__asm {
-			//fwait
-			fninit
 			mov eax, fenvnext
 			//frstor [fenv]
 			fxrstor[eax]
 		}
 	}
-
+	if ((g_tagMsg++) % 0x100 == 0 && g_tagMsg < 0x1000) {
+		__printf(szout, "new task pid:%d tid:%d,old task pid:%d tid:%d\r\n", prev->pid, prev->tid, next->pid, next->tid);
+	}
 	return TRUE;
 }
 #else
 extern "C"  __declspec(dllexport) DWORD __kTaskSchedule(LIGHT_ENVIRONMENT * env) {
+
+	char szout[1024];
+	__asm {
+		clts			//before all fpu instructions
+	}
 
 	__k8254TimerProc();
 
@@ -394,8 +437,17 @@ extern "C"  __declspec(dllexport) DWORD __kTaskSchedule(LIGHT_ENVIRONMENT * env)
 	LPPROCESS_INFO process = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
 
 	LPPROCESS_INFO prev = (LPPROCESS_INFO)(tss + process->tid);
-	if (prev->status == TASK_TERMINATE) {
+
+	LPPROCESS_INFO next = prev;
+
+	if (process->tid != prev->tid) {
+		__printf(szout, "__kTaskSchedule error\r\n");
+		return 0;
+	}
+
+	if (prev->status == TASK_TERMINATE || process->status == TASK_TERMINATE) {
 		prev->status = TASK_OVER;
+		process->status = TASK_OVER;
 		if (prev->tid == prev->pid) {
 			//__kFreeProcess(prev->pid);
 		}
@@ -403,7 +455,24 @@ extern "C"  __declspec(dllexport) DWORD __kTaskSchedule(LIGHT_ENVIRONMENT * env)
 			//__kFree(prev->espbase);
 		}
 	}
-	LPPROCESS_INFO next = prev;
+	else if (prev->status == TASK_OVER || process->status == TASK_OVER) {
+		__printf(szout, "__kTaskSchedule error\r\n");
+		return 0;	
+	}
+	else if (process->status == TASK_RUN || prev->status == TASK_RUN)
+	{
+		if (prev->sleep) {
+			prev->sleep--;
+		}
+	}
+	else if (process->status == TASK_SUSPEND || prev->status == TASK_SUSPEND) {
+
+	}
+	else {
+		__printf(szout, "__kTaskSchedule error\r\n");
+		return 0;
+	}
+
 	do {
 		next++;
 		if (next - tss >= TASK_LIMIT_TOTAL) {
@@ -422,17 +491,24 @@ extern "C"  __declspec(dllexport) DWORD __kTaskSchedule(LIGHT_ENVIRONMENT * env)
 			else {
 				//__kFree(next->espbase);
 			}
+			continue;
 		}
-
-		if (next->status == TASK_RUN) {
+		else if (next->status == TASK_RUN) {
 			if (next->sleep) {
 				next->sleep--;
 			}
 			else {
 				break;
 			}
+			continue;
 		}
-	} while (next != prev);
+		else if (next->status == TASK_OVER) {
+			continue;
+		}
+		else if (next->status == TASK_SUSPEND) {
+			continue;
+		}
+	} while (TRUE);
 
 	process->tss.eax = env->eax;
 	process->tss.ecx = env->ecx;
@@ -475,17 +551,14 @@ extern "C"  __declspec(dllexport) DWORD __kTaskSchedule(LIGHT_ENVIRONMENT * env)
 	//process->tss.ldt = ldtreg.addr;
 
 	process->counter++;
-	__memcpy((char*)(tss + prev->tid), (char*)process, sizeof(PROCESS_INFO));
-	__memcpy((char*)process, (char*)(next->tid + tss), sizeof(PROCESS_INFO));
+	__memcpy((char*)prev, (char*)process, sizeof(PROCESS_INFO));
+	__memcpy((char*)process, (char*)next, sizeof(PROCESS_INFO));
 
 	if (process->tss.eflags & 0x20000) {
-
 	}
 	else if (process->tss.cs & 3) {
-		//env->ss = KERNEL_MODE_STACK;
 	}
 	else {
-
 	}
 
 	//tasktest();
@@ -496,21 +569,17 @@ extern "C"  __declspec(dllexport) DWORD __kTaskSchedule(LIGHT_ENVIRONMENT * env)
 	//and the processor executes each of these instructions separately.
 	//If an exception is generated for either of these instructions, the save EIP points to the instruction that caused the exception.
 	__asm {
-		clts			//before all fpu instructions
 		FNCLEX
+		fninit
 		//fwait
 		mov eax, fenvprev
 		FxSAVE[eax]
 		//fsave [fenv]
 	}
-	prev->fpu = 1;
 
-	if (next->fpu)
 	{
 		char* fenvnext = (char*)FPU_STATUS_BUFFER + (next->tid << 9);
 		__asm {
-			//fwait
-			fninit
 			mov eax, fenvnext
 			//frstor [fenv]
 			fxrstor[eax]
@@ -530,6 +599,10 @@ extern "C"  __declspec(dllexport) DWORD __kTaskSchedule(LIGHT_ENVIRONMENT * env)
 	env->ds = process->tss.ds;
 	env->es = process->tss.es;
 	env->ss = process->tss.ss;
+
+	if ((g_tagMsg++) % 0x10 == 0) {
+		__printf(szout, "new task pid:%d tid:%d,old task pid:%d tid:%d\r\n", prev->pid, prev->tid, next->pid, next->tid);
+	}
 
 	return TRUE;
 }

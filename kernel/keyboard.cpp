@@ -250,7 +250,7 @@ void __kKeyboardProc() {
 	if (c == 1 && (data->kbdStatus & CTRLLEFT_SET_FLAG))
 	{
 		LPPROCESS_INFO tss = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
-		__terminateProcess(tss->pid | 0x80000000,tss->funcname,tss->filename,0);
+		//__terminateProcess(tss->pid | 0x80000000,tss->funcname,tss->filename,0);
 		return;
 	}
 

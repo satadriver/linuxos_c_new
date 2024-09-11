@@ -176,6 +176,7 @@
     <ClCompile Include="debugger.cpp" />
     <ClCompile Include="descriptor.cpp" />
     <ClCompile Include="device.cpp" />
+    <ClCompile Include="heap.cpp" />
     <ClCompile Include="parallel.cpp" />
     <ClCompile Include="processDOS.cpp" />
     <ClCompile Include="elf.cpp" />
@@ -234,6 +235,7 @@
     <ClInclude Include="def.h" />
     <ClInclude Include="descriptor.h" />
     <ClInclude Include="device.h" />
+    <ClInclude Include="heap.h" />
     <ClInclude Include="parallel.h" />
     <ClInclude Include="processDOS.h" />
     <ClInclude Include="elf.h" />

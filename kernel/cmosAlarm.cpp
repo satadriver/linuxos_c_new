@@ -154,10 +154,6 @@ void addAlarmTimer(DWORD interval) {
 	writeCmosPort(0x03, b2bcd(dstmin));
 	writeCmosPort(0x01, b2bcd(dstsecond));
 
-	__asm {
-		//sti
-	}
-
 	char szout[1024];
 	__printf(szout, "set alarm at:%d/%d/%d %d:%d:%d\n", dstyear, dstmonth, dstday, dsthour, dstmin, dstsecond);
 
@@ -207,15 +203,11 @@ int __kAddAlarmTimer( DWORD interval, DWORD linearaddr, DWORD param) {
 }
 
 void __kRemoveAlarmTimer() {
-	__asm {
-		//cli
-	}
+
 	gCmosAlarmProc.addr = 0;
 	gCmosAlarmProc.interval = 0;
 	gCmosAlarmProc.param = 0;
-	__asm{
-		//sti
-	}
+
 }
 
 

@@ -128,6 +128,10 @@ int __initDosTss(LPPROCESS_INFO tss, int pid, DWORD addr, char * filename, char 
 
 	WORD offset = (addr & 0x0f);
 
+	tss->sleep = 0;
+
+	tss->fpu = TRUE;
+
 	tss->tss.esp0 = TASKS_STACK0_BASE + (pid + 1) * TASK_STACK0_SIZE - STACK_TOP_DUMMY;
 	tss->tss.ss0 = KERNEL_MODE_STACK;
 

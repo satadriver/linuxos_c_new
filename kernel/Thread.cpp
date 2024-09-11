@@ -81,6 +81,7 @@ DWORD __kCreateThread(DWORD addr, DWORD module, DWORD runparam,char * funcname) 
 	tss->heapsize = process->heapsize;
 	tss->pid = process->pid;
 	tss->ppid = process->pid;
+	tss->fpu = TRUE;
 	tss->level = process->level;
 	tss->vaddr = process->vaddr;
 	tss->vasize = process->vasize;

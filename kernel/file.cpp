@@ -63,6 +63,8 @@ int initFileSystem() {
 		return 0;
 	}
 
+	char szout[1024];
+	__printf(szout, "initFileSystem ok\r\n");
 	return TRUE;
 }
 

@@ -31,6 +31,7 @@ DWORD __declspec(naked) servicesProc(LIGHT_ENVIRONMENT* stack) {
 		mov es, ax
 		MOV FS, ax
 		MOV GS, AX
+		mov ss,ax
 		call __kServicesProc
 		add esp, 8
 
@@ -144,9 +145,10 @@ DWORD __declspec(dllexport) __kServicesProc(DWORD num, DWORD * params) {
 
 
 void sleep(DWORD * params) {
+	int sleeptime = params[0];
 	int interval = 1000 / (OSCILLATE_FREQUENCY / SYSTEM_TIMER0_FACTOR);
-	DWORD times = params[0] / interval;
-	DWORD mod = params[0] % interval;
+	DWORD times = sleeptime / interval;
+	DWORD mod = sleeptime % interval;
 	if (mod != 0)
 	{
 		times++;
@@ -156,18 +158,25 @@ void sleep(DWORD * params) {
 		times = 1;
 	}
 
-	LPPROCESS_INFO tss = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
-	tss->sleep += times;
-
-	for (int i = 0; i < times; i++)
+	LPPROCESS_INFO proc = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
+	int tid = proc->tid;
+	LPPROCESS_INFO tss = (LPPROCESS_INFO)TASKS_TSS_BASE;
+	LPPROCESS_INFO cur_tss = tss + tid;
+	
+	cur_tss->sleep += times ;
+	proc->sleep = cur_tss->sleep;
+	while(1)
 	{
 		__asm {
 			hlt
 		}
 
-		if (tss->sleep)
+		if (cur_tss->sleep == 0)
 		{
-			tss->sleep--;
+			break;
+		}
+		else {
+			continue;
 		}
 	}
 }

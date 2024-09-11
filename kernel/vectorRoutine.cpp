@@ -46,6 +46,7 @@ __declspec(naked) void DivideError(LIGHT_ENVIRONMENT* stack) {
 		mov es, ax
 		MOV FS, ax
 		MOV GS, AX
+		mov ss,ax
 	}
 	{
 		LPPROCESS_INFO process = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
@@ -139,6 +140,8 @@ void __declspec(naked) NmiInterrupt(LIGHT_ENVIRONMENT* stack) {
 		mov es, ax
 		MOV FS, ax
 		MOV GS, AX
+		mov ss,ax
+
 	}
 	{
 		int v = inportb(0x92);
@@ -186,6 +189,7 @@ void __declspec(naked) OverflowException(LIGHT_ENVIRONMENT* stack) {
 		mov es, ax
 		MOV FS, ax
 		MOV GS, AX
+		mov ss, ax
 	}
 	{
 		LPPROCESS_INFO process = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
@@ -231,6 +235,7 @@ void __declspec(naked) BoundRangeExceed(LIGHT_ENVIRONMENT* stack) {
 		mov es, ax
 		MOV FS, ax
 		MOV GS, AX
+		mov ss, ax
 	}
 	{
 		LPPROCESS_INFO process = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
@@ -276,6 +281,7 @@ void __declspec(naked) UndefinedOpcode(LIGHT_ENVIRONMENT* stack) {
 		mov es, ax
 		MOV FS, ax
 		MOV GS, AX
+		mov ss, ax
 	}
 
 	{
@@ -323,6 +329,7 @@ void __declspec(naked) DeviceUnavailable(LIGHT_ENVIRONMENT* stack) {
 		MOV FS, ax
 		MOV GS, AX
 
+		mov ss, ax
 	}
 
 	__kCoprocessor();
@@ -373,9 +380,10 @@ void __declspec(naked) DoubleFault(LIGHT_ENVIRONMENT* stack) {
 		mov es, ax
 		MOV FS, ax
 		MOV GS, AX
+		mov ss, ax
 	}
 	{
-		gExceptionCounter++;
+		//gExceptionCounter++;
 		if (gExceptionCounter <= 10) {
 			LPPROCESS_INFO process = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
 			char szout[1024];
@@ -420,6 +428,7 @@ void __declspec(naked) CoprocSegOverrun(LIGHT_ENVIRONMENT* stack) {
 		mov es, ax
 		MOV FS, ax
 		MOV GS, AX
+		mov ss, ax
 
 		clts
 		fnclex
@@ -468,9 +477,10 @@ void __declspec(naked) InvalidTss(LIGHT_ENVIRONMENT* stack) {
 		mov es, ax
 		MOV FS, ax
 		MOV GS, AX
+		mov ss, ax
 	}
 	{
-		gExceptionCounter++;
+		//gExceptionCounter++;
 		if (gExceptionCounter < 10) {
 			LPPROCESS_INFO process = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
 			char szout[1024];
@@ -519,6 +529,7 @@ void __declspec(naked) SegmentUnpresent(LIGHT_ENVIRONMENT* stack) {
 		mov es, ax
 		MOV FS, ax
 		MOV GS, AX
+		mov ss, ax
 	}
 	{
 		LPPROCESS_INFO process = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
@@ -564,6 +575,7 @@ void __declspec(naked) StackSegFault(LIGHT_ENVIRONMENT* stack) {
 		mov es, ax
 		MOV FS, ax
 		MOV GS, AX
+		mov ss, ax
 	}
 	{
 		LPPROCESS_INFO process = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
@@ -608,9 +620,10 @@ void __declspec(naked) GeneralProtection(LIGHT_ENVIRONMENT* stack) {
 		mov es, ax
 		MOV FS, ax
 		MOV GS, AX
+		mov ss, ax
 	}
 	{
-		gExceptionCounter++;
+		//gExceptionCounter++;
 		if (gExceptionCounter <= 10) {
 			LPPROCESS_INFO process = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
 			char szout[1024];
@@ -656,6 +669,7 @@ void __declspec(naked) PageFault(LIGHT_ENVIRONMENT* stack) {
 		mov es, ax
 		MOV FS, ax
 		MOV GS, AX
+		mov ss, ax
 	}
 	{
 		LPPROCESS_INFO process = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
@@ -703,6 +717,7 @@ void __declspec(naked) AnonymousException(LIGHT_ENVIRONMENT* stack) {
 		mov es, ax
 		MOV FS, ax
 		MOV GS, AX
+		mov ss, ax
 	}
 	{
 		LPPROCESS_INFO process = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
@@ -747,6 +762,7 @@ void __declspec(naked) FloatPointError(LIGHT_ENVIRONMENT* stack) {
 		mov es, ax
 		MOV FS, ax
 		MOV GS, AX
+		mov ss, ax
 	}
 
 	__kCoprocessor();
@@ -797,6 +813,7 @@ void __declspec(naked) AlignmentCheck(LIGHT_ENVIRONMENT* stack) {
 		mov es, ax
 		MOV FS, ax
 		MOV GS, AX
+		mov ss, ax
 	}
 	{
 		LPPROCESS_INFO process = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
@@ -841,6 +858,7 @@ void __declspec(naked) MachineCheck(LIGHT_ENVIRONMENT* stack) {
 		mov es, ax
 		MOV FS, ax
 		MOV GS, AX
+		mov ss, ax
 	}
 	{
 		LPPROCESS_INFO process = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
@@ -884,6 +902,7 @@ __declspec(naked) void SIMDException(LIGHT_ENVIRONMENT* stack) {
 		mov es, ax
 		MOV FS, ax
 		MOV GS, AX
+		mov ss, ax
 	}
 	{
 		LPPROCESS_INFO process = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
@@ -927,6 +946,7 @@ __declspec(naked) void VirtualizationException(LIGHT_ENVIRONMENT* stack) {
 		mov es, ax
 		MOV FS, ax
 		MOV GS, AX
+		mov ss, ax
 	}
 	{
 		LPPROCESS_INFO process = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
@@ -972,6 +992,7 @@ __declspec(naked) void CtrlProtectException(LIGHT_ENVIRONMENT* stack) {
 		mov es, ax
 		MOV FS, ax
 		MOV GS, AX
+		mov ss, ax
 	}
 	{
 		LPPROCESS_INFO process = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
@@ -1016,11 +1037,13 @@ extern "C" void __declspec(naked) TimerInterrupt(LIGHT_ENVIRONMENT * stack) {
 		mov es, ax
 		MOV FS, ax
 		MOV GS, AX
+		mov ss, ax
 	}
 
 	{
 		LPPROCESS_INFO process = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
 		char szout[1024];
+		//__printf(szout,"TimerInterrupt\r\n");
 
 		__kTaskSchedule((LIGHT_ENVIRONMENT*)stack);
 
@@ -1047,7 +1070,6 @@ extern "C" void __declspec(naked) TimerInterrupt(LIGHT_ENVIRONMENT * stack) {
 #ifdef SINGLE_TASK_TSS
 		mov esp, dword ptr ss: [esp - 20]
 #endif	
-
 		clts
 		iretd
 
@@ -1079,6 +1101,7 @@ extern "C" void __declspec(naked) CmosInterrupt(LIGHT_ENVIRONMENT * stack) {
 		mov es, ax
 		MOV FS, ax
 		MOV GS, AX
+		mov ss, ax
 	}
 
 	{
@@ -1139,6 +1162,7 @@ void __declspec(naked) Com2IntProc(LIGHT_ENVIRONMENT* stack) {
 		mov es, ax
 		MOV FS, ax
 		MOV GS, AX
+		mov ss, ax
 	}
 
 	{
@@ -1185,6 +1209,7 @@ void __declspec(naked) Com1IntProc(LIGHT_ENVIRONMENT* stack) {
 		mov es, ax
 		MOV FS, ax
 		MOV GS, AX
+		mov ss, ax
 	}
 
 	{
@@ -1231,6 +1256,7 @@ void __declspec(naked) Parallel2IntProc(LIGHT_ENVIRONMENT* stack) {
 		mov es, ax
 		MOV FS, ax
 		MOV GS, AX
+		mov ss, ax
 	}
 
 	{
@@ -1279,6 +1305,7 @@ void __declspec(naked) FloppyDiskIntProc(LIGHT_ENVIRONMENT* stack) {
 		mov es, ax
 		MOV FS, ax
 		MOV GS, AX
+		mov ss, ax
 	}
 
 	{
@@ -1325,6 +1352,7 @@ void __declspec(naked) Parallel1IntProc(LIGHT_ENVIRONMENT* stack) {
 		mov es, ax
 		MOV FS, ax
 		MOV GS, AX
+		mov ss, ax
 	}
 
 	{
@@ -1372,6 +1400,7 @@ void __declspec(naked) SlaveIntProc(LIGHT_ENVIRONMENT* stack) {
 		mov es, ax
 		MOV FS, ax
 		MOV GS, AX
+		mov ss, ax
 	}
 
 	{
@@ -1419,6 +1448,7 @@ void __declspec(naked) Slave1IntProc(LIGHT_ENVIRONMENT* stack) {
 		mov es, ax
 		MOV FS, ax
 		MOV GS, AX
+		mov ss, ax
 	}
 
 	{
@@ -1466,6 +1496,7 @@ void __declspec(naked) NetcardIntProc(LIGHT_ENVIRONMENT* stack) {
 		mov es, ax
 		MOV FS, ax
 		MOV GS, AX
+		mov ss, ax
 	}
 
 	{
@@ -1513,6 +1544,7 @@ void __declspec(naked) USBIntProc(LIGHT_ENVIRONMENT* stack) {
 		mov es, ax
 		MOV FS, ax
 		MOV GS, AX
+		mov ss, ax
 	}
 
 	{
@@ -1560,6 +1592,11 @@ void __declspec(naked) CoprocessorIntProc(LIGHT_ENVIRONMENT* stack) {
 		mov es, ax
 		MOV FS, ax
 		MOV GS, AX
+		mov ss, ax
+
+		clts
+		fnclex
+		fninit
 	}
 
 	{
@@ -1611,6 +1648,7 @@ void __declspec(naked) IDEMasterIntProc(LIGHT_ENVIRONMENT* stack) {
 		mov es, ax
 		MOV FS, ax
 		MOV GS, AX
+		mov ss, ax
 	}
 
 	{
@@ -1619,6 +1657,7 @@ void __declspec(naked) IDEMasterIntProc(LIGHT_ENVIRONMENT* stack) {
 		outportb(0x20, 0x20);
 		outportb(0xa0, 0xa0);
 		inportb(gAtaBasePort + 7);
+		//below 2 line codes why can not be removed?
 		inportb(gAtaBasePort + 4);
 		inportb(gAtaBasePort + 5);
 	}
@@ -1661,6 +1700,7 @@ void __declspec(naked) IDESlaveIntProc(LIGHT_ENVIRONMENT* stack) {
 		mov es, ax
 		MOV FS, ax
 		MOV GS, AX
+		mov ss, ax
 	}
 
 	{
@@ -1669,9 +1709,9 @@ void __declspec(naked) IDESlaveIntProc(LIGHT_ENVIRONMENT* stack) {
 		outportb(0x20, 0x20);
 		outportb(0xa0, 0xa0);
 		inportb(gAtapiBasePort + 7);
+		//below 2 line codes why can not be removed?
 		inportb(gAtapiBasePort + 4);
 		inportb(gAtapiBasePort + 5);
-
 
 	}
 

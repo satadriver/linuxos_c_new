@@ -73,8 +73,8 @@ void enableAVX() {
 
 //https://blog.csdn.net/qq_43401808/article/details/86677863
 void enableSSE() {
-	//DWORD mxcsr_reg = 0x1fbf;
-	DWORD mxcsr_reg = 0x1f80;
+	DWORD mxcsr_reg = 0x1fbf;
+	//DWORD mxcsr_reg = 0x1f80;
 	__asm {
 
 		mov eax, cr0
@@ -116,7 +116,7 @@ void initCoprocessor() {
 		__emit 0x20
 		__emit 0xe0
 
-		//or eax,0x40600
+		or eax,0x40600
 		
 		//mov cr4,eax
 		__emit 0x0f

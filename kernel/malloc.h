@@ -36,17 +36,22 @@ typedef struct
 
 #pragma pack()
 
+int setMemAllocInfo(LPMEMALLOCINFO item, DWORD addr, DWORD vaddr, int size, int pid);
 
-LPMEMALLOCINFO getExistAddr(DWORD addr,int size);
+void resetAllMemAllocInfo();
 
-LPMEMALLOCINFO getFreeMemItem();
+int resetMemAllocInfo(LPMEMALLOCINFO item);
+
+LPMEMALLOCINFO getExistAddr_size(DWORD addr,int size);
+
+LPMEMALLOCINFO getExistAddr_none_size(DWORD addr);
+
+LPMEMALLOCINFO getMemAllocInfo();
 
 int getAlignedSize(int size, int allignsize);
 
-DWORD __heapAlloc(int size);
 
-DWORD __heapFree(DWORD addr);
-
+LPMEMALLOCINFO getExistAddr(DWORD addr, int size);
 
 int initMemory();
 
@@ -58,7 +63,7 @@ void freeProcessMemory();
 
 #ifdef DLL_EXPORT
 
-extern "C"  __declspec(dllexport) int formatProcMem(int pid, char * szout);
+extern "C"  __declspec(dllexport) int getProcMemory(int pid, char * szout);
 extern "C"  __declspec(dllexport) int __free(DWORD addr);
 extern "C"  __declspec(dllexport) DWORD __malloc(DWORD s);
 
@@ -66,7 +71,7 @@ extern "C"  __declspec(dllexport) DWORD __kMalloc(DWORD size);
 
 extern "C"  __declspec(dllexport) int __kFree(DWORD buf);
 #else
-extern "C"  __declspec(dllimport) int formatProcMem(int pid, char * szout);
+extern "C"  __declspec(dllimport) int getProcMemory(int pid, char * szout);
 extern "C"  __declspec(dllimport) int __free(DWORD addr);
 extern "C"  __declspec(dllimport) DWORD __malloc(DWORD s);
 extern "C"  __declspec(dllimport) DWORD __kMalloc(DWORD size);

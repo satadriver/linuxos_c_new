@@ -110,15 +110,15 @@ int __kExplorer(unsigned int retaddr, int tid, char * filename, char * funcname,
 
 	showPciDevs();
 
-	__enableBreakPoint();
+	//__enableBreakPoint();
 
 	__kAddAlarmTimer(30, (DWORD)__doAlarmTask, 0);
 
 	//sysEntryProc();
 
-	callgateEntry(0, 0);
+	//callgateEntry(0, 0);
 
-	displayCCPoem();
+	//displayCCPoem();
 
 	int imagesize = 0x10000;
 	DWORD address = getAddrFromName(MAIN_DLL_BASE, "__taskTest1");

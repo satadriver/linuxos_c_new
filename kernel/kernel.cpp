@@ -103,7 +103,7 @@ int __kernelEntry(LPVESAINFORMATION vesa, DWORD fontbase,DWORD v86Proc,DWORD v86
 #ifdef SINGLE_TASK_TSS
 	//__createDosInFileTask(gV86VMIEntry, "V86VMIEntry");
 #else
-	__createDosInFileTask(gV86VMIEntry, "V86VMIEntry");
+	//__createDosInFileTask(gV86VMIEntry, "V86VMIEntry");
 #endif
 
 	initFileSystem();
@@ -160,6 +160,8 @@ int __kernelEntry(LPVESAINFORMATION vesa, DWORD fontbase,DWORD v86Proc,DWORD v86
 void __kKernelMain(DWORD retaddr,int pid,char * filename,char * funcname,DWORD param) {
 
 	int ret = 0;
+
+	__sleep(6000);
 
  	char szout[1024];
 	__printf(szout, "__kKernelMain task pid:%x,filename:%s,function name:%s\n", pid, filename,funcname);
