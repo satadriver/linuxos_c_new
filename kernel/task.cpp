@@ -600,7 +600,7 @@ extern "C"  __declspec(dllexport) DWORD __kTaskSchedule(LIGHT_ENVIRONMENT * env)
 	env->es = process->tss.es;
 	env->ss = process->tss.ss;
 
-	if ((g_tagMsg++) % 0x10 == 0) {
+	if ((g_tagMsg++) % 0x100 == 0 && g_tagMsg < 0x1000) {
 		__printf(szout, "new task pid:%d tid:%d,old task pid:%d tid:%d\r\n", prev->pid, prev->tid, next->pid, next->tid);
 	}
 
