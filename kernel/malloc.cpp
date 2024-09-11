@@ -30,15 +30,13 @@ int getAlignedSize(int size, int allignsize) {
 
 //Bit Scan Forward
 //格式: BSF dest, src
-//	影响标志位 : ZF
-//	功能：从源操作数的的最低位向高位搜索，将遇到的第一个“1”所在的位序号存入目标寄存器中，
-//	若所有位都是0，则ZF = 1，否则ZF = 0。
+//影响标志位 : ZF
+//功能：从源操作数的的最低位向高位搜索，将遇到的第一个“1”所在的位序号存入目标寄存器中，若所有位都是0，则ZF = 1，否则ZF = 0。
 
 //Bit Scan Reverse
 //BSR dest, src
-//	影响标志位 : ZF
-//	功能：从源操作数的的最高位向低位搜索，将遇到的第一个“1”所在的位序号存入目标寄存器中，
-//	若所有位都是0，则ZF = 1，否则ZF = 0。
+//影响标志位 : ZF
+//功能：从源操作数的的最高位向低位搜索，将遇到的第一个“1”所在的位序号存入目标寄存器中，若所有位都是0，则ZF = 1，否则ZF = 0。
 
 //BTS指令
 //格式: BTS OPD, OPS
@@ -157,19 +155,16 @@ LPMEMALLOCINFO getExistAddr(DWORD addr,int size) {
 
 
 void resetAllMemAllocInfo() {
-	LPMEMALLOCINFO memAllocList = (LPMEMALLOCINFO)MEMORY_ALLOC_BUFLIST;
-	initListEntry(&memAllocList->list);
 
 	LPMEMALLOCINFO item = (LPMEMALLOCINFO)MEMORY_ALLOC_BUFLIST;
-
-	int c = MEMORY_ALLOC_BUFLIST_SIZE / sizeof(MEMALLOCINFO);
-	for (int i = 0; i < c; i++)
+	int cnt = MEMORY_ALLOC_BUFLIST_SIZE / sizeof(MEMALLOCINFO);
+	for (int i = 0; i < cnt; i++)
 	{
-		item[i].size = 0;
-		item[i].addr == 0;
-		item[i].vaddr = 0;
-		item[i].pid = 0;
+		__memset((char*)&item[i], 0, sizeof(MEMALLOCINFO));
 	}
+
+	LPMEMALLOCINFO memList = (LPMEMALLOCINFO)MEMORY_ALLOC_BUFLIST;
+	initListEntry(&memList->list);
 }
 
 
@@ -177,10 +172,7 @@ int resetMemAllocInfo(LPMEMALLOCINFO item) {
 	DWORD size = item->size;
 
 	removelist((LPLIST_ENTRY)item);
-	item->addr = 0;
-	item->size = 0;
-	item->vaddr = 0;
-	item->pid = 0;
+	__memset((char*)item, 0, sizeof(MEMALLOCINFO));
 
 	return size;
 }
@@ -188,10 +180,11 @@ int resetMemAllocInfo(LPMEMALLOCINFO item) {
 LPMEMALLOCINFO getMemAllocInfo() {
 	LPMEMALLOCINFO item = (LPMEMALLOCINFO)MEMORY_ALLOC_BUFLIST;
 
-	int c = MEMORY_ALLOC_BUFLIST_SIZE / sizeof(MEMALLOCINFO);
-	for ( int i = 0;i < c;i ++)
+	int cnt = MEMORY_ALLOC_BUFLIST_SIZE / sizeof(MEMALLOCINFO);
+	for ( int i = 0;i < cnt;i ++)
 	{
-		if (item[i].size == 0 && item[i].addr == 0 && item[i].vaddr == 0 && item[i].pid == 0)
+		if (item[i].list.next == 0 && item[i].list.prev == 0 &&
+			item[i].size == 0 && item[i].addr == 0 && item[i].vaddr == 0 && item[i].pid == 0)
 		{
 			return &item[i];
 		}
@@ -370,7 +363,7 @@ int __kFree(DWORD physicalAddr) {
 	}
 	else {
 		char szout[1024];
-		int len = __printf(szout, "__kFree not found physical address:%x\n", physicalAddr);
+		int len = __printf(szout, "__kFree not found address:%x\n", physicalAddr);
 	}
 
 	__leaveSpinlock(&gAllocLock);
@@ -451,6 +444,7 @@ void freeProcessMemory() {
 	__enterSpinlock(&gAllocLock);
 
 	LPPROCESS_INFO tss = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
+
 	LPMEMALLOCINFO info = (LPMEMALLOCINFO)MEMORY_ALLOC_BUFLIST;
 	do
 	{
@@ -458,8 +452,7 @@ void freeProcessMemory() {
 		{
 			break;
 		}
-
-		if (info->pid == tss->pid)
+		else if (info->pid == tss->pid)
 		{
 			resetMemAllocInfo(info);
 		}
@@ -494,12 +487,14 @@ int getProcMemory(int pid, char* szout) {
 	{
 		if (info->pid == pid)
 		{
-			int len = __printf(szout + offset, "base:%x,vaddr:%x,size:%x,pid:%x\n", info->addr, info->vaddr, info->size, info->pid);
+			int len = __printf(szout + offset, 
+				"memory:%x,virtual memory:%x,size:%x,pid:%x\n", info->addr, info->vaddr, info->size, info->pid);
 			offset += len;
 		}
 
 		info = (LPMEMALLOCINFO)info->list.next;
 
 	} while (info != (LPMEMALLOCINFO)MEMORY_ALLOC_BUFLIST);
+
 	return offset;
 }

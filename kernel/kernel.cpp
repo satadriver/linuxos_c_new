@@ -101,9 +101,9 @@ int __kernelEntry(LPVESAINFORMATION vesa, DWORD fontbase,DWORD v86Proc,DWORD v86
 	__printf(szout, "Hello world of Liunux!\r\n");
 
 #ifdef SINGLE_TASK_TSS
-	//__createDosInFileTask(gV86VMIEntry, "V86VMIEntry");
+	__createDosInFileTask(gV86VMIEntry, "V86VMIEntry");
 #else
-	//__createDosInFileTask(gV86VMIEntry, "V86VMIEntry");
+	__createDosInFileTask(gV86VMIEntry, "V86VMIEntry");
 #endif
 
 	initFileSystem();
@@ -120,22 +120,11 @@ int __kernelEntry(LPVESAINFORMATION vesa, DWORD fontbase,DWORD v86Proc,DWORD v86
 	{
 		TASKCMDPARAMS cmd;
 		__memset((char*)&cmd, 0, sizeof(TASKCMDPARAMS));
-		__kCreateThread((unsigned int)kernelMain, KERNEL_DLL_BASE,(DWORD)&cmd, "__kKernelMain");
-		//__kCreateProcess((unsigned int)KERNEL_DLL_SOURCE_BASE, imagesize, "kernel.dll", "__kKernelMain", 3, 0);
+		//__kCreateThread((unsigned int)kernelMain, KERNEL_DLL_BASE,(DWORD)&cmd, "__kKernelMain");
+		__kCreateProcess((unsigned int)KERNEL_DLL_SOURCE_BASE, imagesize, "kernel.dll", "__kKernelMain", 3, 0);
 	}
 
-// 	ret = loadLibRunFun("c:\\liunux\\main.dll", "__kMainProcess");
-
-	DWORD address = getAddrFromName(MAIN_DLL_BASE, "__taskTest1");
-	//__kCreateThread((DWORD)address, MAIN_DLL_BASE, (DWORD)0, "__taskTest1");
-
-	//__kCreateProcessFromAddrFunc(MAIN_DLL_SOURCE_BASE, imagesize, "__taskTest1", 3, 0);
-	DWORD address2 = getAddrFromName(MAIN_DLL_BASE, "__taskTest2");
-	//__kCreateThread((DWORD)address2, MAIN_DLL_BASE, (DWORD)0, "__taskTest2");
-	//__kCreateProcessFromAddrFunc(MAIN_DLL_SOURCE_BASE, imagesize, "__taskTest2", 3, 0);
-
-	imagesize = getSizeOfImage((char*)MAIN_DLL_SOURCE_BASE);
-	//__kCreateProcessFromAddrFunc(MAIN_DLL_SOURCE_BASE, imagesize,  "__kExplorer", 3, 0);
+	//ret = loadLibRunFun("c:\\liunux\\main.dll", "__kMainProcess");
 
 	//__kGetKbd(0);
 
@@ -144,7 +133,6 @@ int __kernelEntry(LPVESAINFORMATION vesa, DWORD fontbase,DWORD v86Proc,DWORD v86
 		if (__findProcessFuncName("__kExplorer") == FALSE)
 		{
 			__kCreateProcess(MAIN_DLL_SOURCE_BASE, imagesize, "main.dll", "__kExplorer", 3, 0);
-			//__printf(szout, "create process __kExplorer\r\n");
 		}
 
 		__asm {
@@ -183,34 +171,6 @@ void __kKernelMain(DWORD retaddr,int pid,char * filename,char * funcname,DWORD p
 
 //注意二位数组在内存中的排列和结构
 void mytest() {
-	char tmp[0x4000] = { 0 };
-	for (int i = 0; i < 100; i++) {
-		tmp[i] = 0x80 - i;
-	}
-	char* lptmp = tmp;
-	char t = *(lptmp++);
-
-	PCI_CONFIG_VALUE pci = { 0 };
-	PCI_CONFIG_VALUE* lppci = &pci;
-	pci.enable = 1;
-	pci.bus = 44;
-	pci.dev = 14;
-	pci.func = 5;
-	pci.reg = 22;
-
-	TssDescriptor d;
-
-	TssDescriptor* ld = &d;
-
-	IntTrapGateDescriptor i;
-
-	IntTrapGateDescriptor* li = &i;
-
-	initKernelTss((TSS*)tmp, TASKS_STACK0_BASE + TASK_STACK0_SIZE - STACK_TOP_DUMMY,KERNEL_TASK_STACK_TOP, 0, PDE_ENTRY_VALUE, 0);
-	makeTssDescriptor((DWORD)0x12345678, 3,  0xabcd, (TssDescriptor*)&d);
-
-	makeIntGateDescriptor((DWORD)0x12345678, KERNEL_MODE_CODE, 3, &i);
-
 	return;
 }
 

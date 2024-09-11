@@ -94,6 +94,8 @@ void removelist(LPLIST_ENTRY list) {
 			LPLIST_ENTRY prev = list->prev;
 			list->prev->next = next;
 			list->next->prev = prev;
+			list->next = 0;
+			list->prev = 0;
 		}
 	}
 }
