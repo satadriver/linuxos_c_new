@@ -27,7 +27,7 @@ DWORD makePciAddr(int bus, int dev, int func, int reg) {
 int getPciDevBasePort(DWORD* baseregs, WORD devClsVender, DWORD* dev, DWORD* irqpin) {
 
 	int cnt = 0;
-	for (int bdf = 0x80000008; bdf <= 0x80fff808; bdf += 0x1000)			//offset 8,read class type,vender type
+	for (int bdf = 0x80000008; bdf <= 0x80fff808; bdf += 0x100)			//offset 8,read class type,vender type
 	{
 		outportd(0xcf8, bdf);
 		DWORD v = inportd(0xcfc);
@@ -72,7 +72,7 @@ int listpci(DWORD* dst) {
 
 	DWORD* lpdst = (DWORD*)dst;
 
-	for (int bdf = 0x80000008; bdf <= 0x80fff808; bdf += 0x1000)			//offset 8,read class type,vender type
+	for (int bdf = 0x80000008; bdf <= 0x80fff808; bdf += 0x100)			//offset 8,read class type,vender type
 	{
 		outportd(0xcf8, bdf);
 		DWORD v = inportd(0xcfc);

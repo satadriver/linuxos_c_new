@@ -10,9 +10,11 @@
 #include "memory.h"
 #include "heap.h"
 
-DWORD gAllocLimitSize = 0;
+
 DWORD gAvailableSize = 0;
 DWORD gAvailableBase = 0;
+
+DWORD gAllocLimitSize = 0;
 
 DWORD gAllocLock = FALSE;
 
@@ -133,16 +135,14 @@ LPMEMALLOCINFO getExistAddr(DWORD addr,int size) {
 		{
 			return (LPMEMALLOCINFO)-1;
 		}	
-		else if ( (info->addr <= addr) && ( info->addr + info->size > addr) )
+		else if (info->addr == addr) 
 		{
 			return info;
 		}
-		/*
-		else if ( (info->addr >= addr) && (  info->addr < addr + size ) )
+		else if ( (info->addr < addr) && ( info->addr + info->size > addr) )
 		{
 			return info;
-		}	
-		*/
+		}
 		else {
 			info = (LPMEMALLOCINFO)info->list.next;
 		}
@@ -172,7 +172,10 @@ int resetMemAllocInfo(LPMEMALLOCINFO item) {
 	DWORD size = item->size;
 
 	removelist((LPLIST_ENTRY)item);
-	__memset((char*)item, 0, sizeof(MEMALLOCINFO));
+	item->addr = 0;
+	item->size = 0;
+	item->vaddr = 0;
+	item->pid = 0;
 
 	return size;
 }
@@ -183,7 +186,7 @@ LPMEMALLOCINFO getMemAllocInfo() {
 	int cnt = MEMORY_ALLOC_BUFLIST_SIZE / sizeof(MEMALLOCINFO);
 	for ( int i = 0;i < cnt;i ++)
 	{
-		if (item[i].list.next == 0 && item[i].list.prev == 0 &&
+		if ( //item[i].list.next == 0 && item[i].list.prev == 0 &&
 			item[i].size == 0 && item[i].addr == 0 && item[i].vaddr == 0 && item[i].pid == 0)
 		{
 			return &item[i];

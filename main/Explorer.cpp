@@ -108,9 +108,9 @@ int __kExplorer(unsigned int retaddr, int tid, char * filename, char * funcname,
 	getCpuInfo(cpuinfo);
 	__printf(szout, "CPU MODEL:%s,details:%s,video height:%d,width:%d,pixel:%d\n", cputype, cpuinfo, gVideoHeight, gVideoWidth, gBytesPerPixel);
 
-	showPciDevs();
+	//showPciDevs();
 
-	//__enableBreakPoint();
+	__enableBreakPoint();
 
 	__kAddAlarmTimer(30, (DWORD)__doAlarmTask, 0);
 
@@ -120,7 +120,7 @@ int __kExplorer(unsigned int retaddr, int tid, char * filename, char * funcname,
 
 	//displayCCPoem();
 
-	int imagesize = 0x10000;
+	int imagesize = getSizeOfImage((char*)MAIN_DLL_BASE);
 	DWORD address = getAddrFromName(MAIN_DLL_BASE, "__taskTest1");
 	//__kCreateThread((DWORD)address, MAIN_DLL_BASE, (DWORD)0, "__taskTest1");
 	//__kCreateProcessFromAddrFunc(MAIN_DLL_SOURCE_BASE, imagesize, "__taskTest1", 3, 0);

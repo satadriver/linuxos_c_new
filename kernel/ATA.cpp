@@ -122,7 +122,7 @@ int getIDEPort() {
 		gAtapiBasePort = 0x3f0;
 	}
 
-	__printf((char*)szshow, "getIDEPort 3f0 over\n");
+	//__printf((char*)szshow, "getIDEPort 3f0 over\n");
 
 	ret = checkIDEPort(0x370);
 	if (ret==1)
@@ -135,7 +135,7 @@ int getIDEPort() {
 		gAtapiBasePort = 0x370;
 	}
 
-	__printf((char*)szshow, "getIDEPort 370 over\n");
+	//__printf((char*)szshow, "getIDEPort 370 over\n");
 
 	//1f7 = 3f6 = 3f7,376=377=177
 	ret = checkIDEPort(0x1f0);
@@ -149,7 +149,7 @@ int getIDEPort() {
 		gAtapiBasePort = 0x1f0;
 	}
 
-	__printf((char*)szshow, "getIDEPort 1f0 over\n");
+	//__printf((char*)szshow, "getIDEPort 1f0 over\n");
 
 	ret = checkIDEPort(0x170);
 	if (ret == 1)
@@ -162,9 +162,9 @@ int getIDEPort() {
 		gAtapiBasePort = 0x170;
 	}
 
-	__printf((char*)szshow, "getIDEPort 170 over\n");
+	//__printf((char*)szshow, "getIDEPort 170 over\n");
 
-	DWORD hdport[16] ;
+	DWORD hdport[64] ;
 	DWORD dev = 0;
 	DWORD irq = 0;
 	int cnt = getPciDevBasePort(hdport, 0x0101, &dev, &irq);

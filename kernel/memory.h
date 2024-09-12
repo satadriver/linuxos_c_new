@@ -7,7 +7,6 @@
 #define PAGE_TABLE_NOTEXIST			-1
 
 
-DWORD mapCodeToLinear(DWORD pedata,int level);
 
 int clearCr3(DWORD *cr3);
 

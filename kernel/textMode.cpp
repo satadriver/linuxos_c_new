@@ -64,7 +64,7 @@ int runcmd(char * cmd) {
 		}*/
 
 #ifdef SINGLE_TASK_TSS
-		//__createDosInFileTask(gV86VMIEntry, "V86VMIEntry");
+		__createDosInFileTask(gV86VMIEntry, "V86VMIEntry");
 #else
 		__createDosInFileTask(gV86VMIEntry, "V86VMIEntry");
 #endif
@@ -196,9 +196,7 @@ extern "C" __declspec(dllexport) int __kTextModeEntry(LPVESAINFORMATION vesa, DW
 
 	initMemory();
 
-	initPage();
-
-	enablePage();
+	initPaging();
 
 	__initTask();
 

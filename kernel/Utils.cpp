@@ -894,7 +894,7 @@ int __shutdownSystem() {
 
 	outportw(0x4004, 0x3400);
 
-	for (int bdf = 0x80000008; bdf <= 0x80fff808; bdf += 0x1000)			//offset 8,read class type,vender type
+	for (int bdf = 0x80000008; bdf <= 0x80fff808; bdf += 0x100)			//offset 8,read class type,vender type
 	{
 		outportd(0xcf8, bdf);
 		DWORD v = inportd(0xcfc);

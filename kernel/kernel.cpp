@@ -39,6 +39,10 @@
 //#pragma comment(linker, "/align:512")
 //#pragma comment(linker, "/merge:.data=.text")
 
+//https://www.cnblogs.com/ck1020/p/6115200.html
+
+
+
 DWORD gV86VMIEntry = 0;
 DWORD gV86Process = 0;
 DWORD gKernel16;
@@ -67,9 +71,7 @@ int __kernelEntry(LPVESAINFORMATION vesa, DWORD fontbase,DWORD v86Proc,DWORD v86
 
 	initMemory();
 
-	initPage();
-
-	enablePage();
+	initPaging();
 
 	__initTask();
 
@@ -85,7 +87,6 @@ int __kernelEntry(LPVESAINFORMATION vesa, DWORD fontbase,DWORD v86Proc,DWORD v86
 
 	sysEntryInit((DWORD)sysEntry);
 
-	//https://www.cnblogs.com/ck1020/p/6115200.html
 	enableVME();
 	enablePCE();
 	enableMCE();
@@ -98,7 +99,9 @@ int __kernelEntry(LPVESAINFORMATION vesa, DWORD fontbase,DWORD v86Proc,DWORD v86
 		sti
 	}
 
-	__printf(szout, "Hello world of Liunux!\r\n");
+	//__printf(szout, "Hello world of Liunux!\r\n");
+
+
 
 #ifdef SINGLE_TASK_TSS
 	__createDosInFileTask(gV86VMIEntry, "V86VMIEntry");
@@ -108,21 +111,20 @@ int __kernelEntry(LPVESAINFORMATION vesa, DWORD fontbase,DWORD v86Proc,DWORD v86
 
 	initFileSystem();
 
-// 	TASKCMDPARAMS cmd;
-// 	__memset((char*)&cmd, 0, sizeof(TASKCMDPARAMS));
-// 	__kCreateThread((DWORD)__kSpeakerProc, (DWORD)&cmd, "__kSpeakerProc");
-
-	//logFile("__kernelEntry\n");
-	
+	TASKCMDPARAMS cmd;
+	__memset((char*)&cmd, 0, sizeof(TASKCMDPARAMS));
+	//__kCreateThread((DWORD)__kSpeakerProc, (DWORD)&cmd, "__kSpeakerProc");
 	int imagesize = getSizeOfImage((char*)KERNEL_DLL_SOURCE_BASE);
 	DWORD kernelMain = getAddrFromName(KERNEL_DLL_BASE, "__kKernelMain");
 	if (kernelMain)
 	{
-		TASKCMDPARAMS cmd;
-		__memset((char*)&cmd, 0, sizeof(TASKCMDPARAMS));
-		//__kCreateThread((unsigned int)kernelMain, KERNEL_DLL_BASE,(DWORD)&cmd, "__kKernelMain");
+		//__kCreateThread((unsigned int)kernelMain, KERNEL_DLL_BASE, (DWORD)&cmd, "__kKernelMain");
 		__kCreateProcess((unsigned int)KERNEL_DLL_SOURCE_BASE, imagesize, "kernel.dll", "__kKernelMain", 3, 0);
 	}
+
+	//logFile("__kernelEntry\n");
+	
+
 
 	//ret = loadLibRunFun("c:\\liunux\\main.dll", "__kMainProcess");
 

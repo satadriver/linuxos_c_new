@@ -392,8 +392,6 @@ extern "C" void __declspec(dllexport) __kApInitProc() {
 	char szout[1024];
 	__printf(szout, "idt base:%x,size:%x\r\n", idtbase.addr, idtbase.size);
 
-	enablePage();
-
 	*(DWORD*)0xFEE00310 = 0;
 	*(DWORD*)0xFEE00300 = 0x4030;
 

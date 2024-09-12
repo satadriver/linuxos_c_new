@@ -670,8 +670,14 @@ void __declspec(naked) PageFault(LIGHT_ENVIRONMENT* stack) {
 		MOV FS, ax
 		MOV GS, AX
 		mov ss, ax
+
 	}
 	{
+		DWORD regcr2 = 0;
+		__asm {
+			mov eax, cr2
+			mov regcr2,eax
+		}
 		LPPROCESS_INFO process = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
 		char szout[1024];
 		__printf(szout, "PageFault! pid:%d\r\n", process->pid);
@@ -1019,6 +1025,7 @@ __declspec(naked) void CtrlProtectException(LIGHT_ENVIRONMENT* stack) {
 
 
 extern "C" void __declspec(naked) TimerInterrupt(LIGHT_ENVIRONMENT * stack) {
+	__TimerInterrupt:
 	__asm {
 		pushad
 		push ds
@@ -1071,9 +1078,10 @@ extern "C" void __declspec(naked) TimerInterrupt(LIGHT_ENVIRONMENT * stack) {
 		mov esp, dword ptr ss: [esp - 20]
 #endif	
 		clts
+		sti
 		iretd
 
-		jmp TimerInterrupt
+		jmp __TimerInterrupt
 	}
 }
 

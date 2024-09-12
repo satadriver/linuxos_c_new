@@ -187,6 +187,8 @@ DWORD g_sysEntryInit = 0;
 
 DWORD g_sysEntryStack3 = 0;
 
+DWORD g_sysEntryEip3 = 0;
+
 
 
 
@@ -201,9 +203,15 @@ extern "C" __declspec(naked) int sysEntry() {
 		WORD rcs = 0;
 		DWORD resp = 0;
 		WORD rss = 0;
+		DWORD reip = 0;
 		__asm {
 			mov ax, cs
 			mov rcs, ax
+
+			call _eip_tag
+			_eip_tag:
+			pop eax
+			mov reip,eax
 
 			mov ax, ss
 			mov rss, ax
@@ -211,17 +219,14 @@ extern "C" __declspec(naked) int sysEntry() {
 			mov resp, esp
 		}
 		char szout[1024];
-		__printf(szout, "sysEntry current cs:%x,tss cs:%x,ss:%x,esp:%x\r\n", rcs, tss->cs, rss, resp);
+		__printf(szout, "sysEntry current cs:%x,eip:%x,ss:%x,esp:%x\r\n", rcs, reip, rss, resp);
 	}
 
 	__asm {
-		lea edx, __sysEntryExit
-		mov ecx, ds : [g_sysEntryStack3]
+		mov edx, ds:[g_sysEntryEip3]
+		mov ecx, ds:[g_sysEntryStack3]
 		_emit 0x0f
 		_emit 0x35
-
-		__sysEntryExit :
-		ret
 	}
 }
 
@@ -249,6 +254,9 @@ extern "C" __declspec(naked) int sysEntryProc() {
 		jz __sysEntryExit
 
 		mov ds : [g_sysEntryStack3] , esp
+
+		lea eax, __sysEntryExit
+		mov ds:[g_sysEntryEip3],eax
 
 		_emit 0x0f
 		_emit 0x34
