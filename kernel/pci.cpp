@@ -23,6 +23,26 @@ DWORD makePciAddr(int bus, int dev, int func, int reg) {
 }
 
 
+int getNetcard(DWORD* regs, DWORD* dev, DWORD* irq) {
+	return getPciDevBasePort(regs, 0x0200, dev, irq);
+}
+
+int getSvga(DWORD* regs, DWORD* dev, DWORD* irq) {
+	return getPciDevBasePort(regs, 0x0300, dev, irq);
+}
+
+int getSoundcard(DWORD* regs, DWORD* dev, DWORD* irq) {
+	return getPciDevBasePort(regs, 0x0401, dev, irq);
+}
+
+int getSmbus(DWORD* regs, DWORD* dev, DWORD* irq) {
+	return getPciDevBasePort(regs, 0x0c05, dev, irq);
+}
+
+int getUsb(DWORD* regs, DWORD* dev, DWORD* irq) {
+	return getPciDevBasePort(regs, 0x0c03, dev, irq);
+}
+
 
 int getPciDevBasePort(DWORD* baseregs, WORD devClsVender, DWORD* dev, DWORD* irqpin) {
 
@@ -95,25 +115,7 @@ int listpci(DWORD* dst) {
 
 
 
-int getNetcard(DWORD* regs, DWORD* dev, DWORD* irq) {
-	return getPciDevBasePort(regs, 0x0200, dev, irq);
-}
 
-int getSvga(DWORD* regs, DWORD* dev, DWORD* irq) {
-	return getPciDevBasePort(regs, 0x0300, dev, irq);
-}
-
-int getSoundcard(DWORD* regs, DWORD* dev, DWORD* irq) {
-	return getPciDevBasePort(regs, 0x0401, dev, irq);
-}
-
-int getSmbus(DWORD* regs, DWORD* dev, DWORD* irq) {
-	return getPciDevBasePort(regs, 0x0c05, dev, irq);
-}
-
-int getUsb(DWORD* regs, DWORD* dev, DWORD* irq) {
-	return getPciDevBasePort(regs, 0x0c03, dev, irq);
-}
 
 
 
@@ -132,6 +134,10 @@ void showAllPciDevs() {
 		}
 	}
 }
+
+
+
+
 
 int showPciDevs() {
 

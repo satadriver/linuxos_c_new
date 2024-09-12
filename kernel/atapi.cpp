@@ -24,7 +24,25 @@ unsigned char gAtapiCmdWrite[16] = {0xAA, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0,0,0,
 
 //2,3,4,5 is bit31-bit24,bit23-bit16,bit15-bit8,bit7-bit0,6,7,8,9 is sector number, bit31-bit24,bit23-bit16,bit15-bit8,bit7-bit0
 
+int readsector16(int port, int len, char* buf) {
+	__asm {
+		cld
+		mov edi, buf
+		mov ecx, len
+		mov edx, port
+		rep insw
+	}
+}
 
+int writesector16(int port, int len, char* buf) {
+	__asm {
+		cld
+		mov esi, buf
+		mov ecx, len
+		mov edx, port
+		rep outsw
+	}
+}
 
 int writeAtapiCMD(unsigned short* cmd) {
 	__asm {
@@ -38,6 +56,32 @@ int writeAtapiCMD(unsigned short* cmd) {
 	return 0;
 }
 
+//atapi free value is 0x41,not 0x50
+int waitDRQ(WORD port) {
+
+	int cnt = 16;
+	while (cnt--) {
+		int r = inportb(port);
+		if (r & 5) {
+			return FALSE;
+		}
+		else if ((r & 0x88) == 8) {
+			return TRUE;
+		}
+		else {
+			char szout[1024];
+			if (r & 0x80 == 0) {
+				__printf(szout, "waitComplete:%x\r\n", r);
+			}
+			__sleep(0);
+			continue;
+		}
+	}
+
+	return FALSE;
+}
+
+
 
 int checkAtapiPort(WORD port) {
 	char param[2048];
@@ -46,16 +90,15 @@ int checkAtapiPort(WORD port) {
 
 	outportb(port, 0xa1);
 
-	waitComplete(port);
+	waitDRQ(port);
 
-	readsector(port - 7, BYTES_PER_SECTOR / 4, param);
+	readsector16(port - 7, BYTES_PER_SECTOR / 2, param);
 
 	unsigned char szshow[0x1000];
 	__dump((char*)param, BYTES_PER_SECTOR, 0, szshow);
 	__drawGraphChars((unsigned char*)szshow, 0);
 	return TRUE;
 }
-
 
 
 
@@ -73,7 +116,7 @@ int atapiCMD(unsigned short *cmd) {
 	outportb(gAtapiBasePort + 6, gATAPIDev);
 	outportb(gAtapiBasePort + 7, 0xa0);
 
-	int res = waitComplete(gAtapiBasePort + 7);
+	int res = waitDRQ(gAtapiBasePort + 7);
 
 	int low = inportb(gAtapiBasePort + 4);
 	int high = inportb(gAtapiBasePort + 5);
@@ -106,11 +149,17 @@ int readAtapiSector(char * buf,unsigned int secnum,unsigned char seccnt) {
 	outportb(gAtapiBasePort + 6, gATAPIDev);
 	outportb(gAtapiBasePort + 7, 0xa0);
 
-	int res = waitComplete(gAtapiBasePort + 7);
+	int res = waitDRQ(gAtapiBasePort + 7);
 
 	int low = inportb(gAtapiBasePort + 4);
 	int high = inportb(gAtapiBasePort + 5);
-	gAtapiCmdRead[9] = seccnt;
+	gAtapiCmdRead[0] = 0xa8;
+	gAtapiCmdRead[1] = 0;
+
+	gAtapiCmdRead[6] = (seccnt>>24)&0xff;
+	gAtapiCmdRead[7] = (seccnt >> 16) & 0xff;
+	gAtapiCmdRead[8] = (seccnt >> 8) & 0xff;
+	gAtapiCmdRead[9] = seccnt&0xff;
 
 	gAtapiCmdRead[5] = secnum&0xff;
 	gAtapiCmdRead[4] = (secnum>>8) & 0xff;
@@ -120,8 +169,8 @@ int readAtapiSector(char * buf,unsigned int secnum,unsigned char seccnt) {
 
 	char* lpbuf = buf;
 	for (int i = 0; i < seccnt; i++) {
-		int res = waitComplete(gAtapiBasePort + 7);
-		res = readsector(gAtapiBasePort, ATAPI_SECTOR_SIZE / 4,lpbuf);
+		int res = waitDRQ(gAtapiBasePort + 7);
+		res = readsector16(gAtapiBasePort, ATAPI_SECTOR_SIZE / 2,lpbuf);
 		lpbuf += ATAPI_SECTOR_SIZE;
 	}
 
@@ -149,11 +198,18 @@ int writeAtapiSector(char* buf, unsigned int secnum, unsigned char seccnt) {
 	outportb(gAtapiBasePort + 6, gATAPIDev);
 	outportb(gAtapiBasePort + 7, 0xa0);
 
-	int res = waitComplete(gAtapiBasePort + 7);
+	int res = waitDRQ(gAtapiBasePort + 7);
 
 	int low = inportb(gAtapiBasePort + 4);
 	int high = inportb(gAtapiBasePort + 5);
-	gAtapiCmdWrite[9] = seccnt;
+
+	gAtapiCmdWrite[0] = 0xaa;
+	gAtapiCmdWrite[1] = 0;
+
+	gAtapiCmdWrite[6] = (seccnt >> 24) & 0xff;
+	gAtapiCmdWrite[7] = (seccnt >> 16) & 0xff;
+	gAtapiCmdWrite[8] = (seccnt >> 8) & 0xff;
+	gAtapiCmdWrite[9] = seccnt & 0xff;
 
 	gAtapiCmdWrite[5] = secnum & 0xff;
 	gAtapiCmdWrite[4] = (secnum >> 8) & 0xff;
@@ -163,8 +219,8 @@ int writeAtapiSector(char* buf, unsigned int secnum, unsigned char seccnt) {
 
 	char* lpbuf = buf;
 	for (int i = 0; i < seccnt; i++) {
-		int res = waitComplete(gAtapiBasePort + 7);
-		res = writesector(gAtapiBasePort, ATAPI_SECTOR_SIZE / 4, lpbuf);
+		int res = waitDRQ(gAtapiBasePort + 7);
+		res = writesector16(gAtapiBasePort, ATAPI_SECTOR_SIZE / 2, lpbuf);
 		lpbuf += ATAPI_SECTOR_SIZE;
 	}
 
@@ -178,125 +234,3 @@ int writeAtapiSector(char* buf, unsigned int secnum, unsigned char seccnt) {
 
 
 
-
-
-/*
-__asm {
-	mov dx, gAtaBasePort + 1
-	mov al, 0		//1 is dma,0 is pio
-	out dx, al
-
-	mov dx, gAtapiPort + 6
-	mov al, 0xa0
-	out dx, al
-
-	mov dx, gAtapiPort + 4
-	mov al, 12
-	out dx, al
-
-	mov dx, gAtapiPort + 5
-	mov al, 0
-	out dx, al
-
-	mov dx, gAtapiPort+7
-	mov al, 0a0h
-	out dx, al
-
-	movzx edx, gAtapiPort
-	add edx, 7
-	push edx
-	call waitComplete
-	add esp,4
-	cmp eax,-1
-	jz _atapi_a0_end
-
-	mov dx, gAtapiPort + 4
-	in al, dx
-	mov cl, al
-
-	mov dx, gAtapiPort + 5
-	in al, dx
-	mov ch, al
-
-	mov cx, 6
-	mov dx, gAtapiPort
-	mov esi, cmd
-	cld
-	rep outsw
-	_atapi_a0_end:
-}
-*/
-
-
-
-/*
-__asm {
-	mov dx, gAtapiPort + 1
-	mov al,0
-	out dx,al
-
-	mov dx, gAtapiPort + 6
-	mov al, 0a0h
-	out dx, al
-
-	mov eax, ATAPI_SECTOR_SIZE
-	movzx ecx, seccnt
-	mul ecx
-	mov dx, gAtapiPort + 4
-	OUT dx,al
-	mov dx, gAtapiPort + 5
-	mov al,ah
-	OUT dx,al
-
-	mov dx, gAtapiPort + 7
-	mov al, 0a0h
-	out dx, al
-
-	movzx edx, gAtapiPort
-	add edx,7
-	push edx
-	call waitComplete
-	add esp,4
-	cmp eax, -1
-	jz _atapi_a0_end
-
-	mov dx, gAtapiPort + 4
-	in al, dx
-	mov cl, al
-
-	mov dx, gAtapiPort + 5
-	in al, dx
-	mov ch, al
-
-	lea esi, gAtapiCmdRead
-	mov al,seccnt
-	mov byte ptr [esi + 9], al
-
-	mov eax, secno
-	mov byte ptr[esi + 5], al
-	mov byte ptr[esi + 4], ah
-	shr eax,16
-	mov byte ptr[esi + 3], al
-	mov byte ptr[esi + 2], ah
-
-	mov ecx, 6
-	mov dx, gAtapiPort
-	rep outsw
-
-	movzx edx, gAtapiPort
-	add edx, 7
-	push edx
-	call waitComplete
-	add esp, 4
-	cmp eax, -1
-	jz _atapi_a0_end
-
-	movzx edx, gAtapiPort
-	mov edi, buf
-	movzx ecx,seccnt
-	shl ecx,9
-	rep insd
-
-	_atapi_a0_end:
-}
-*/

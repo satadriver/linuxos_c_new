@@ -101,8 +101,6 @@ int __kernelEntry(LPVESAINFORMATION vesa, DWORD fontbase,DWORD v86Proc,DWORD v86
 
 	//__printf(szout, "Hello world of Liunux!\r\n");
 
-
-
 #ifdef SINGLE_TASK_TSS
 	__createDosInFileTask(gV86VMIEntry, "V86VMIEntry");
 #else
@@ -111,21 +109,19 @@ int __kernelEntry(LPVESAINFORMATION vesa, DWORD fontbase,DWORD v86Proc,DWORD v86
 
 	initFileSystem();
 
-	TASKCMDPARAMS cmd;
-	__memset((char*)&cmd, 0, sizeof(TASKCMDPARAMS));
-	//__kCreateThread((DWORD)__kSpeakerProc, (DWORD)&cmd, "__kSpeakerProc");
 	int imagesize = getSizeOfImage((char*)KERNEL_DLL_SOURCE_BASE);
 	DWORD kernelMain = getAddrFromName(KERNEL_DLL_BASE, "__kKernelMain");
 	if (kernelMain)
 	{
+		TASKCMDPARAMS cmd;
+		__memset((char*)&cmd, 0, sizeof(TASKCMDPARAMS));
+		//__kCreateThread((DWORD)__kSpeakerProc, (DWORD)&cmd, "__kSpeakerProc");
 		//__kCreateThread((unsigned int)kernelMain, KERNEL_DLL_BASE, (DWORD)&cmd, "__kKernelMain");
 		__kCreateProcess((unsigned int)KERNEL_DLL_SOURCE_BASE, imagesize, "kernel.dll", "__kKernelMain", 3, 0);
 	}
 
 	//logFile("__kernelEntry\n");
 	
-
-
 	//ret = loadLibRunFun("c:\\liunux\\main.dll", "__kMainProcess");
 
 	//__kGetKbd(0);
@@ -172,7 +168,11 @@ void __kKernelMain(DWORD retaddr,int pid,char * filename,char * funcname,DWORD p
 
 
 //注意二位数组在内存中的排列和结构
-void mytest() {
+void mytest(int p) {
+	__asm {
+		lea eax,p
+
+	}
 	return;
 }
 
@@ -183,7 +183,7 @@ int __stdcall DllMain( HINSTANCE hInstance,  DWORD fdwReason,  LPVOID lpvReserve
 #else
 int __stdcall WinMain(  HINSTANCE hInstance,  HINSTANCE hPrevInstance,  LPSTR lpCmdLine,  int nShowCmd )
 {
-	mytest();
+	mytest(0);
 	return TRUE;
 }
 #endif

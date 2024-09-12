@@ -1025,7 +1025,7 @@ __declspec(naked) void CtrlProtectException(LIGHT_ENVIRONMENT* stack) {
 
 
 extern "C" void __declspec(naked) TimerInterrupt(LIGHT_ENVIRONMENT * stack) {
-	__TimerInterrupt:
+
 	__asm {
 		pushad
 		push ds
@@ -1081,7 +1081,7 @@ extern "C" void __declspec(naked) TimerInterrupt(LIGHT_ENVIRONMENT * stack) {
 		sti
 		iretd
 
-		jmp __TimerInterrupt
+		jmp TimerInterrupt
 	}
 }
 
@@ -1661,13 +1661,18 @@ void __declspec(naked) IDEMasterIntProc(LIGHT_ENVIRONMENT* stack) {
 
 	{
 		char szout[1024];
-		__printf(szout, "IDEMasterIntProc!\r\n");
+		
 		outportb(0x20, 0x20);
 		outportb(0xa0, 0xa0);
-		inportb(gAtaBasePort + 7);
+		
+		int status = inportb(gAtaBasePort + 7);
 		//below 2 line codes why can not be removed?
-		inportb(gAtaBasePort + 4);
-		inportb(gAtaBasePort + 5);
+		int low = inportb(gAtaBasePort + 4);
+		int high = inportb(gAtaBasePort + 5);
+		int size = (high << 8) | low;
+
+		LPPROCESS_INFO proc = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
+		//__printf(szout, "IDEMasterIntProc size:%x tid:%d port:%x status:%x\r\n", size,proc->tid,gAtaBasePort+7,status);
 	}
 
 	__asm {
@@ -1713,14 +1718,16 @@ void __declspec(naked) IDESlaveIntProc(LIGHT_ENVIRONMENT* stack) {
 
 	{
 		char szout[1024];
-		__printf(szout, "IDESlaveIntProc!\r\n");
+
 		outportb(0x20, 0x20);
 		outportb(0xa0, 0xa0);
-		inportb(gAtapiBasePort + 7);
+		int status = inportb(gAtapiBasePort + 7);
 		//below 2 line codes why can not be removed?
-		inportb(gAtapiBasePort + 4);
-		inportb(gAtapiBasePort + 5);
-
+		int low = inportb(gAtapiBasePort + 4);
+		int high = inportb(gAtapiBasePort + 5);
+		int size = (high << 8) | low;
+		LPPROCESS_INFO proc = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
+		__printf(szout, "IDESlaveIntProc size:%x tid:%d port:%x status:%x\r\n", size, proc->tid, gAtapiBasePort + 7, status);
 	}
 
 	__asm {

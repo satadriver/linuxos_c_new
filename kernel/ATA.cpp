@@ -56,11 +56,14 @@ int(__cdecl* writeSector)(unsigned int secnolow, DWORD secnohigh, unsigned int s
 //而一个扇区共有512Byte，这样使用CHS寻址一块硬盘最大容量为256 * 1024 * 63 * 512B = 8064 MB
 int checkIDEPort(unsigned short port) {
 
-	int r = inportb(port + 7);
-	if (r == 0x50) {
+	char buffer[0x1000];
 
-		char buffer[0x1000];
-		r = identifyDevice(port , 0xec, buffer);
+	int r = inportb(port + 7);
+	if (r == 0x50)
+	{	
+		gAtaBasePort = port;
+
+		r = identifyDevice(port, 0xec, buffer);
 		if (r) {
 			unsigned char gc = *(unsigned char*)buffer;
 			if (gc * 0x80) {
@@ -71,20 +74,24 @@ int checkIDEPort(unsigned short port) {
 			}
 			return 1;
 		}
-		else {
-			r = identifyDevice(port , 0xa1 , buffer);
-			if (r) {
-				WORD gc = *(WORD*)buffer;
-				if ( (gc & 3) == 1) {
-					gAtapiPackSize = 16;
-				}
-				else if ((gc & 3) == 0) {
-					gAtapiPackSize = 12;
-				}
+	}
+	else if( r == 0x41)
+	{
+		gAtapiBasePort = port;
 
-				return 2;
+		r = identifyDevice(port , 0xa1 , buffer);
+		if (r) {
+			WORD gc = *(WORD*)buffer;
+			if ( (gc & 3) == 1) {
+				gAtapiPackSize = 16;
 			}
+			else if ((gc & 3) == 0) {
+				gAtapiPackSize = 12;
+			}
+
+			return 2;
 		}
+		
 		return FALSE;
 	}
 	else {
@@ -292,16 +299,20 @@ int waitComplete(WORD port) {
 
 	int r = inportb(port - 6);
 	if (r == 0) {
-		int cnt = 6;
+		int cnt = 16;
 		while (cnt--) {
 			r = inportb(port);
-			if (r & 1) {
+			if (r & 5) {
 				return FALSE;
 			}
-			else if ((r & 0x58) == 0x58) {
+			else if ((r & 0xfd) == 0x58) {
 				return TRUE;
 			}
 			else {
+				char szout[1024];
+				if (r & 0x80 == 0) {
+					__printf(szout, "waitComplete:%x\r\n",r);
+				}
 				__sleep(0);
 				continue;
 			}
@@ -311,11 +322,13 @@ int waitComplete(WORD port) {
 }
 
 void waitFree(WORD port) {
-	int cnt = 6;
+	int cnt = 16;
 	while (cnt--)
 	{
 		int r = inportb(port);
 		if (r & 0x80) {
+			char szout[1024];
+			//__printf(szout, "waitFree:%x\r\n",r);
 			__sleep(0);
 			continue;
 		}
@@ -325,10 +338,8 @@ void waitFree(WORD port) {
 	}
 }
 
-
-
 void waitReady(WORD port) {
-	int cnt = 6;
+	int cnt = 16;
 	while (cnt --)
 	{
 		int r = inportb(port);
@@ -336,6 +347,8 @@ void waitReady(WORD port) {
 			break;
 		}
 		else {
+			char szout[1024];
+			//__printf(szout, "waitReady:%x\r\n", r);
 			__sleep(0);
 			continue;
 		}

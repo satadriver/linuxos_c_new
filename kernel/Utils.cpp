@@ -552,6 +552,39 @@ int __strd2i(char * istr) {
 }
 
 
+int __kPrintf(char* buf, char* format, ...) {
+
+	if (format == 0 || buf == 0) {
+		return FALSE;
+	}
+
+	int formatLen = __strlen(format);
+	if (formatLen == 0) {
+		return FALSE;
+	}
+
+	DWORD* params = 0;
+	__asm {
+		lea eax,format
+		add eax,4
+		mov params,eax
+	}
+
+	int idx = 0;
+	for (int i = 0; i < formatLen; i++) {
+
+		if (format[i] == '%' && format[i + 1] == 'd') {
+
+		}
+		else if (format[i] == '%' && format[i + 1] == 'x') {
+		}
+		else if (format[i] == '%' && format[i + 1] == 'u') {
+		}
+		else if (format[i] == '%' && format[i + 1] == 's') {
+		}
+	}
+	return 0;
+}
 
 
 int __printf(char * buf, char * format, ...) {
