@@ -104,9 +104,6 @@ int checkAtapiPort(WORD port) {
 
 int atapiCMD(unsigned short *cmd) {
 
-	__asm {
-		//cli
-	}
 
 	waitFree(gAtapiBasePort + 7);
 
@@ -122,19 +119,11 @@ int atapiCMD(unsigned short *cmd) {
 	int high = inportb(gAtapiBasePort + 5);
 	writeAtapiCMD(cmd);
 
-	__asm {
-		//sti
-	}
-
 	return 0;
 }
 
 
 int readAtapiSector(char * buf,unsigned int secnum,unsigned char seccnt) {
-
-	__asm {
-		//cli
-	}
 
 	waitFree(gAtapiBasePort + 7);
 
@@ -174,19 +163,11 @@ int readAtapiSector(char * buf,unsigned int secnum,unsigned char seccnt) {
 		lpbuf += ATAPI_SECTOR_SIZE;
 	}
 
-	__asm {
-		//sti
-	}
-
 	return readsize;
 }
 
 
 int writeAtapiSector(char* buf, unsigned int secnum, unsigned char seccnt) {
-
-	__asm {
-		//cli
-	}
 
 	waitFree(gAtapiBasePort + 7);
 
@@ -222,10 +203,6 @@ int writeAtapiSector(char* buf, unsigned int secnum, unsigned char seccnt) {
 		int res = waitDRQ(gAtapiBasePort + 7);
 		res = writesector16(gAtapiBasePort, ATAPI_SECTOR_SIZE / 2, lpbuf);
 		lpbuf += ATAPI_SECTOR_SIZE;
-	}
-
-	__asm {
-		//sti
 	}
 
 	return readsize;

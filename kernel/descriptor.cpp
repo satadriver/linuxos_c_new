@@ -88,7 +88,7 @@ extern "C" __declspec(dllexport) void callgateEntry(DWORD  params,DWORD count) {
 		push gs
 		push ss
 
-		//cli
+		cli
 
 		push dword ptr count
 		push params
@@ -106,7 +106,7 @@ extern "C" __declspec(dllexport) void callgateEntry(DWORD  params,DWORD count) {
 		//retf 0x08 will balance the user mode stack esp,so do not to balance it self
 		//add esp,8
 
-		//sti
+		sti
 
 		pop ss
 		pop gs
@@ -220,20 +220,20 @@ extern "C" __declspec(naked) int sysEntry() {
 		}
 		char szout[1024];
 		__printf(szout, "sysEntry current cs:%x,eip:%x,ss:%x,esp:%x\r\n", rcs, reip, rss, resp);
-	}
 
-	__asm {
-		mov edx, ds:[g_sysEntryEip3]
-		mov ecx, ds:[g_sysEntryStack3]
-		_emit 0x0f
-		_emit 0x35
+		__asm {
+			mov edx, ds: [g_sysEntryEip3]
+			mov ecx, ds : [g_sysEntryStack3]
+			_emit 0x0f
+			_emit 0x35
+		}
 	}
 }
 
 
 
 //only be invoked in ring3,in ring0 will cause exception 0dh
-extern "C" __declspec(naked) int sysEntryProc() {
+extern "C" __declspec(dllexport) int sysEntryProc() {
 
 	{
 		if (g_sysEntryInit == 0) {
@@ -258,11 +258,13 @@ extern "C" __declspec(naked) int sysEntryProc() {
 		lea eax, __sysEntryExit
 		mov ds:[g_sysEntryEip3],eax
 
+		cli
+
 		_emit 0x0f
 		_emit 0x34
 
 		__sysEntryExit :
-		ret
+		sti
 	}	
 }
 
@@ -283,7 +285,7 @@ int sysEntryInit(DWORD entryaddr) {
 
 	writemsr(0x174, csseg, high);
 
-	DWORD esp0 = SYSCALL_STACK0_TOP;
+	DWORD esp0 = SYSCALL_STACK_TOP;
 
 	writemsr(0x175, esp0, high);
 

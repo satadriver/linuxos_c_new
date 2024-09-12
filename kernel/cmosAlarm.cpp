@@ -74,9 +74,7 @@ unsigned short makehalf(unsigned char low, unsigned char high) {
 
 
 void addAlarmTimer(DWORD interval) {
-	__asm {
-		//cli
-	}
+	
 	int ret = 0;
 
 	unsigned char bcentury = readCmosPort(0x32);

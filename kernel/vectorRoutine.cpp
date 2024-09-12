@@ -623,8 +623,8 @@ void __declspec(naked) GeneralProtection(LIGHT_ENVIRONMENT* stack) {
 		mov ss, ax
 	}
 	{
-		//gExceptionCounter++;
-		if (gExceptionCounter <= 10) {
+		gExceptionCounter++;
+		if (gExceptionCounter <= 16) {
 			LPPROCESS_INFO process = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
 			char szout[1024];
 			__printf(szout, "GeneralProtection! pid:%d\r\n", process->pid);
@@ -1078,7 +1078,7 @@ extern "C" void __declspec(naked) TimerInterrupt(LIGHT_ENVIRONMENT * stack) {
 		mov esp, dword ptr ss: [esp - 20]
 #endif	
 		clts
-		sti
+		
 		iretd
 
 		jmp TimerInterrupt
@@ -1727,7 +1727,8 @@ void __declspec(naked) IDESlaveIntProc(LIGHT_ENVIRONMENT* stack) {
 		int high = inportb(gAtapiBasePort + 5);
 		int size = (high << 8) | low;
 		LPPROCESS_INFO proc = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
-		__printf(szout, "IDESlaveIntProc size:%x tid:%d port:%x status:%x\r\n", size, proc->tid, gAtapiBasePort + 7, status);
+		__printf(szout, "IDESlaveIntProc size:%x tid:%d port:%x status:%x\r\n",
+			size, proc->tid, gAtapiBasePort + 7, status);
 	}
 
 	__asm {

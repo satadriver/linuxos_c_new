@@ -63,6 +63,8 @@ int checkIDEPort(unsigned short port) {
 	{	
 		gAtaBasePort = port;
 
+		gATADev = inportb(port + 6);
+
 		r = identifyDevice(port, 0xec, buffer);
 		if (r) {
 			unsigned char gc = *(unsigned char*)buffer;
@@ -74,10 +76,13 @@ int checkIDEPort(unsigned short port) {
 			}
 			return 1;
 		}
+		return 0;
 	}
 	else if( r == 0x41)
 	{
 		gAtapiBasePort = port;
+
+		gATAPIDev = inportb(port + 6);
 
 		r = identifyDevice(port , 0xa1 , buffer);
 		if (r) {
@@ -88,6 +93,8 @@ int checkIDEPort(unsigned short port) {
 			else if ((gc & 3) == 0) {
 				gAtapiPackSize = 12;
 			}
+
+			//outportb(gAtapiBasePort + 7, 0);
 
 			return 2;
 		}
@@ -121,12 +128,12 @@ int getIDEPort() {
 	ret = checkIDEPort(0x3f0);
 	if (ret == 1)
 	{
-		gAtaBasePort = 0x3f0;	
-		gATADev = 0xf0;
+		//gAtaBasePort = 0x3f0;	
+		//gATADev = 0xf0;
 	}
 	else if (ret == 2) {
-		gATAPIDev = 0xf0;
-		gAtapiBasePort = 0x3f0;
+		//gATAPIDev = 0xf0;
+		//gAtapiBasePort = 0x3f0;
 	}
 
 	//__printf((char*)szshow, "getIDEPort 3f0 over\n");
@@ -134,12 +141,12 @@ int getIDEPort() {
 	ret = checkIDEPort(0x370);
 	if (ret==1)
 	{
-		gATADev = 0xf0;
-		gAtaBasePort = 0x370;
+		//gATADev = 0xf0;
+		//gAtaBasePort = 0x370;
 	}
 	else if (ret == 2) {
-		gATAPIDev = 0xf0;
-		gAtapiBasePort = 0x370;
+		//gATAPIDev = 0xf0;
+		//gAtapiBasePort = 0x370;
 	}
 
 	//__printf((char*)szshow, "getIDEPort 370 over\n");
@@ -148,12 +155,12 @@ int getIDEPort() {
 	ret = checkIDEPort(0x1f0);
 	if (ret == 1)
 	{
-		gAtaBasePort = 0x1f0;
-		gATADev = 0xe0;
+		//gAtaBasePort = 0x1f0;
+		//gATADev = 0xe0;
 	}
 	else if (ret == 2) {
-		gATAPIDev = 0xe0;
-		gAtapiBasePort = 0x1f0;
+		//gATAPIDev = 0xe0;
+		//gAtapiBasePort = 0x1f0;
 	}
 
 	//__printf((char*)szshow, "getIDEPort 1f0 over\n");
@@ -161,17 +168,17 @@ int getIDEPort() {
 	ret = checkIDEPort(0x170);
 	if (ret == 1)
 	{
-		gATADev = 0xe0;
-		gAtaBasePort = 0x170;
+		//gATADev = 0xe0;
+		//gAtaBasePort = 0x170;
 	}
 	else if (ret == 2) {
-		gATAPIDev = 0xe0;
-		gAtapiBasePort = 0x170;
+		//gATAPIDev = 0xe0;
+		//gAtapiBasePort = 0x170;
 	}
 
 	//__printf((char*)szshow, "getIDEPort 170 over\n");
 
-	DWORD hdport[64] ;
+	DWORD hdport[0x1000] ;
 	DWORD dev = 0;
 	DWORD irq = 0;
 	int cnt = getPciDevBasePort(hdport, 0x0101, &dev, &irq);
@@ -199,22 +206,24 @@ int getIDEPort() {
 				if (ret == 1)
 				{
 					gAtaBasePort = hdport[i] & 0xFFF0;
+					gATADev = inportb(gAtaBasePort + 6);
 					if (i % 4 == 0)
 					{
-						gATADev = 0xf0;
+						//gATADev = 0xf0;
 					}
 					else {
-						gATADev = 0xe0;
+						//gATADev = 0xe0;
 					}
 				}
 				else if (ret == 2) {
 					gAtapiBasePort = hdport[i] & 0xFFF0;
+					gATAPIDev = inportb(gAtapiBasePort + 6);
 					if (i % 4 == 0)
 					{
-						gATAPIDev = 0xf0;
+						//gATAPIDev = 0xf0;
 					}
 					else {
-						gATAPIDev = 0xe0;
+						//gATAPIDev = 0xe0;
 					}
 				}
 			}
@@ -369,19 +378,19 @@ int writesector(int port,int len,char* buf) {
 
 int readsector(int port,int len, char * buf) {
 	__asm {
+		cli
+
 		cld
 		mov edi,buf
 		mov ecx, len
 		mov edx, port
 		rep insd
+
+		sti
 	}
 }
 
 int readSectorLBA24(unsigned int secno, unsigned char seccnt, char* buf, int device) {
-
-	__asm{
-		//cli
-	}
 
 	waitFree(gAtaBasePort + 7);
 
@@ -404,20 +413,12 @@ int readSectorLBA24(unsigned int secno, unsigned char seccnt, char* buf, int dev
 		lpbuf += BYTES_PER_SECTOR;
 	}
 
-	__asm {
-		//sti
-	}
-
 	return seccnt * BYTES_PER_SECTOR;
 }
 
 
 
 int writeSectorLBA24(unsigned int secno, unsigned char seccnt, char* buf, int device) {
-
-	__asm {
-		//cli
-	}
 
 	waitFree(gAtaBasePort + 7);
 
@@ -440,20 +441,12 @@ int writeSectorLBA24(unsigned int secno, unsigned char seccnt, char* buf, int de
 		lpbuf += BYTES_PER_SECTOR;
 	}
 
-	__asm {
-		//sti
-	}
-
 	return seccnt * BYTES_PER_SECTOR;
 }
 
 
 //most 6 bytes sector no
 int readSectorLBA48(unsigned int secnoLow, unsigned int secnoHigh, unsigned char seccnt, char* buf, int device) {
-
-	__asm {
-		//cli
-	}
 
 	waitFree(gAtaBasePort + 7);
 
@@ -484,20 +477,12 @@ int readSectorLBA48(unsigned int secnoLow, unsigned int secnoHigh, unsigned char
 		lpbuf += BYTES_PER_SECTOR;
 	}
 
-	__asm {
-		//sti
-	}
-
 	return seccnt * BYTES_PER_SECTOR;
 }
 
 
 
 int writeSectorLBA48(unsigned int secnoLow, unsigned int secnoHigh, unsigned char seccnt, char* buf, int device) {
-
-	__asm {
-		//cli
-	}
 
 	waitFree(gAtaBasePort + 7);
 
@@ -527,10 +512,6 @@ int writeSectorLBA48(unsigned int secnoLow, unsigned int secnoHigh, unsigned cha
 		lpbuf += BYTES_PER_SECTOR;
 	}
 
-	__asm {
-		//sti
-	}
-
 	return seccnt * BYTES_PER_SECTOR;
 }
 
@@ -548,9 +529,6 @@ int readSectorLBA48Mimo(unsigned int secnoLow, unsigned int secnoHigh, unsigned 
 }
 
 int identifyDevice(int port,int cmd,char * buffer) {	// IDENTIFY PACKET DEVICE ¨C A1h and  IDENTIFY  DEVICE ¨C ECh
-	__asm {
-		//cli
-	}
 
 	waitFree(port + 7);
 
@@ -567,15 +545,15 @@ int identifyDevice(int port,int cmd,char * buffer) {	// IDENTIFY PACKET DEVICE ¨
 
 	int res = waitComplete(port + 7);
 	if (res) {
+		__asm {
+			cli
+		}
 		readsector(port, BYTES_PER_SECTOR / 4, buffer);
+		__asm{sti}
 
 		unsigned char szshow[0x1000];
 		__dump((char*)buffer, BYTES_PER_SECTOR, 0, szshow);
 		__drawGraphChars((unsigned char*)szshow, 0);
-	}
-
-	__asm {
-		//sti
 	}
 
 	//char szout[1024];
