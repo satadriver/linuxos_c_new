@@ -185,11 +185,11 @@ void sysleave() {
 
 DWORD g_sysEntryInit = 0;
 
-DWORD g_sysEntryStack3 = 0;
+DWORD g_sysEntryEsp3 = 0;
 
 DWORD g_sysEntryEip3 = 0;
 
-
+DWORD g_sysEntryEflags = 0;
 
 
 
@@ -223,7 +223,7 @@ extern "C" __declspec(naked) int sysEntry() {
 
 		__asm {
 			mov edx, ds: [g_sysEntryEip3]
-			mov ecx, ds : [g_sysEntryStack3]
+			mov ecx, ds : [g_sysEntryEsp3]
 			_emit 0x0f
 			_emit 0x35
 		}
@@ -233,6 +233,13 @@ extern "C" __declspec(naked) int sysEntry() {
 
 
 //only be invoked in ring3,in ring0 will cause exception 0dh
+// 
+//When SYSENTER is called, CS is set to the value in IA32_SYSENTER_CS. 
+//SS is set to IA32_SYSENTER_CS + 8. 
+//EIP is loaded from IA32_SYSENTER_EIP and ESP is loaded from IA32_SYSENTER_ESP. 
+//The CPU is now in ring 0, with EFLAGS.IF=0, EFLAGS.VM=0, EFLAGS.RF=0.
+//When SYSEXIT is called, CS is set to IA32_SYSENTER_CS + 16. 
+//EIP is set to EDX.SS is set to IA32_SYSENTER_CS + 24, and ESP is set to ECX.
 extern "C" __declspec(dllexport) int sysEntryProc() {
 
 	{
@@ -253,7 +260,10 @@ extern "C" __declspec(dllexport) int sysEntryProc() {
 		test ax, 3
 		jz __sysEntryExit
 
-		mov ds : [g_sysEntryStack3] , esp
+		pushfd
+		pop dword ptr ds:[g_sysEntryEflags]
+
+		mov ds : [g_sysEntryEsp3] , esp
 
 		lea eax, __sysEntryExit
 		mov ds:[g_sysEntryEip3],eax
@@ -264,7 +274,11 @@ extern "C" __declspec(dllexport) int sysEntryProc() {
 		_emit 0x34
 
 		__sysEntryExit :
-		sti
+		//need to restore eflags
+		//sti
+		
+		push dword ptr ds : [g_sysEntryEflags]
+		popfd
 	}	
 }
 

@@ -54,9 +54,6 @@
     <ClCompile Include="gdi\jpeg.cpp">
       <Filter>源文件\gdi</Filter>
     </ClCompile>
-    <ClCompile Include="machine.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="fileManager.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -108,9 +105,6 @@
       <Filter>头文件\gdi</Filter>
     </ClInclude>
     <ClInclude Include="main.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="machine.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="console.h">

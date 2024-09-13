@@ -12,6 +12,7 @@
 #include "malloc.h"
 #include "core.h"
 #include "vectorRoutine.h"
+#include "servicesProc.h"
 
 
 /*
@@ -299,6 +300,8 @@ extern "C"  __declspec(dllexport) DWORD __kTaskSchedule(LIGHT_ENVIRONMENT* regs)
 
 	char szout[1024];
 
+	__int64 timeh1 = __rdtsc();
+
 	__k8254TimerProc();
 
 	__asm {
@@ -418,8 +421,11 @@ extern "C"  __declspec(dllexport) DWORD __kTaskSchedule(LIGHT_ENVIRONMENT* regs)
 			fxrstor[eax]
 		}
 	}
+
 	if ((g_tagMsg++) % 0x100 == 0 && g_tagMsg < 0x1000) {
-		__printf(szout, "new task pid:%d tid:%d,old task pid:%d tid:%d\r\n", prev->pid, prev->tid, next->pid, next->tid);
+		__int64 timeh2 = __rdtsc() - timeh1;
+		__printf(szout, "new task pid:%d tid:%d,old task pid:%d tid:%d,time:%x\r\n", 
+			prev->pid, prev->tid, next->pid, next->tid,(DWORD)timeh2);
 	}
 	return TRUE;
 }
@@ -427,6 +433,9 @@ extern "C"  __declspec(dllexport) DWORD __kTaskSchedule(LIGHT_ENVIRONMENT* regs)
 extern "C"  __declspec(dllexport) DWORD __kTaskSchedule(LIGHT_ENVIRONMENT * env) {
 
 	char szout[1024];
+
+	__int64 timeh1 = __rdtsc();
+
 	__asm {
 		clts			//before all fpu instructions
 	}
@@ -449,10 +458,10 @@ extern "C"  __declspec(dllexport) DWORD __kTaskSchedule(LIGHT_ENVIRONMENT * env)
 		prev->status = TASK_OVER;
 		process->status = TASK_OVER;
 		if (prev->tid == prev->pid) {
-			//__kFreeProcess(prev->pid);
+			__kFreeProcess(prev->pid);
 		}
 		else {
-			//__kFree(prev->espbase);
+			__kFree(prev->espbase);
 		}
 	}
 	else if (prev->status == TASK_OVER || process->status == TASK_OVER) {
@@ -486,10 +495,10 @@ extern "C"  __declspec(dllexport) DWORD __kTaskSchedule(LIGHT_ENVIRONMENT * env)
 		if (next->status == TASK_TERMINATE) {
 			next->status = TASK_OVER;
 			if (next->tid == next->pid) {
-				//__kFreeProcess(next->pid);
+				__kFreeProcess(next->pid);
 			}
 			else {
-				//__kFree(next->espbase);
+				__kFree(next->espbase);
 			}
 			continue;
 		}
@@ -601,7 +610,9 @@ extern "C"  __declspec(dllexport) DWORD __kTaskSchedule(LIGHT_ENVIRONMENT * env)
 	env->ss = process->tss.ss;
 
 	if ((g_tagMsg++) % 0x100 == 0 && g_tagMsg < 0x1000) {
-		__printf(szout, "new task pid:%d tid:%d,old task pid:%d tid:%d\r\n", prev->pid, prev->tid, next->pid, next->tid);
+		__int64 timeh2 = __rdtsc() - timeh1;
+		__printf(szout, "new task pid:%d tid:%d,old task pid:%d tid:%d,time:%x\r\n",
+			prev->pid, prev->tid, next->pid, next->tid, (DWORD)timeh2);
 	}
 
 	return TRUE;

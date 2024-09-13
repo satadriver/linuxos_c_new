@@ -175,7 +175,6 @@
     <ClCompile Include="graph.cpp" />
     <ClCompile Include="gdi\jpeg.cpp" />
     <ClCompile Include="ios9660\ios9660.cpp" />
-    <ClCompile Include="machine.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="menu.cpp" />
     <ClCompile Include="NTFS\ntfsDirs.cpp" />
@@ -203,7 +202,6 @@
     <ClInclude Include="windowClass.h" />
     <ClInclude Include="graph.h" />
     <ClInclude Include="gdi\jpeg.h" />
-    <ClInclude Include="machine.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="NTFS\ntfs.h" />
     <ClInclude Include="NTFS\ntfsDirs.h" />

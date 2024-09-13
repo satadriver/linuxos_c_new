@@ -332,11 +332,11 @@ void initIDT() {
 	}
 
 	makeTrapGateDescriptor((DWORD)DivideError, KERNEL_MODE_CODE, 3, descriptor + 0);
-	makeTrapGateDescriptor((DWORD)debugger, KERNEL_MODE_CODE, 3, descriptor + 1);
+	makeTrapGateDescriptor((DWORD)DebugTrapProc, KERNEL_MODE_CODE, 3, descriptor + 1);
 
 	makeTrapGateDescriptor((DWORD)NmiInterrupt, KERNEL_MODE_CODE, 3, descriptor + 2);
 
-	makeTrapGateDescriptor((DWORD)breakPoint, KERNEL_MODE_CODE, 3, descriptor + 3);
+	makeTrapGateDescriptor((DWORD)BreakPoint, KERNEL_MODE_CODE, 3, descriptor + 3);
 
 	makeTrapGateDescriptor((DWORD)OverflowException, KERNEL_MODE_CODE, 3, descriptor + 4);
 	makeTrapGateDescriptor((DWORD)BoundRangeExceed, KERNEL_MODE_CODE, 3, descriptor + 5);

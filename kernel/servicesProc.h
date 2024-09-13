@@ -18,7 +18,11 @@
 #define RESTORE_MOUSE		14
 #define SET_VIDEOMODE		15
 
+extern "C" __declspec(dllexport) int __readTemperature(DWORD * temp);
 
+unsigned __int64  __rdtsc();
+
+DWORD __cpuRate(DWORD* high);
 
 DWORD servicesProc(LIGHT_ENVIRONMENT* stack);
 

@@ -164,7 +164,6 @@ void initTextModeDevices() {
 	//setMouseRate(200);
 	enableSpeaker();
 	getKeyboardID();
-
 	initSerial();
 }
 

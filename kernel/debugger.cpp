@@ -109,7 +109,7 @@ void initDebugger() {
 
 
 
-void __declspec(naked) breakPoint(LIGHT_ENVIRONMENT* stack) {
+void __declspec(naked) BreakPoint(LIGHT_ENVIRONMENT* stack) {
 	__asm {
 		pushad
 		push ds
@@ -128,6 +128,7 @@ void __declspec(naked) breakPoint(LIGHT_ENVIRONMENT* stack) {
 		mov es, ax
 		MOV FS, ax
 		MOV GS, AX
+		mov ss,ax
 	}
 
 	{
@@ -151,7 +152,7 @@ void __declspec(naked) breakPoint(LIGHT_ENVIRONMENT* stack) {
 	}
 }
 
-void __declspec(naked) debugger(LIGHT_ENVIRONMENT* stack) {
+void __declspec(naked) DebugTrapProc(LIGHT_ENVIRONMENT* stack) {
 	__asm {
 		pushad
 		push ds
@@ -170,6 +171,7 @@ void __declspec(naked) debugger(LIGHT_ENVIRONMENT* stack) {
 		mov es, ax
 		MOV FS, ax
 		MOV GS, AX
+		mov ss, ax
 	}
 
 	{
@@ -200,7 +202,7 @@ void __kBreakPoint(LIGHT_ENVIRONMENT* stack) {
 
 	DWORD eflags = 0;
 	__asm {
-		//cpu not clear IF when enter interruptions
+		//cpu clear IF when enter interruptions
 		pushfd
 		pop ss:[eflags]
 	}
@@ -208,22 +210,23 @@ void __kBreakPoint(LIGHT_ENVIRONMENT* stack) {
 	if (stack->eflags & 0x20000)
 	{
 		len = __printf(szout,
-			"eax:%x,ecx:%x,edx:%x,ebx:%x,kernel esp:%x,ebp:%x,esi:%x,edi:%x,eip:%x,v86 cs:%x,current eflags:%x,eflags:%x,v86 esp:%x,v86 ss:%x,v86 ds:%x,v86 es:%x,v86 fs:%x,v86 gs:%x\n",
+		"eax:%x,ecx:%x,edx:%x,ebx:%x,esp0:%x,ebp:%x,esi:%x,edi:%x,eip:%x,cs3:%x,eflags:%x,eflags:%x,esp3:%x,ss3:%x,ds3:%x,es3:%x,fs3:%x,gs3:%x\n",
 			stack->eax, stack->ecx, stack->edx, stack->ebx, stack->esp, stack->ebp, stack->esi, stack->edi, 
 			stack->eip, stack->cs, eflags, stack->eflags, stack->esp3, stack->ss3,stack->ds_v86, stack->es_v86, stack->fs_v86, stack->gs_v86);
 	}
 	else if (stack->cs & 3)
 	{
 		len = __printf(szout,
-			"eax:%x,ecx:%x,edx:%x,ebx:%x,kernel esp:%x,ebp:%x,esi:%x,edi:%x,eip:%x,cs:%x,current eflags:%x,eflags:%x,user esp:%x,user ss:%x,ds:%x,es:%x,fs:%x,gs:%x,kernel ss:%x\n",
+		"eax:%x,ecx:%x,edx:%x,ebx:%x,esp0:%x,ebp:%x,esi:%x,edi:%x,eip:%x,cs:%x,eflags:%x,eflags:%x,esp3:%x,ss3:%x,ds:%x,es:%x,fs:%x,gs:%x,ss0:%x\n",
 			stack->eax, stack->ecx, stack->edx, stack->ebx, stack->esp, stack->ebp, stack->esi, stack->edi, 
 			stack->eip, stack->cs, eflags, stack->eflags, stack->esp3, stack->ss3,
 			stack->ds, stack->es, stack->fs, stack->gs,stack->ss);
 	}
 	else {
 		len = __printf(szout,
-			"eax:%x,ecx:%x,edx:%x,ebx:%x,esp:%x,ebp:%x,esi:%x,edi:%x,eip:%x,cs:%x,current eflags:%x,eflags:%x,ds:%x,es:%x,fs:%x,gs:%x,kernel ss:%x\n",
-			stack->eax, stack->ecx, stack->edx, stack->ebx, stack->esp, stack->ebp, stack->esi, stack->edi,stack->eip, stack->cs, eflags, stack->eflags,
+		"eax:%x,ecx:%x,edx:%x,ebx:%x,esp:%x,ebp:%x,esi:%x,edi:%x,eip:%x,cs:%x,eflags:%x,eflags:%x,ds:%x,es:%x,fs:%x,gs:%x,ss:%x\n",
+			stack->eax, stack->ecx, stack->edx, stack->ebx, stack->esp, stack->ebp, stack->esi, stack->edi,stack->eip, 
+			stack->cs, eflags, stack->eflags,
 			stack->ds, stack->es, stack->fs, stack->gs, stack->ss);
 	}
 
@@ -342,8 +345,7 @@ void __kDebugger(LIGHT_ENVIRONMENT* stack) {
 	
 	if((reg_dr6 & 1) || (reg_dr6 & 2) || (reg_dr6 & 4) || (reg_dr6 & 8)){
 
-		len = __printf(szout, "breakpoint address:%x,type:%d,bplen:%d\r\n",addr, bptype,bplen);
-
+		len = __printf(szout, "breakpoint address:%x,type:%d,size:%d\r\n",addr, bptype,bplen);
 	}
 
 	__asm {
@@ -351,6 +353,7 @@ void __kDebugger(LIGHT_ENVIRONMENT* stack) {
 		mov[reg_dr6], eax
 	}
 
+	//ckear eflags.RF
 	DWORD eflags = stack->eflags;
 	if (eflags & 0x10000)
 	{

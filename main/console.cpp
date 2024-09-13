@@ -21,7 +21,7 @@
 #include "paint.h"
 #include "malloc.h"
 #include "Thread.h"
-#include "machine.h"
+#include "servicesProc.h"
 #include "pci.h"
 
 
@@ -212,8 +212,8 @@ int __cmd(char* cmd, WINDOWCLASS* window, char* pidname, int pid) {
 	{
 		if (paramcnt >= 3)
 		{
-			int size = __hstr2i((unsigned char*)params[1]);
-			int cnt = __hstr2i((unsigned char*)params[2]);
+			int size = __strh2i((unsigned char*)params[1]);
+			int cnt = __strh2i((unsigned char*)params[2]);
 			for (int i = 0; i < cnt; i++)
 			{
 				DWORD addr = __malloc(size);
@@ -223,7 +223,7 @@ int __cmd(char* cmd, WINDOWCLASS* window, char* pidname, int pid) {
 		}
 		else if (paramcnt >= 2)
 		{
-			int size = __hstr2i((unsigned char*)params[1]);
+			int size = __strh2i((unsigned char*)params[1]);
 			DWORD addr = __malloc(size);
 			__sprintf(szout, "malloc size:%x,address:%x\r\n", size, addr);
 			ret = __outputConsole((unsigned char*)&szout, CONSOLE_FONT_COLOR, window);
@@ -233,7 +233,7 @@ int __cmd(char* cmd, WINDOWCLASS* window, char* pidname, int pid) {
 	{
 		if (paramcnt >= 2)
 		{
-			DWORD addr = __hstr2i((unsigned char*)params[1]);
+			DWORD addr = __strh2i((unsigned char*)params[1]);
 			int size = __free(addr);
 			__sprintf(szout, "free size:%x,address:%x\r\n", size, addr);
 			ret = __outputConsole((unsigned char*)&szout, CONSOLE_FONT_COLOR, window);
@@ -243,13 +243,13 @@ int __cmd(char* cmd, WINDOWCLASS* window, char* pidname, int pid) {
 	{
 		if (paramcnt >= 2)
 		{
-			DWORD addr = __hstr2i((unsigned char*)params[1]);
+			DWORD addr = __strh2i((unsigned char*)params[1]);
 
 			int len = 0x40;
 
 			if (paramcnt >= 3)
 			{
-				len = __hstr2i((unsigned char*)params[2]);
+				len = __strh2i((unsigned char*)params[2]);
 			}
 			__dump((char*)addr, len, TRUE, (unsigned char*)szout);
 
@@ -260,14 +260,14 @@ int __cmd(char* cmd, WINDOWCLASS* window, char* pidname, int pid) {
 	{
 		if (paramcnt >= 3)
 		{
-			DWORD addr = __hstr2i((unsigned char*)params[1]);
+			DWORD addr = __strh2i((unsigned char*)params[1]);
 			__strcpy((char*)addr, params[2]);
 		}
 	}
 
 	else if (__strcmp(params[0], "memlist") == 0 && paramcnt >= 2)
 	{
-		int pid = __hstr2i((unsigned char*)params[1]);
+		int pid = __strh2i((unsigned char*)params[1]);
 		*szout = 0;
 		int len = getmemmap(pid, szout);
 		ret = __outputConsole((unsigned char*)&szout, CONSOLE_FONT_COLOR, window);
@@ -339,8 +339,8 @@ int __cmd(char* cmd, WINDOWCLASS* window, char* pidname, int pid) {
 	}
 	else if (__strcmp(params[0], "inp ") == 0 || __strcmp(params[0], "outp ") == 0)
 	{
-		DWORD n = __hstr2i((unsigned char*)params[1]);
-		DWORD port = __hstr2i((unsigned char*)params[2]);
+		DWORD n = __strh2i((unsigned char*)params[1]);
+		DWORD port = __strh2i((unsigned char*)params[2]);
 		if (__strcmp(params[0], "inp ") == 0)
 		{
 			__asm {

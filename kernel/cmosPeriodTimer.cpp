@@ -210,3 +210,30 @@ void __kPeriodTimerProc() {
 		}
 	}
 }
+
+
+
+
+extern "C"  __declspec(dllexport) int __getDateTime(LPDATETIME datetime)
+{
+	char c = readCmosPort(0x32);
+	char y = readCmosPort(9);
+	char m = readCmosPort(8);
+	char d = readCmosPort(7);
+	char hour = readCmosPort(4);
+	char minute = readCmosPort(2);
+	char second = readCmosPort(0);
+
+	datetime->year = (bcd2b(c) * 100) + bcd2b(y);
+	datetime->month = bcd2b(m);
+	datetime->dayInMonth = bcd2b(d);
+	datetime->hour = bcd2b(hour);
+	datetime->minute = bcd2b(minute);
+	datetime->second = bcd2b(second);
+	return TRUE;
+}
+
+
+extern "C"  __declspec(dllexport) int __getDateTimeStr(void* str) {
+	return __strcpy((char*)str, (char*)CMOS_DATETIME_STRING);
+}

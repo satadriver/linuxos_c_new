@@ -4,84 +4,16 @@
 #include "cmosAlarm.h"
 #include "cmosPeriodTimer.h"
 #include "acpi.h"
+#include "hardware.h"
 
 
-int __memset(char * dst, int value, int len) {
-#ifdef _DEBUG
-	return 0;
-#else
-	__asm {
-		mov ecx, len
-
-		mov edi, dst
-
-		mov al, byte ptr value
-
-		cld
-
-		rep stosb
-		mov eax, len
-	}
-#endif
-}
-
-int __memset4(char * dst, int value, int len) {
-	__asm {
-		push ecx
-		push edx
-		push ebx
-		push esi
-		push edi
-
-		mov ecx, len
-		shr ecx,2
-
-		mov edi, dst
-
-		mov eax,value
-
-		cld
-
-		rep stosd
-
-		lea esi,value
-		mov ecx,len
-		and ecx,3
-		rep movsb
-
-		pop edi
-		pop esi
-		pop ebx
-		pop edx
-		pop ecx
-		mov eax, len
-	}
-}
-
-int __strlen(char * s) {
-	__asm {
-		push esi
-		mov esi, s
-		cld
-		_checkZero :
-		lodsb
-		cmp al, 0
-		jnz _checkZero
-		dec esi
-		sub esi, s
-		mov eax, esi
-		pop esi
-	}
-}
-
-
-int unicode2asc(short * unicode, int unicodelen, char * asc) {
+int unicode2asc(short* unicode, int unicodelen, char* asc) {
 	int i = 0;
 	int j = 0;
 	for (; i < unicodelen; )
 	{
 		asc[i] = (char)unicode[j];
-		j ++;
+		j++;
 		i++;
 	}
 
@@ -89,15 +21,13 @@ int unicode2asc(short * unicode, int unicodelen, char * asc) {
 	return unicodelen;
 }
 
-
-
-int asc2unicode(char * asc, int asclen, short * unicode) {
+int asc2unicode(char* asc, int asclen, short* unicode) {
 	int i = 0;
 	int j = 0;
 	for (; i < asclen; )
 	{
 		unicode[j] = asc[i];
-		j ++;
+		j++;
 		i++;
 	}
 
@@ -105,69 +35,147 @@ int asc2unicode(char * asc, int asclen, short * unicode) {
 	return asclen;
 }
 
-int __memcpy(char * dst, char * src,int len) {
-	__asm {
-		mov esi,src
-
-		mov edi,dst
-
-		mov ecx,len
-
-		cld
-
-		rep movsb
-		mov eax,len
+int __memset(char* dst, int value, int len) {
+#ifdef _DEBUG
+	return 0;
+#else
+	if (dst == 0) {
+		return 0;
 	}
+	for (int i = 0; i < len; i++) {
+		dst[i] = value;
+	}
+	return len;
+#endif
+}
+
+int __memcpy(char* dst, char* src, int len) {
+	if (dst == 0 || src == 0) {
+		return 0;
+	}
+	for (int i = 0; i < len; i++) {
+		dst[i] = src[i];
+	}
+	return len;
+}
+
+int __wmemcpy(wchar_t* dst, wchar_t* src, int len) {
+	if (dst == 0 || src == 0) {
+		return 0;
+	}
+	for (int i = 0; i < len; i++) {
+		dst[i] = src[i];
+	}
+	return len;
+}
+
+int __wmemcmp(wchar_t* src, wchar_t* dst, int len) {
+	if (dst == 0 || src == 0) {
+		return 0;
+	}
+	for (int i = 0; i < len; i++) {
+		int v = src[i] - dst[i];
+		if (v) {
+			return v;
+		}
+		else {
+			continue;
+		}
+	}
+
+	return 0;
 }
 
 
-int __strcpy(char * dst, char * src) {
-	__asm {
-		mov edi,dst
-		mov esi,src
-		cld
-		_copyBytes:
-		lodsb
-		stosb
-		cmp al, 0
-		jnz _copyBytes
-
-		dec edi
-		sub edi,dst
-		mov eax,edi
+int __memcmp(char* src, char* dst, int len) {
+	if (dst == 0 || src == 0) {
+		return 0;
 	}
+	for (int i = 0; i < len; i++) {
+		int v = src[i] - dst[i];
+		if (v) {
+			return v;
+		}
+		else {
+			continue;
+		}
+	}
+
+	return 0;
+}
+
+int __strlen(char* s) {
+	int len = 0;
+	while (s && *s) {
+		s++;
+		len++;
+	}
+	return len;
+}
+
+int __wcslen(wchar_t* s) {
+	int len = 0;
+	while (s && *s )
+	{
+		len++;
+		s++;
+	}
+	return len;
+}
+
+int __strcpy(char* dst, char* src) {
+	if (dst == 0 || src == 0) {
+		return 0;
+	}
+	int len = __strlen(src);
+	__memcpy(dst, src, len);
+	dst[len] = 0;
+	return  len;
+}
+
+int __wcscpy(wchar_t* dst, wchar_t* src) {
+	if (dst == 0 || src == 0) {
+		return 0;
+	}
+	int len = __wcslen(src);
+	__wmemcpy(dst, src, len );
+	dst[len] = 0;
+	return len ;
+}
+
+int __strcat(char* src, char* dst) {
+	int srclen = __strlen(src);
+	int dstlen = __strlen(dst);
+	__memcpy(src + srclen, dst, dstlen);
+	*(src + srclen + dstlen) = 0;
+	return srclen + dstlen;
 }
 
 
-int __strncpy(char * dst, char * src,int limit) {
+int __wcscat(wchar_t* src, wchar_t* dst) {
+	int srclen = __wcslen(src);
+	int dstlen = __wcslen(dst);
+	__wmemcpy( (src + srclen), dst, dstlen);
+	*(src + srclen + dstlen) = 0;
+	return srclen + dstlen;
+}
+
+int __strncpy(char* dst, char* src, int limit) {
 	if (limit <= 0)
 	{
 		return FALSE;
 	}
 
 	int l = __strlen(src);
-	if (l > limit)
+	if (l >= limit)
 	{
 		l = limit;
 		__memcpy(dst, src, l);
 		*(dst + l) = 0;
 		return l;
 	}
-	else {	
-		__asm {
-			mov edi, dst
-			mov esi, src
-			cld
-			_copyBytes :
-			lodsb
-			stosb
-			cmp al, 0
-			jnz _copyBytes
-
-			dec edi
-			sub edi, dst
-			mov eax, edi
-		}
+	else {
+		return __strcpy(dst, src);
 	}
 }
 
@@ -176,67 +184,39 @@ char* __strstr(char * src, char * dst) {
 
 	int dstlen = __strlen(dst);
 	int srclen = __strlen(src);
-	if (dstlen > srclen)
+	if (dstlen > srclen || dstlen == 0 || srclen == 0)
+	{
+		return 0;
+	}
+	
+	for (int i = 0; i < srclen - dstlen + 1 ;i++) {
+
+		if (__memcmp(src + i,dst ,dstlen) == 0) {
+			return src + i;
+		}
+	}
+
+	return 0;
+}
+
+
+wchar_t* __wcsstr(wchar_t* src, wchar_t* dst) {
+
+	int dstlen = __wcslen(dst);
+	int srclen = __wcslen(src);
+	if (dstlen > srclen || dstlen == 0 || srclen == 0)
 	{
 		return 0;
 	}
 
-	__asm {
-		mov esi,src
+	for (int i = 0; i < srclen - dstlen + 1; i++) {
 
-		mov ecx, srclen
-		sub ecx,dstlen
-		inc ecx
-		cld
-
-		_checkStr:
-		mov edx,ecx
-
-		push esi
-
-		mov edi, dst
-
-		mov ecx, dstlen
-		repz cmpsb
-
-		pop esi
-
-		jz _strstrFound
-
-		mov ecx,edx
-
-		inc esi
-		loop _checkStr
-
-		mov eax,0
-		jmp __strstrEnd
-
-		_strstrFound:
-		mov eax,esi
-
-		__strstrEnd:
+		if (__wmemcmp(src + i, dst, dstlen) == 0) {
+			return src + i;
+		}
 	}
-}
 
-
-
-int __memcmp(char * src, char * dst,int len) {
-
-	__asm {
-		mov esi, src
-		mov edi, dst
-		mov ecx, len
-		cld
-		repz cmpsb
-		jz _strEqual
-		mov eax, -1
-		jmp _memcmpEnd
-		_strEqual :
-		mov eax, 0
-		_memcmpEnd :
-		//不要在嵌入汇编中调用ret，会打乱c编译器的编译
-		//ret
-	}
+	return 0;
 }
 
 
@@ -248,36 +228,39 @@ int __strcmp(char * src, char * dst) {
 		return -1;
 	}
 
-	__asm {
-		mov esi, src
-		mov edi, dst
-		mov ecx, srclen
-		repz cmpsb
-		jz _strEqual	//do not use jecxz,if length equal and first n-1 is equal but last char is not equal,then ecx is 0,error
-		mov eax,-1
-		jmp _strcmpEnd
-		_strEqual:
-		mov eax,0
-		_strcmpEnd :
-		//不要在嵌入汇编中调用ret，会打乱c编译器的编译
-		//ret
+	for (int i = 0; i < srclen; i++) {
+		int v = src[i] - dst[i];
+		if (v) {
+			return v;
+		}
+		else {
+			continue;
+		}
 	}
+
+	return 0;
 }
 
+int __wcscmp(wchar_t* src, wchar_t* dst) {
+	int srclen = __wcslen(src);
+	int dstlen = __wcslen(dst);
+	if (srclen != dstlen)
+	{
+		return -1;
+	}
 
+	for (int i = 0; i < srclen; i++) {
+		int v = src[i] - dst[i];
+		if (v) {
+			return v;
+		}
+		else {
+			continue;
+		}
+	}
 
-int __strcat(char * src, char * dst) {
-	int srclen = __strlen(src);
-
-	int dstlen = __strlen(dst);
-
-	__memcpy(src + srclen, dst, dstlen);
-
-	*(src + srclen + dstlen) = 0;
-
-	return __strlen(src);
+	return 0;
 }
-
 
 
 int __substrLen(char * src, int pos, int len,char * dst) {
@@ -396,20 +379,32 @@ int __dump(char * src,int len,int lowercase, unsigned char * dstbuf) {
 }
 
 
-int __h2strh(unsigned int n,int lowercase,unsigned char * dst) {
+int __i2strh(unsigned int n,int lowercase,unsigned char * buf) {
+	buf[0] = 0x30;
+	buf[1] = 'X';
+
 	int no = 55;
 	if (lowercase)
 	{
 		no = 87;
+		buf[1] = 'x';
 	}
 
 	int b = 24;
 
+	int tag = 0;
+
+	unsigned char* dst = buf + 2;
+
 	for (int i = 0; i < 4; i ++)
 	{
 		unsigned char c = n >> b;
+
 		unsigned char h = (c & 0x0f0) >> 4;
 		unsigned char l = c & 0x0f;
+
+		unsigned char tmp = h;
+
 		if (h >= 0 && h <= 9)
 		{
 			h += 48;
@@ -418,9 +413,22 @@ int __h2strh(unsigned int n,int lowercase,unsigned char * dst) {
 			h += no;
 		}
 
-		*dst = h;
-		dst++;
+		if (tag) {
+			*dst = h;
+			dst++;
+		}
+		else {
+			if (tmp) {
+				tag = TRUE;
+				*dst = h;
+				dst++;
+			}
+			else {
 
+			}
+		}
+
+		tmp = l;
 		if (l >= 0 && l <= 9)
 		{
 			l += 48;
@@ -430,16 +438,35 @@ int __h2strh(unsigned int n,int lowercase,unsigned char * dst) {
 			l += no;
 		}
 
-		*dst = l;
-		dst++;
+		if (tag) {
+			*dst = l;
+			dst++;
+		}
+		else {
+			if (tmp) {
+				tag = TRUE;
+				*dst = l;
+				dst++;
+			}
+			else {
+
+			}
+		}
 
 		b -= 8;
 	}
 
-	return TRUE;
+	*(dst) = 0;
+
+	if (dst - buf == 2) {
+		dst[2] = 0x30;
+		dst[3] = 0;
+		dst++;
+	}
+	return dst - buf;
 }
 
-int __h2strd(unsigned int h, char * strd) {
+int __i2strd(unsigned int h, char * strd) {
 
 	__memset(strd, 0, 11);
 
@@ -483,7 +510,7 @@ int __h2strd(unsigned int h, char * strd) {
 	return cnt;
 }
 
-int __hstr2i(unsigned char * str) {
+int __strh2i(unsigned char * str) {
 	int ret = 0;
 
 	int len = __strlen((char*)str);
@@ -551,8 +578,136 @@ int __strd2i(char * istr) {
 	return ret;
 }
 
+int __printf(char* buf, char* format, ...) {
 
-int __kPrintf(char* buf, char* format, ...) {
+		if (format == 0 || buf == 0) {
+			return FALSE;
+		}
+
+		int formatLen = __strlen(format);
+		if (formatLen == 0) {
+			return FALSE;
+		}
+
+		DWORD* params = 0;
+		int param_cnt = 0;
+		__asm {
+			lea eax, format
+			add eax, 4
+			mov params, eax
+		}
+
+		char* dst = buf;
+		int spos = 0;
+		int dpos = 0;
+		char numstr[64];
+		int len = 0;
+		for (spos = 0; spos < formatLen; ) {
+
+			if (format[spos] == '%' && format[spos + 1] == 'd') {
+				spos += 2;
+				DWORD num = *params;
+				params++;
+
+				len = __i2strd(num, numstr);
+				__memcpy(dst + dpos, numstr, len);
+				dpos += len;
+			}
+			else if (format[spos] == '%' && format[spos + 1] == 'x') {
+
+				DWORD num = *params;
+				params++;
+
+				len = __i2strh(num, 1, (unsigned char*)numstr);
+				__memcpy(dst + dpos, numstr, len);
+
+				spos += 2;
+				dpos += len;
+			}
+			else if (format[spos] == '%' && format[spos + 1] == 'u') {
+
+				spos += 2;
+				DWORD num = *params;
+				params++;
+
+				len = __i2strd(num, numstr);
+				__memcpy(dst + dpos, numstr, len);
+				dpos += len;
+			}
+			else if (format[spos] == '%' && format[spos + 1] == 's') {
+				char* str = (char*)*params;
+				params++;
+				int tmpstrlen = __strlen(str);
+
+				__strcpy(dst + dpos, str);
+				dpos += tmpstrlen;
+				spos += 2;
+			}
+			else if (format[spos] == '%' && format[spos + 1] == 'X') {
+				DWORD num = *params;
+				params++;
+
+				len = __i2strh(num, 0, (unsigned char*)numstr);
+				__memcpy(dst + dpos, numstr, len);
+
+				spos += 2;
+				dpos += len;
+			}
+			else if (format[spos] == '%' && __memcmp(format + spos + 1, "i64d", 4) == 0) {
+				spos += 5;
+
+				DWORD numl = *params;
+				params++;
+				DWORD numh = *params;
+				params++;
+
+				len = __i2strd(numh, numstr);
+				__memcpy(dst + dpos, numstr, len);
+				dpos += len;
+				len = __i2strd(numl, numstr);
+				__memcpy(dst + dpos, numstr, len);
+				dpos += len;
+			}
+			else if (format[spos] == '%' && __memcmp(format + spos + 1, "i64x", 4) == 0) {
+				spos += 5;
+
+				DWORD numl = *params;
+				params++;
+				DWORD numh = *params;
+				params++;
+
+				len = __i2strh(numh, 1, (unsigned char*)numstr);
+				__memcpy(dst + dpos, numstr, len);
+				dpos += len;
+				len = __i2strh(numl, 1, (unsigned char*)numstr);
+				__memcpy(dst + dpos, numstr, len);
+				dpos += len;
+			}
+			else if (format[spos] == '%' && format[spos + 1] == 'S') {
+				wchar_t* wstr = (wchar_t*)*params;
+				params++;
+				int tmpstrlen = 2 * __wcslen(wstr);
+				spos += 2;
+				__wcscpy((wchar_t*)dst + dpos, (wchar_t*)wstr);
+				dpos += tmpstrlen;
+			}
+			else {
+				dst[dpos] = format[spos];
+				dpos++;
+				spos++;
+			}
+		}
+		dst[dpos] = 0;
+		dst[dpos + 1] = 0;
+
+	if (g_ScreenMode) {
+		int showlen = __drawGraphChars((unsigned char*)buf, 0);
+	}
+	return dpos;
+}
+
+
+int __sprintf(char* buf, char* format, ...) {
 
 	if (format == 0 || buf == 0) {
 		return FALSE;
@@ -564,419 +719,117 @@ int __kPrintf(char* buf, char* format, ...) {
 	}
 
 	DWORD* params = 0;
+	int param_cnt = 0;
 	__asm {
 		lea eax,format
 		add eax,4
 		mov params,eax
 	}
 
-	int idx = 0;
-	for (int i = 0; i < formatLen; i++) {
-
-		if (format[i] == '%' && format[i + 1] == 'd') {
-
-		}
-		else if (format[i] == '%' && format[i + 1] == 'x') {
-		}
-		else if (format[i] == '%' && format[i + 1] == 'u') {
-		}
-		else if (format[i] == '%' && format[i + 1] == 's') {
-		}
-	}
-	return 0;
-}
-
-
-int __printf(char * buf, char * format, ...) {
-	int seq = 0;
+	char* dst = buf;
+	int spos = 0;
+	int dpos = 0;
+	char numstr[64];
 	int len = 0;
+	for (spos = 0; spos < formatLen; ) {
 
-	__asm {
-		lea eax, format
-		add eax, 4
-		mov seq, eax
+		if (format[spos] == '%' && format[spos + 1] == 'd') {
+			spos+=2;
+			DWORD num = *params;
+			params++;
 
-		mov esi, format
-		mov edi, buf
-		cld
-		_printfGetBytes :
-		lodsb
-		cmp al, 0
-		jz _printfEnd
-		cmp al, '%'
-		jz _loadNextByte
-		stosb
-		jmp _printfGetBytes
+			len = __i2strd(num, numstr);
+			__memcpy(dst + dpos, numstr, len);
+			dpos += len;
+		}
+		else if (format[spos] == '%' && format[spos + 1] == 'x') {
 
-		_loadNextByte :
-		cmp byte ptr[esi], 'd'
-		jz _printfInt
-		cmp byte ptr[esi], 'x'
-		jz _printfHex
-		cmp byte ptr[esi], 'p'
-		jz _printfHex
-		cmp byte ptr[esi], 'u'
-		jz _printfInt
-		cmp byte ptr[esi], 's'
-		jz _printfstr
-		cmp dword ptr[esi], 0x64343649		//I64d
-		jz _printfInt64
-		cmp dword ptr[esi], 0x75343649		//I64u
-		jz _printfInt64
-		stosb
-		jmp _printfGetBytes
+			DWORD num = *params;
+			params++;
 
-		_printfInt :
-		inc esi
-		push edi
-		mov eax, seq
-		push[eax]
-		add eax, 4
-		mov seq, eax
-		call __h2strd
-		add esp, 8
-		add edi,eax
-		jmp _printfGetBytes
+			len = __i2strh(num,1, (unsigned char*)numstr);
+			__memcpy(dst + dpos, numstr, len);
 
-		_printfHex :
-		mov ax, 7830h
-		stosw
-		inc esi
-		push edi
-		push 0
-		mov eax, seq
-		push[eax]
-		add eax, 4
-		mov seq, eax
-		call __h2strh
-		add esp, 12
-		add edi, 8
-		jmp _printfGetBytes
+			spos += 2;
+			dpos += len;
+		}
+		else if (format[spos] == '%' && format[spos + 1] == 'u') {
 
-		_printfstr :
-		inc esi
-		mov eax, seq
-		push[eax]
-		add eax, 4
-		mov seq, eax
-		push edi
-		call __strcpy
-		add esp, 8
-		add edi, eax
-		jmp _printfGetBytes
+			spos += 2;
+			DWORD num = *params;
+			params++;
 
-		_printfInt64 :
-		add esi, 4
-		mov eax,edi
-		add eax,8
-		push eax
-		//push edi+8
-		push 0
-		mov eax, seq
-		push[eax]
-		add eax, 4
-		mov seq, eax
-		call __h2strh
-		add esp, 12
-		//add edi, 8
+			len = __i2strd(num, numstr);
+			__memcpy(dst + dpos, numstr, len);
+			dpos += len;
+		}
+		else if (format[spos] == '%' && format[spos + 1] == 's') {
+			char * str = (char*)*params;
+			params++;
+			int tmpstrlen = __strlen(str);
+			
+			__strcpy(dst + dpos, str);
+			dpos += tmpstrlen;
+			spos += 2;
+		}
+		else if (format[spos] == '%' && format[spos + 1] == 'X') {
+			DWORD num = *params;
+			params++;
 
-		push edi
-		push 0
-		mov eax, seq
-		push[eax]
-		add eax, 4
-		mov seq, eax
-		call __h2strh
-		add esp, 12
+			len = __i2strh(num, 0, (unsigned char*)numstr);
+			__memcpy(dst + dpos, numstr, len);
 
-		add edi, 16
-		jmp _printfGetBytes
+			spos += 2;
+			dpos += len;
+		}
+		else if (format[spos] == '%' && __memcmp(format + spos + 1,"i64d",4) == 0 ) {
+			spos += 5;
 
-		_printfEnd :
-		stosb
-		mov eax, edi
-		sub eax, buf
-		dec eax
-		mov len,eax
-	}
-	if (g_ScreenMode) {
-		int showlen = __drawGraphChars((unsigned char*)buf, 0);
-	}
-	else {
+			DWORD numl = *params;
+			params++;
+			DWORD numh = *params;
+			params++;
 
-	}
-	return len;
-}
+			len = __i2strd(numh, numstr);
+			__memcpy(dst + dpos, numstr, len);
+			dpos += len;
+			len = __i2strd(numl, numstr);
+			__memcpy(dst + dpos, numstr, len);
+			dpos += len;
+		}
+		else if (format[spos] == '%' && __memcmp(format + spos + 1, "i64x", 4) == 0) {
+			spos += 5;
 
+			DWORD numl = *params;
+			params++;
+			DWORD numh = *params;
+			params++;
 
-int __sprintf(char * buf, char * format,...) {
-	int seq = 0;
-	 
-	int len = 0;
-	__asm {
-		lea eax, format
-		add eax,4	//size of pointer is 4
-		mov seq,eax	//seq is address of params after format in esp
-
-		mov esi,format
-		mov edi,buf
-		cld
-
-		_printfGetBytes:
-		lodsb
-		cmp al,0
-		jz _printfEnd
-		cmp al,'%'
-		jz _loadNextByte
-		stosb
-		jmp _printfGetBytes
-
-		_loadNextByte:
-		cmp byte ptr [esi], 'd'
-		jz _printfInt
-		cmp byte ptr [esi], 'x'
-		jz _printfHex
-		cmp byte ptr [esi], 'p'
-		jz _printfHex
-		cmp byte ptr [esi], 'u'
-		jz _printfInt
-		cmp byte ptr [esi], 's'
-		jz _printfstr
-		cmp dword ptr [esi], 0x64343649		//I64d
-		jz _printfInt64
-		cmp dword ptr[esi], 0x75343649		//I64u
-		jz _printfInt64
-		stosb
-		jmp _printfGetBytes
-
-
-		_printfHex :
-		mov ax,7830h
-		stosw
-		inc esi
-		push edi
-		push 0	//lowercase is 0,else uppercase
-		mov eax, seq
-		push[eax]
-		add eax, 4
-		mov seq, eax
-		call __h2strh
-		add esp, 12
-		add edi, 8
-		jmp _printfGetBytes
-
-		_printfInt :
-		inc esi
-		push edi
-		mov eax, seq
-		push[eax]
-		add eax, 4
-		mov seq, eax
-		call __h2strd
-		add esp,8
-		add edi, eax
-		jmp _printfGetBytes
-
-		_printfstr:
-		inc esi
-		mov eax, seq
-		push[eax]
-		add eax, 4
-		mov seq, eax
-		push edi
-		call __strcpy
-		add esp,8
-		add edi,eax
-		jmp _printfGetBytes
-
-		//__int64高位4字节在前，低位4字节在后一个参数中
-		_printfInt64:
-		add esi,4
-		mov eax, edi
-		add eax, 8
-		push eax
-		//push edi
-		push 0
-		mov eax, seq
-		push[eax]
-		add eax, 4
-		mov seq, eax
-		call __h2strh
-		add esp, 12
-		//add edi, 8
-
-		push edi
-		push 0
-		mov eax, seq
-		push[eax]
-		add eax, 4
-		mov seq, eax
-		call __h2strh
-		add esp, 12
-
-		//add edi, 8
-		add edi, 16
-		jmp _printfGetBytes
-
-		_printfEnd:
-		stosb
-		mov eax,edi
-		sub eax, buf
-		dec eax
-		mov len,eax
-	}
-
-	return len;
-}
-
-
-
-
-
-
-
-int getCpuType(char * name) {
-	__asm {
-		mov edi,name
-		mov eax, 0
-		mov [edi],eax
-
-		; must use .586 or above
-		cpuid
-		mov ecx, 0
-		; ebx:edx:ecx = intel or else
-		mov ds : [edi], ebx
-		mov ds : [edi + 4], edx
-		mov ds : [edi + 8], ecx
-		mov dword ptr ds : [edi + 12], 0
-	}
-
-// 	__asm {
-// 		mov edi,name
-// 		mov eax,9
-// 		int 80h
-// 	}
-
-	return 0;
-}
-
-int getCpuInfo(char * name) {
-
-	__asm {
-		mov edi,name
-		mov dword ptr [edi],0
-
-		mov     eax, 80000000h
-		mov ecx, 0
-		cpuid
-		cmp     eax, 80000004h
-		jb      __cpuinfoEnd
-
-		mov     eax, 80000002h
-		mov ecx, 0
-		cpuid
-		mov     dword ptr[edi], eax
-		mov     dword ptr[edi + 4], ebx
-		mov     dword ptr[edi + 8], ecx
-		mov     dword ptr[edi + 12], edx
-
-		mov     eax, 80000003h
-		mov ecx, 0
-		cpuid
-		mov     dword ptr[edi + 16], eax
-		mov     dword ptr[edi + 20], ebx
-		mov     dword ptr[edi + 24], ecx
-		mov     dword ptr[edi + 28], edx
-
-		mov     eax, 80000004h
-		mov ecx, 0
-		cpuid
-		mov     dword ptr[edi + 32], eax
-		mov     dword ptr[edi + 36], ebx
-		mov     dword ptr[edi + 40], ecx
-		mov     dword ptr[edi + 44], edx
-
-		mov     dword ptr[edi + 48], 0
-
-		__cpuinfoEnd:
-	}
-
-// 	__asm {
-// 		mov edi, name
-// 		mov eax, 12
-// 		int 80h
-// 	}
-
-	return 0;
-}
-
-
-#include "hardware.h"
-
-int __shutdownSystem() {
-
-	__asm {
-		mov ax, 2001h;
-		mov dx, 1004h;
-		out dx, ax;    //写入 2001h  到端口 1004h    实现暴力关机
-	}
-
-	doPowerOff();
-
-	return 0;
-
-	outportw(0x4004, 0x3400);
-
-	for (int bdf = 0x80000008; bdf <= 0x80fff808; bdf += 0x100)			//offset 8,read class type,vender type
-	{
-		outportd(0xcf8, bdf);
-		DWORD v = inportd(0xcfc);
-		if (v && v != 0xffffffff)
-		{
-			int r = 4 + ( v & 0xfffe);
-			int d = inportw(r) | 0x3c00;
-			outportw(r, d);
-
-			int r2 = 30 + (v & 0xfffe);
-			int d2 = inportw(r2) & 0xffef;
-			outportw(r2, d2);	
+			len = __i2strh(numh,1, (unsigned char*)numstr);
+			__memcpy(dst + dpos, numstr, len);
+			dpos += len;
+			len = __i2strh(numl,1, (unsigned char*)numstr);
+			__memcpy(dst + dpos, numstr, len);
+			dpos += len;
+		}
+		else if (format[spos] == '%' && format[spos + 1] == 'S') {
+			wchar_t* wstr = (wchar_t*)*params;
+			params++;
+			int tmpstrlen = 2*__wcslen(wstr);
+			spos += 2;
+			__wcscpy((wchar_t*)dst + dpos, (wchar_t*)wstr);
+			dpos += tmpstrlen;
+		}
+		else {
+			dst[dpos] = format[spos];
+			dpos++;
+			spos++;
 		}
 	}
-	return 0;
-}
+	dst[dpos] = 0;
+	dst[dpos+1] = 0;
 
-//pu寻址位在第一位开始ffff:0000,当寻址位在第一位的时候及0，
-//会检测到当前地址0040:0072位是否为1234h,如果是1234h时，就不需要检测内存，如果不是1234h，就需要检测内存，就会重启
-int __reset() {
-
-	doReboot();
-	return 0;
-
-#if 0
-	outportb(0x92, 0x01);
-	outportb(0x64, 0xFE);
-	outportb(0xcf9, 0x04);
-	outportb(0xcf9, 0x06);
-#endif
-	__asm {
-
- 		mov al, 4
- 		mov dx, 0cf9h
- 		out dx, al
-
-		mov al,1
-		out 92h,al
-	}
-}
-
-
-
-int __sleep(int millisecs) {
-	__asm {
-		mov eax, 6
-		lea edi, millisecs
-		int 80h
-	}
+	return dpos;
 }
 
 int __strlwr(char * str) {
@@ -1032,25 +885,6 @@ int upper2lower(char *data, int len) {
 	return k;
 }
 
-//1 + 3 + 5 + ... + (2n - 1) = (1 + (2n - 1))*(n / 2) = n ^ 2
-DWORD __sqrtInteger(DWORD i) {
-	DWORD root = 0;
-	__asm {
-		MOV eax, i
-		MOV EBX, 1
-		MOV ECX, 1
-		_S_LOOP:
-		SUB EAX, EBX
-		JC _END		; 有借位为止
-		INC EBX		; 修改为3、5、7...
-		INC EBX
-		INC ECX		; n加1
-		JMP _S_LOOP
-		_END :
-		MOV root,ECX
-	}
-	return root;
-}
 
 //bswap oprd1,oprd1:reg
 DWORD __ntohl(DWORD v) {
@@ -1193,31 +1027,97 @@ DWORD __leaveLock(DWORD * lockvalue) {
 	return result;
 }
 
-extern "C"  __declspec(dllexport) int __getDateTime(LPDATETIME datetime)
-{
-	char c = readCmosPort(0x32);
-	char y = readCmosPort(9);
-	char m = readCmosPort(8);
-	char d = readCmosPort(7);
-	char hour = readCmosPort(4);
-	char minute = readCmosPort(2);
-	char second = readCmosPort(0);
 
-	datetime->year = ( bcd2b(c) *100) + bcd2b(y);
-	datetime->month = bcd2b(m);
-	datetime->dayInMonth = bcd2b(d);
-	datetime->hour = bcd2b(hour);
-	datetime->minute = bcd2b(minute);
-	datetime->second = bcd2b(second);
-	return TRUE;
+
+
+
+
+
+
+int getCpuType(char* name) {
+
+	__asm {
+		mov edi, name
+		mov eax, 9
+		int 80h
+	}
+
+	return 0;
+}
+
+int getCpuInfo(char* name) {
+
+	__asm {
+		mov edi, name
+		mov eax, 12
+		int 80h
+	}
+
+	return 0;
 }
 
 
-extern "C"  __declspec(dllexport) int __getDateTimeStr(void * str) {
-	return __strcpy((char*)str,(char*) CMOS_DATETIME_STRING);
+
+
+int __shutdownSystem() {
+
+	__asm {
+		mov ax, 2001h;
+		mov dx, 1004h;
+		out dx, ax;    //写入 2001h  到端口 1004h    实现暴力关机
+	}
+
+	doPowerOff();
+
+	outportw(0x4004, 0x3400);
+
+	for (int bdf = 0x80000008; bdf <= 0x80fff808; bdf += 0x100)			//offset 8,read class type,vender type
+	{
+		outportd(0xcf8, bdf);
+		DWORD v = inportd(0xcfc);
+		if (v && v != 0xffffffff)
+		{
+			int r = 4 + (v & 0xfffe);
+			int d = inportw(r) | 0x3c00;
+			outportw(r, d);
+
+			int r2 = 30 + (v & 0xfffe);
+			int d2 = inportw(r2) & 0xffef;
+			outportw(r2, d2);
+		}
+	}
+	return 0;
+}
+
+//pu寻址位在第一位开始ffff:0000,当寻址位在第一位的时候及0，
+//会检测到当前地址0040:0072位是否为1234h,如果是1234h时，就不需要检测内存，如果不是1234h，就需要检测内存，就会重启
+int __reset() {
+
+	doReboot();
+
+#if 0
+	outportb(0x92, 0x01);
+	outportb(0x64, 0xFE);
+	outportb(0xcf9, 0x04);
+	outportb(0xcf9, 0x06);
+#endif
+	__asm {
+
+		mov al, 4
+		mov dx, 0cf9h
+		out dx, al
+
+		mov al, 1
+		out 92h, al
+	}
 }
 
 
 
-
-
+int __sleep(int millisecs) {
+	__asm {
+		mov eax, 6
+		lea edi, millisecs
+		int 80h
+	}
+}

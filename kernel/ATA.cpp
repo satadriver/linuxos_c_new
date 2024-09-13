@@ -126,67 +126,28 @@ int getIDEPort() {
 	writeSector = writePortSector;
 
 	ret = checkIDEPort(0x3f0);
-	if (ret == 1)
-	{
-		//gAtaBasePort = 0x3f0;	
-		//gATADev = 0xf0;
-	}
-	else if (ret == 2) {
-		//gATAPIDev = 0xf0;
-		//gAtapiBasePort = 0x3f0;
-	}
-
 	//__printf((char*)szshow, "getIDEPort 3f0 over\n");
 
 	ret = checkIDEPort(0x370);
-	if (ret==1)
-	{
-		//gATADev = 0xf0;
-		//gAtaBasePort = 0x370;
-	}
-	else if (ret == 2) {
-		//gATAPIDev = 0xf0;
-		//gAtapiBasePort = 0x370;
-	}
-
 	//__printf((char*)szshow, "getIDEPort 370 over\n");
 
 	//1f7 = 3f6 = 3f7,376=377=177
 	ret = checkIDEPort(0x1f0);
-	if (ret == 1)
-	{
-		//gAtaBasePort = 0x1f0;
-		//gATADev = 0xe0;
-	}
-	else if (ret == 2) {
-		//gATAPIDev = 0xe0;
-		//gAtapiBasePort = 0x1f0;
-	}
-
 	//__printf((char*)szshow, "getIDEPort 1f0 over\n");
 
 	ret = checkIDEPort(0x170);
-	if (ret == 1)
-	{
-		//gATADev = 0xe0;
-		//gAtaBasePort = 0x170;
-	}
-	else if (ret == 2) {
-		//gATAPIDev = 0xe0;
-		//gAtapiBasePort = 0x170;
-	}
-
 	//__printf((char*)szshow, "getIDEPort 170 over\n");
 
-	DWORD hdport[0x1000] ;
+	DWORD hdport[1024] ;
 	DWORD dev = 0;
 	DWORD irq = 0;
 	int cnt = getPciDevBasePort(hdport, 0x0101, &dev, &irq);
-	__printf((char*)szshow, "sata port:%x,%x,%x,%x\n", hdport[0],hdport[1], hdport[2], hdport[3]);
-	for (int i = 0; i < cnt/2; i+=2)
+	for (int i = 0; i < cnt; i++)
 	{
 		if (hdport[i])
 		{
+			__printf((char*)szshow, "sata port:%x\n", hdport[i]);
+
 			if ((hdport[i] & 1) == 0)
 			{
 				gMimo = 1;
@@ -201,30 +162,15 @@ int getIDEPort() {
 				}
 			}
 			else {
-
 				ret = checkIDEPort((hdport[i] & 0xFFF0) );
 				if (ret == 1)
 				{
 					gAtaBasePort = hdport[i] & 0xFFF0;
 					gATADev = inportb(gAtaBasePort + 6);
-					if (i % 4 == 0)
-					{
-						//gATADev = 0xf0;
-					}
-					else {
-						//gATADev = 0xe0;
-					}
 				}
 				else if (ret == 2) {
 					gAtapiBasePort = hdport[i] & 0xFFF0;
 					gATAPIDev = inportb(gAtapiBasePort + 6);
-					if (i % 4 == 0)
-					{
-						//gATAPIDev = 0xf0;
-					}
-					else {
-						//gATAPIDev = 0xe0;
-					}
 				}
 			}
 		}
@@ -238,7 +184,7 @@ int getIDEPort() {
 		gATADev = 0xf0;
 		readSector = vm86ReadSector;
 		writeSector = vm86WriteSector;
-		__printf((char*)szshow, "int13 emulate ide read write\n");
+		__printf((char*)szshow, "int13h emulate ide read write sector\n");
 	}
 
 	return TRUE;
@@ -319,7 +265,7 @@ int waitComplete(WORD port) {
 			}
 			else {
 				char szout[1024];
-				if (r & 0x80 == 0) {
+				if ((r & 0x80) == 0) {
 					__printf(szout, "waitComplete:%x\r\n",r);
 				}
 				__sleep(0);
@@ -368,11 +314,15 @@ void waitReady(WORD port) {
 
 int writesector(int port,int len,char* buf) {
 	__asm {
+		cli
+
 		cld
 		mov esi, buf
 		mov ecx, len
 		mov edx, port
 		rep outsd
+
+		sti
 	}
 }
 
@@ -549,7 +499,9 @@ int identifyDevice(int port,int cmd,char * buffer) {	// IDENTIFY PACKET DEVICE ¨
 			cli
 		}
 		readsector(port, BYTES_PER_SECTOR / 4, buffer);
-		__asm{sti}
+		__asm{
+			sti
+		}
 
 		unsigned char szshow[0x1000];
 		__dump((char*)buffer, BYTES_PER_SECTOR, 0, szshow);

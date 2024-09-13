@@ -2,6 +2,7 @@
 #define _MATH_C_
 
 #include "math.h"
+#include "def.h"
 
 double abs(double x)
 {
@@ -12,8 +13,14 @@ double abs(double x)
 	return x;
 }
 
+
+
+//only when n > 0
 double pown(double x, int n)
 {
+	if (n <= 0) {
+		return 0;
+	}
 	double r = 1.0;
 	for (int i = 0; i < n; ++i)
 	{
@@ -23,8 +30,24 @@ double pown(double x, int n)
 }
 
 
-
-
+float pow(float a, int b)
+{
+	float r = a;
+	if (b > 0)
+	{
+		while (--b)
+			r *= a;
+	}
+	else if (b < 0)
+	{
+		while (++b)
+			r *= a;
+		r = 1.0 / r;
+	}
+	else
+		r = 1;
+	return r;
+}
 
 double __sqrt(float a)
 {
@@ -62,18 +85,12 @@ double sqrt(double x)
 
 
 
-float __abs(float x)
-{
-	if (x < 0) 
-		x = 0 - x;
-	return x;
-}
 
 float sin(float x)
 {
 	const float B = 1.2732395447;
 	const float C = -0.4052847346;
-	const float P = 0.2310792853;//0.225; 
+	const float P = 0.2310792853;		//0.225; 
 	float y = B * x + C * x * abs(x);
 	y = P * (y * abs(y) - y) + y;
 	return y;
@@ -93,24 +110,27 @@ float cos(float x)
 
 
 
-float pow(float a, int b)
-{
-	float r = a;
-	if (b > 0)
-	{
-		while (--b)
-			r *= a;
 
+
+
+//1 + 3 + 5 + ... + (2n - 1) = (1 + (2n - 1))*(n / 2) = n ^ 2
+DWORD __sqrtInteger(DWORD i) {
+	DWORD root = 0;
+	__asm {
+		MOV eax, i
+		MOV EBX, 1
+		MOV ECX, 1
+		_S_LOOP:
+		SUB EAX, EBX
+			JC _END; 有借位为止
+			INC EBX; 修改为3、5、7...
+			INC EBX
+			INC ECX; n加1
+			JMP _S_LOOP
+			_END :
+		MOV root, ECX
 	}
-	else if (b < 0)
-	{
-		while (++b)     
-			r *= a;
-		r = 1.0 / r;
-	}
-	else 
-		r = 0;
-	return r;
+	return root;
 }
 
 #endif

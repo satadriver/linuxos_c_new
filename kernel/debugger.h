@@ -12,9 +12,9 @@
 
 void initDebugger();
 
-void  breakPoint(LIGHT_ENVIRONMENT* stack);
+void  BreakPoint(LIGHT_ENVIRONMENT* stack);
 
-void  debugger(LIGHT_ENVIRONMENT* stack);
+void  DebugTrapProc(LIGHT_ENVIRONMENT* stack);
 
 #ifdef DLL_EXPORT
 

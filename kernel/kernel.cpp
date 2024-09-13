@@ -167,13 +167,13 @@ void __kKernelMain(DWORD retaddr,int pid,char * filename,char * funcname,DWORD p
 
 
 
-//注意二位数组在内存中的排列和结构
-void mytest(int p) {
-	__asm {
-		lea eax,p
 
-	}
-	return;
+__int64 mytest() {
+
+	char szout[1024];
+	__sprintf(szout, "hello:%x,test:%s,64bit:%i64x, send:%d", 0x200, "hahaha",0x123456789abcdef, 256);
+	return 0x123456789abcdef;
+
 }
 
 #ifdef _USRDLL
@@ -183,7 +183,7 @@ int __stdcall DllMain( HINSTANCE hInstance,  DWORD fdwReason,  LPVOID lpvReserve
 #else
 int __stdcall WinMain(  HINSTANCE hInstance,  HINSTANCE hPrevInstance,  LPSTR lpCmdLine,  int nShowCmd )
 {
-	mytest(0);
+	__int64 t = mytest();
 	return TRUE;
 }
 #endif
