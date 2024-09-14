@@ -22,7 +22,7 @@
 DOS_PE_CONTROL g_v86ControlBloack[LIMIT_V86_PROC_COUNT] = { 0 };
 
 
-int getDosPeAddr(DWORD filedata,int pid) {
+int getDosPeAddr(int type,DWORD filedata,int size,int pid) {
 
 	LPDOS_PE_CONTROL info = (LPDOS_PE_CONTROL)g_v86ControlBloack;
 	for (int i = 0; i < LIMIT_V86_PROC_COUNT; i ++)
@@ -33,7 +33,9 @@ int getDosPeAddr(DWORD filedata,int pid) {
 
 			info[i].pid = pid;
 
-			if (__memcmp((char*)filedata, "MZ", 2) == 0)
+			info[i].size = size;
+
+			if (type == DOS_EXE_FILE)
 			{
 				info[i].address = i * 0x1000 + DOS_LOAD_FIRST_SEG + 0x10;
 			}
@@ -75,10 +77,10 @@ int relocDos(DWORD loadseg) {
 }
 
 
-DWORD __initDosExe(DWORD filedata, int filesize,int pid) {
+DWORD __initDosExe(int type,DWORD filedata, int filesize,int pid) {
 	int ret = 0;
 
-	DWORD seg = getDosPeAddr( filedata,pid);
+	DWORD seg = getDosPeAddr(type, filedata,filesize,pid);
 	if (seg >= INT13_RM_FILEBUF_SEG || seg <= 0)
 	{
 		return FALSE;
@@ -90,11 +92,12 @@ DWORD __initDosExe(DWORD filedata, int filesize,int pid) {
 
 	__memcpy((char*)dosaddr, (char*)filedata, filesize);
 
-	if (__memcmp((char*)filedata,"MZ",2) == 0)
+	if (type == DOS_EXE_FILE)
 	{	
 		ret = relocDos(seg);
 	}
 	else {
+
 	}
 	
 	return dosaddr;
@@ -102,6 +105,13 @@ DWORD __initDosExe(DWORD filedata, int filesize,int pid) {
 
 
 
+int __createDosCodeProc(DWORD addr, char* filename) {
+	if (__findProcessFileName(filename))
+	{
+		return 0;
+	}
+	return __kCreateProcess(addr, 0x1000, filename, filename, DOS_PROCESS_RUNCODE | 3, 0);
+}
 
 int __initDosTss(LPPROCESS_INFO tss, int pid, DWORD addr, char * filename, char * funcname, DWORD level, DWORD runparam) {
 
@@ -160,6 +170,7 @@ int __initDosTss(LPPROCESS_INFO tss, int pid, DWORD addr, char * filename, char 
 		tss->tss.fs = seg;
 		tss->tss.gs = seg;
 
+		/*
 		tss->tss.esp = tss->tss.esp - sizeof(TASKDOSPARAMS);
 		LPTASKDOSPARAMS params = (LPTASKDOSPARAMS)(tss->tss.esp + (tss->tss.ss << 4));
 		params->terminate = (DWORD)0;
@@ -168,11 +179,12 @@ int __initDosTss(LPPROCESS_INFO tss, int pid, DWORD addr, char * filename, char 
 		params->filename = params->szFileName;		//param2:filename
 		__strcpy(params->szFuncName, funcname);
 		params->funcname = params->szFuncName;		//param2:filename
-		//params->addr = ((seg - DOS_LOAD_FIRST_SEG) / 0x1000) * sizeof(DOS_PE_CONTROL) + V86_TASKCONTROL_ADDRESS;
-		//params->param = runparam;
+		params->addr = ((seg - DOS_LOAD_FIRST_SEG) / 0x1000) * sizeof(DOS_PE_CONTROL) + (unsigned long)&g_v86ControlBloack;
+		params->param = runparam;
+		*/
 
-		//__printf(szout, "__kCreateTask in file dos file:%s\r\n", filename);
-		//__drawGraphChars((unsigned char*)szout, 0);
+		__printf(szout, "__kCreateTask DOS code process:%s\r\n", filename);
+
 	}
 	else if (__memcmp((char*)addr, "MZ", 2) == 0)
 	{
@@ -192,8 +204,8 @@ int __initDosTss(LPPROCESS_INFO tss, int pid, DWORD addr, char * filename, char 
 		tss->tss.fs = dospsp;
 		tss->tss.gs = dospsp;
 
-		//__printf(szout, "__kCreateTask dos exe file:%s\r\n", filename);
-		//__drawGraphChars((unsigned char*)szout, 0);
+		__printf(szout, "__kCreateTask DOS exe file:%s\r\n", filename);
+
 	}
 	else {
 		tss->tss.eip = 0x100;
@@ -210,7 +222,7 @@ int __initDosTss(LPPROCESS_INFO tss, int pid, DWORD addr, char * filename, char 
 
 		//*(WORD*)(tss->tss.esp + addr) = 0;
 
-		__printf(szout, "__kCreateTask dos com file:%s\r\n\r\n", filename);
+		__printf(szout, "__kCreateTask DOS com file:%s\r\n\r\n", filename);
 
 	}
 

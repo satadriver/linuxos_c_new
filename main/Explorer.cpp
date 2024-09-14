@@ -14,7 +14,7 @@
 #include "windowclass.h"
 #include "Pe.h"
 #include "window.h"
-
+#include "processdos.h"
 #include "ata.h"
 #include "UserUtils.h"
 #include "Kernel.h"
@@ -177,7 +177,7 @@ int __kExplorer(unsigned int retaddr, int tid, char * filename, char * funcname,
 		}
 		else if (asc == VK_F3)
 		{
-			__createDosInFileTask(gV86VMIEntry, "V86VMIEntry");
+			__createDosCodeProc(gV86VMIEntry, "V86VMIEntry");
 			continue;
 		}
 

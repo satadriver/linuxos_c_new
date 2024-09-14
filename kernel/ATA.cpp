@@ -251,7 +251,7 @@ int writePortSector(unsigned int secno, DWORD secnohigh, unsigned int seccnt, ch
 
 
 int waitComplete(WORD port) {
-
+	char szout[1024];
 	int r = inportb(port - 6);
 	if (r == 0) {
 		int cnt = 16;
@@ -264,14 +264,19 @@ int waitComplete(WORD port) {
 				return TRUE;
 			}
 			else {
-				char szout[1024];
-				if ((r & 0x80) == 0) {
+				
+				//if ((r & 0x80) == 0) 
+				{
+					outportb(port, 0);
 					__printf(szout, "waitComplete:%x\r\n",r);
 				}
 				__sleep(0);
 				continue;
 			}
 		}
+	}
+	else {
+		__printf(szout, "waitComplete result:%x\r\n", r);
 	}
 	return FALSE;
 }
@@ -283,7 +288,7 @@ void waitFree(WORD port) {
 		int r = inportb(port);
 		if (r & 0x80) {
 			char szout[1024];
-			//__printf(szout, "waitFree:%x\r\n",r);
+			__printf(szout, "waitFree:%x\r\n",r);
 			__sleep(0);
 			continue;
 		}
@@ -303,7 +308,7 @@ void waitReady(WORD port) {
 		}
 		else {
 			char szout[1024];
-			//__printf(szout, "waitReady:%x\r\n", r);
+			__printf(szout, "waitReady:%x\r\n", r);
 			__sleep(0);
 			continue;
 		}
@@ -494,18 +499,15 @@ int identifyDevice(int port,int cmd,char * buffer) {	// IDENTIFY PACKET DEVICE ¨
 	outportb(port + 7, cmd);
 
 	int res = waitComplete(port + 7);
-	if (res) {
-		__asm {
-			cli
-		}
+	if (res) 
+	{
 		readsector(port, BYTES_PER_SECTOR / 4, buffer);
-		__asm{
-			sti
-		}
-
 		unsigned char szshow[0x1000];
 		__dump((char*)buffer, BYTES_PER_SECTOR, 0, szshow);
 		__drawGraphChars((unsigned char*)szshow, 0);
+	}
+	else {
+
 	}
 
 	//char szout[1024];

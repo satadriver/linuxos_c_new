@@ -19,7 +19,7 @@
 #include "pci.h"
 #include "hardware.h"
 #include "kernel.h"
-
+#include "processDOS.h"
 
 
 
@@ -64,9 +64,9 @@ int runcmd(char * cmd) {
 		}*/
 
 #ifdef SINGLE_TASK_TSS
-		__createDosInFileTask(gV86VMIEntry, "V86VMIEntry");
+		__createDosCodeProc(gV86VMIEntry, "V86VMIEntry");
 #else
-		__createDosInFileTask(gV86VMIEntry, "V86VMIEntry");
+		__createDosCodeProc(gV86VMIEntry, "V86VMIEntry");
 #endif
 
 		int imagesize = getSizeOfImage((char*)MAIN_DLL_SOURCE_BASE);

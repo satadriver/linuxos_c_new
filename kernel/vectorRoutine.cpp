@@ -806,6 +806,7 @@ void __declspec(naked) AlignmentCheck(LIGHT_ENVIRONMENT* stack) {
 		pop ds
 		popad
 
+		add esp,4
 		iretd
 	}
 }
@@ -982,6 +983,7 @@ __declspec(naked) void CtrlProtectException(LIGHT_ENVIRONMENT* stack) {
 		pop ds
 		popad
 
+		add esp,4
 		iretd
 	}
 }

@@ -88,7 +88,7 @@ extern "C"  __declspec(dllexport) PROCESS_INFO *  __findProcessFileName(char * f
 
 extern "C"  __declspec(dllexport) PROCESS_INFO *  __findProcessFuncName(char * funcname);
 
-extern "C"  __declspec(dllexport) int __createDosInFileTask(DWORD addr, char * filename);
+
 
 #else
 
@@ -110,7 +110,7 @@ extern "C"  __declspec(dllimport) PROCESS_INFO *  __findProcessFileName(char * f
 
 extern "C"  __declspec(dllimport) PROCESS_INFO *  __findProcessFuncName(char * funcname);
 
-extern "C"  __declspec(dllimport) int __createDosInFileTask(DWORD addr, char * filename);
+
 #endif
 
 

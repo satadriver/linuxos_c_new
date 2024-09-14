@@ -27,6 +27,10 @@ typedef struct {
 	DWORD		eflags;		//64
 	DWORD		esp3;		//68
 	DWORD		ss3;		//72
+	DWORD		es_v86;
+	DWORD		ds_v86;
+	DWORD		fs_v86;
+	DWORD		gs_v86;
 }EXCEPTIONCODESTACK, *LPEXCEPTIONCODESTACK;
 
 typedef struct {
@@ -50,6 +54,10 @@ typedef struct {
 	DWORD		eflags;		//60
 	DWORD		esp3;		//64
 	DWORD		ss3;		//68
+	DWORD		es_v86;
+	DWORD		ds_v86;
+	DWORD		fs_v86;
+	DWORD		gs_v86;
 }EXCEPTIONSTACK, *LPEXCEPTIONSTACK;
 
 #pragma pack()

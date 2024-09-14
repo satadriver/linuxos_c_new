@@ -41,12 +41,11 @@ void __kException(const char* descriptor, int num, LIGHT_ENVIRONMENT* param){
 	}
 
 	LPPROCESS_INFO process = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
-
 	int tid = process->tid;
 	int pid = process->pid;
 	int level = process->level;
 
-	if (num == 8 || num == 10 || num == 11 || num == 12 || num == 13 || num == 14 || num == 17)
+	if (num == 8 || num == 10 || num == 11 || num == 12 || num == 13 || num == 14 || num == 17 || num == 21)
 	{
 		LPEXCEPTIONCODESTACK tss = (LPEXCEPTIONCODESTACK)param;
 		if (tss->eflags & 0x20000)
@@ -54,18 +53,19 @@ void __kException(const char* descriptor, int num, LIGHT_ENVIRONMENT* param){
 			DWORD rva = tss->eip;
 
 			__printf(showinfo,
-				"v86 Exception:%d,tid:%d,error code:%x,EIP RVA:%x,esp0:%x,ss0:%x,eip:%x,cs:%x,eflags:%x,esp3:%x,ss3:%x,"
-				"ds:%x,es:%x,fs:%x,gs:%x,eax:%x,ecx:%x,edx:%x,ebx:%x,ebp:%x,esi:%x,edi:%x,cr0:%x,cr2:%x,cr3:%x,cr4:%x\r\n",
+				"v86 Exception:%d,tid:%d,error:%x,EIP:%x,esp0:%x,ss0:%x,eip:%x,cs:%x,eflags:%x,esp3:%x,ss3:%x,"
+				"ds:%x,es:%x,fs:%x,gs:%x,eax:%x,ecx:%x,edx:%x,ebx:%x,ebp:%x,esi:%x,edi:%x,ds_v86:%x,es_v86:%x,fs_v86:%x,gs_v86:%x,\
+				cr0:%x,cr2:%x,cr3:%x,cr4:%x\r\n",
 				num, tid, tss->errcode, rva, tss->esp0, tss->ss0, tss->eip, tss->cs, tss->eflags, tss->esp3, tss->ss3,
 				tss->ds, tss->es, tss->fs, tss->gs, tss->eax, tss->ecx, tss->edx, tss->ebx, tss->ebp, tss->esi, tss->edi,
-				rcr0, rcr2, rcr3, rcr4);
+				tss->ds_v86, tss->es_v86, tss->fs_v86, tss->gs_v86, rcr0, rcr2, rcr3, rcr4);
 		}
-		else if (level & 3)
+		else if ((level & 3) ||( tss->cs & 3))
 		{
 			DWORD rva = rvaInFile(process->moduleaddr, tss->eip );
 
 			__printf(showinfo,
-				"Exception:%d,tid:%d,error code:%x,EIP RVA:%x,esp0:%x,ss0:%x,eip:%x,cs:%x,eflags:%x,esp3:%x,ss3:%x,"
+				"Exception:%d,tid:%d,error:%x,EIP RVA:%x,esp0:%x,ss0:%x,eip:%x,cs:%x,eflags:%x,esp3:%x,ss3:%x,"
 				"ds:%x,es:%x,fs:%x,gs:%x,eax:%x,ecx:%x,edx:%x,ebx:%x,ebp:%x,esi:%x,edi:%x,cr0:%x,cr2:%x,cr3:%x,cr4:%x\r\n",
 				num,tid, tss->errcode,rva, tss->esp0, tss->ss0, tss->eip, tss->cs, tss->eflags, tss->esp3, tss->ss3,
 				tss->ds, tss->es, tss->fs, tss->gs, tss->eax, tss->ecx, tss->edx, tss->ebx, tss->ebp, tss->esi, tss->edi,
@@ -75,7 +75,7 @@ void __kException(const char* descriptor, int num, LIGHT_ENVIRONMENT* param){
 			DWORD rva = rvaInFile(process->moduleaddr, tss->eip );
 
 			__printf(showinfo,
-				"Exception:%d,tid:%d,error code:%x,EIP RVA:%x,esp0:%x,ss0:%x,eip:%x,cs:%x,eflags:%x,"
+				"Exception:%d,tid:%d,error:%x,EIP RVA:%x,esp0:%x,ss0:%x,eip:%x,cs:%x,eflags:%x,"
 				"ds:%x,es:%x,fs:%x,gs:%x,eax:%x,ecx:%x,edx:%x,ebx:%x,ebp:%x,esi:%x,edi:%x,cr0:%x,cr2:%x,cr3:%x,cr4:%x\r\n",
 				num,tid, tss->errcode,rva, tss->esp0, tss->ss0, tss->eip, tss->cs, tss->eflags,
 				tss->ds, tss->es, tss->fs, tss->gs, tss->eax, tss->ecx, tss->edx, tss->ebx, tss->ebp, tss->esi, tss->edi,
@@ -90,13 +90,14 @@ void __kException(const char* descriptor, int num, LIGHT_ENVIRONMENT* param){
 			DWORD rva = tss->eip;
 
 			__printf(showinfo,
-				"v86 Exception:%d,tid:%d,EIP RVA:%x,esp0:%x,ss0:%x,eip:%x,cs:%x,eflags:%x,esp3:%x,ss3:%x,"
-				"ds:%x,es:%x,fs:%x,gs:%x,eax:%x,ecx:%x,edx:%x,ebx:%x,ebp:%x,esi:%x,edi:%x,cr0:%x,cr2:%x,cr3:%x,cr4:%x\r\n",
+				"v86 Exception:%d,tid:%d,EIP:%x,esp0:%x,ss0:%x,eip:%x,cs:%x,eflags:%x,esp3:%x,ss3:%x,"
+				"ds:%x,es:%x,fs:%x,gs:%x,eax:%x,ecx:%x,edx:%x,ebx:%x,ebp:%x,esi:%x,edi:%x,ds_v86:%x,es_v86:%x,fs_v86:%x,gs_v86:%x,\
+			cr0:%x,cr2:%x,cr3:%x,cr4:%x\r\n",
 				num, tid, rva, tss->esp0, tss->ss0, tss->eip, tss->cs, tss->eflags, tss->esp3, tss->ss3,
 				tss->ds, tss->es, tss->fs, tss->gs, tss->eax, tss->ecx, tss->edx, tss->ebx, tss->ebp, tss->esi, tss->edi,
-				rcr0, rcr2, rcr3, rcr4);
+				tss->ds_v86, tss->es_v86, tss->fs_v86, tss->gs_v86, rcr0, rcr2, rcr3, rcr4);
 		}
-		else if (level & 3)
+		else if ((level & 3) || (tss->cs & 3))
 		{
 
 			DWORD rva = rvaInFile(process->moduleaddr, tss->eip );

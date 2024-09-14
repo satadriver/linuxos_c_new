@@ -382,6 +382,7 @@ int __kCreateProcessFromAddrFunc(DWORD filedata, int filesize,char * funcname,in
 }
 
 
+
 int __kCreateProcess(DWORD filedata, int filesize,char * filename,char * funcname, int syslevel, DWORD params) {
 
 	int ret = 0;
@@ -411,19 +412,19 @@ int __kCreateProcess(DWORD filedata, int filesize,char * filename,char * funcnam
 
 	if (mode & DOS_PROCESS_RUNCODE)
 	{
-		ret = __initDosTss(result.lptss, result.number, filedata, filename, funcname,3, params);
+		ret = __initDosTss(result.lptss, result.number, filedata, filename, funcname,3 | DOS_PROCESS_RUNCODE, params);
 		return ret;
 	}
 
 	int petype = getPeType(filedata);
-	if (petype == 1 || petype == 0)
+	if (petype == DOS_EXE_FILE || petype == DOS_COM_FILE)
 	{
 		if (filesize == 0)
 		{
 			return FALSE;
 		}
 		else {
-			DWORD dosaddr = __initDosExe(filedata, filesize, result.number);
+			DWORD dosaddr = __initDosExe(petype,filedata, filesize, result.number);
 			if (dosaddr)
 			{
 				ret = __initDosTss(result.lptss, result.number, dosaddr, filename, funcname, 3, params);

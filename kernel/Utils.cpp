@@ -456,14 +456,15 @@ int __i2strh(unsigned int n,int lowercase,unsigned char * buf) {
 		b -= 8;
 	}
 
-	*(dst) = 0;
-
 	if (dst - buf == 2) {
-		dst[2] = 0x30;
-		dst[3] = 0;
-		//dst++;
+		buf[2] = 0x30;
+		buf[3] = 0;
+		return 3;
 	}
-	return dst - buf;
+	else {
+		*(dst) = 0;
+		return dst - buf;
+	}
 }
 
 int __i2strd(unsigned int h, char * strd) {
