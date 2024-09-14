@@ -10,20 +10,21 @@
 //any thread can call this function to terminate self
 //any thread can call this with tid to terminate other thread
 //above so,the most import element is dwtid
-DWORD __kTerminateThread(int dwtid, char * filename, char * funcname, DWORD lpparams) {
+DWORD __kTerminateThread(int tid, char * filename, char * funcname, DWORD lpparams) {
 
-	int tid = dwtid & 0x7fffffff;
-	if (tid < 0 || tid >= TASK_LIMIT_TOTAL) {
+	LPPROCESS_INFO tss = (LPPROCESS_INFO)TASKS_TSS_BASE;
+	LPPROCESS_INFO current = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
+
+	if (tid < 0 || tid >= TASK_LIMIT_TOTAL || tss->tid != tid ) {
 		return 0;
 	}
 
-	LPPROCESS_INFO tss = (LPPROCESS_INFO)TASKS_TSS_BASE;
-
-	LPPROCESS_INFO current = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
-
 	char szout[1024];
-	__printf(szout, "__kTerminateThread pid:%x,filename:%s,funcname:%s,current pid:%x\r\n",
-		tid, filename, funcname, current->pid);
+
+	int pid = tss[tid].pid;
+
+	__printf(szout, "__kTerminateThread tid:%x,pid:%x,current pid:%x,current tid:%x,filename:%s,funcname:%s\n",
+		tid, pid, current->pid, current->tid, filename, funcname);
 
 	__asm {
 		//cli
@@ -34,7 +35,7 @@ DWORD __kTerminateThread(int dwtid, char * filename, char * funcname, DWORD lppa
 		current->status = TASK_TERMINATE;
 	}
 	else {
-
+		//do nothing
 	}
 
 	tss[tid].status = TASK_TERMINATE;
@@ -43,13 +44,9 @@ DWORD __kTerminateThread(int dwtid, char * filename, char * funcname, DWORD lppa
 		//sti
 	}
 
-	if (dwtid & 0x80000000)
-	{
-		__sleep(0);
-	}
-	else {
-		__sleep(-1);
-	}
+	__kFree(tss[tid].espbase);
+
+	__sleep(-1);
 	
 	return 0;
 }

@@ -190,16 +190,16 @@ extern "C"  __declspec(dllexport) int __kFreePage(DWORD addr) {
 
 
 //make sure the first in the list is not to be deleted,or else will be locked
-void freeProcessPages() {
+void freeProcessPages(int pid) {
 
 	__enterSpinlock(&gPageAllocLock);
 	
-	LPPROCESS_INFO tss = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
+	//LPPROCESS_INFO tss = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
 
 	LPMEMALLOCINFO info = (LPMEMALLOCINFO)(LPMEMALLOCINFO)PAGE_ALLOC_LIST;
 	do
 	{
-		if (info->pid == tss->pid)
+		if (info->pid == pid)
 		{
 			resetPageIdx(info);
 		}

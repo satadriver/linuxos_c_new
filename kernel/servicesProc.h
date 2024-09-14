@@ -22,7 +22,7 @@ extern "C" __declspec(dllexport) int __readTemperature(DWORD * temp);
 
 unsigned __int64  __rdtsc();
 
-DWORD __cpuRate(DWORD* high);
+unsigned __int64 __cpuRate();
 
 DWORD servicesProc(LIGHT_ENVIRONMENT* stack);
 

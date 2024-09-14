@@ -17,14 +17,6 @@
 
 
 
-#define EXCEPTION_TIPS_COLOR 0X9F3F00
-
-
-
-
-int gExceptionCounter = 0;
-
-
 
 
 __declspec(naked) void DivideError(LIGHT_ENVIRONMENT* stack) {
@@ -49,9 +41,7 @@ __declspec(naked) void DivideError(LIGHT_ENVIRONMENT* stack) {
 		mov ss,ax
 	}
 	{
-		LPPROCESS_INFO process = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
-		char szout[1024];
-		__printf(szout, "DivideError! pid:%d\r\n", process->pid);
+		__kException((const char*)"DivideError", 0, stack);
 	}
 
 	__asm {
@@ -148,9 +138,8 @@ void __declspec(naked) NmiInterrupt(LIGHT_ENVIRONMENT* stack) {
 
 		int v2 = inportb(0x61);
 
-		LPPROCESS_INFO process = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
-		char szout[1024];
-		__printf(szout, "NmiInterrupt! pid:%d\r\n", process->pid);
+		__kException((const char*)"NmiInterrupt", 2, stack);
+
 	}
 	__asm {
 		mov esp, ebp
@@ -192,9 +181,8 @@ void __declspec(naked) OverflowException(LIGHT_ENVIRONMENT* stack) {
 		mov ss, ax
 	}
 	{
-		LPPROCESS_INFO process = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
-		char szout[1024];
-		__printf(szout, "OverflowException! pid:%d\r\n", process->pid);
+		__kException((const char*)"OverflowException", 4, stack);
+
 	}
 
 	__asm {
@@ -238,9 +226,8 @@ void __declspec(naked) BoundRangeExceed(LIGHT_ENVIRONMENT* stack) {
 		mov ss, ax
 	}
 	{
-		LPPROCESS_INFO process = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
-		char szout[1024];
-		__printf(szout, "BoundRangeExceed! pid:%d\r\n", process->pid);
+		__kException((const char*)"BoundRangeExceed", 5, stack);
+
 	}
 
 	__asm {
@@ -285,9 +272,8 @@ void __declspec(naked) UndefinedOpcode(LIGHT_ENVIRONMENT* stack) {
 	}
 
 	{
-		LPPROCESS_INFO process = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
-		char szout[1024];
-		__printf(szout, "UndefinedOpcode! pid:%d\r\n", process->pid);
+		__kException((const char*)"UndefinedOpcode", 6, stack);
+
 	}
 
 	__asm {
@@ -335,9 +321,8 @@ void __declspec(naked) DeviceUnavailable(LIGHT_ENVIRONMENT* stack) {
 	__kCoprocessor();
 
 	{
-		LPPROCESS_INFO process = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
-		char szout[1024];
-		__printf(szout, "DeviceUnavailable! pid:%d\r\n", process->pid);
+		__kException((const char*)"DeviceUnavailable", 7, stack);
+
 	}
 
 	__asm {
@@ -383,12 +368,8 @@ void __declspec(naked) DoubleFault(LIGHT_ENVIRONMENT* stack) {
 		mov ss, ax
 	}
 	{
-		//gExceptionCounter++;
-		if (gExceptionCounter <= 10) {
-			LPPROCESS_INFO process = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
-			char szout[1024];
-			__printf(szout, "DoubleFault! pid:%d\r\n", process->pid);
-		}
+		__kException((const char*)"DoubleFault", 8, stack);
+
 	}
 
 	__asm {
@@ -436,9 +417,8 @@ void __declspec(naked) CoprocSegOverrun(LIGHT_ENVIRONMENT* stack) {
 	}
 
 	{
-		LPPROCESS_INFO process = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
-		char szout[1024];
-		__printf(szout, "CoprocSegOverrun! pid:%d\r\n", process->pid);
+		__kException((const char*)"CoprocSegOverrun", 9, stack);
+
 	}
 
 	__asm {
@@ -480,12 +460,8 @@ void __declspec(naked) InvalidTss(LIGHT_ENVIRONMENT* stack) {
 		mov ss, ax
 	}
 	{
-		//gExceptionCounter++;
-		if (gExceptionCounter < 10) {
-			LPPROCESS_INFO process = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
-			char szout[1024];
-			__printf(szout, "InvalidTss! pid:%d\r\n", process->pid);
-		}
+		__kException((const char*)"InvalidTss", 10, stack);
+
 	}
 
 	__asm {
@@ -532,9 +508,8 @@ void __declspec(naked) SegmentUnpresent(LIGHT_ENVIRONMENT* stack) {
 		mov ss, ax
 	}
 	{
-		LPPROCESS_INFO process = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
-		char szout[1024];
-		__printf(szout, "SegmentUnpresent! pid:%d\r\n", process->pid);
+		__kException((const char*)"SegmentUnpresent", 11, stack);
+
 	}
 
 	__asm {
@@ -578,9 +553,8 @@ void __declspec(naked) StackSegFault(LIGHT_ENVIRONMENT* stack) {
 		mov ss, ax
 	}
 	{
-		LPPROCESS_INFO process = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
-		char szout[1024];
-		__printf(szout, "StackSegFault! pid:%d\r\n", process->pid);
+		__kException((const char*)"StackSegFault", 12, stack);
+
 	}
 
 	__asm {
@@ -623,12 +597,8 @@ void __declspec(naked) GeneralProtection(LIGHT_ENVIRONMENT* stack) {
 		mov ss, ax
 	}
 	{
-		gExceptionCounter++;
-		if (gExceptionCounter <= 16) {
-			LPPROCESS_INFO process = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
-			char szout[1024];
-			__printf(szout, "GeneralProtection! pid:%d\r\n", process->pid);
-		}
+		__kException((const char*)"GeneralProtection", 13, stack);
+
 	}
 
 	__asm {
@@ -678,9 +648,9 @@ void __declspec(naked) PageFault(LIGHT_ENVIRONMENT* stack) {
 			mov eax, cr2
 			mov regcr2,eax
 		}
-		LPPROCESS_INFO process = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
-		char szout[1024];
-		__printf(szout, "PageFault! pid:%d\r\n", process->pid);
+
+		__kException((const char*)"PageFault", 14, stack);
+
 	}
 
 	__asm {
@@ -726,9 +696,8 @@ void __declspec(naked) AnonymousException(LIGHT_ENVIRONMENT* stack) {
 		mov ss, ax
 	}
 	{
-		LPPROCESS_INFO process = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
-		char szout[1024];
-		__printf(szout, "AnonymousException! pid:%d\r\n", process->pid);
+		__kException((const char*)"AnonymousException", 15, stack);
+
 	}
 
 	__asm {
@@ -774,9 +743,8 @@ void __declspec(naked) FloatPointError(LIGHT_ENVIRONMENT* stack) {
 	__kCoprocessor();
 
 	{
-		LPPROCESS_INFO process = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
-		char szout[1024];
-		__printf(szout, "FloatPointError! pid:%d\r\n", process->pid);
+		__kException((const char*)"FloatPointError", 16, stack);
+
 	}
 
 	__asm {
@@ -822,9 +790,8 @@ void __declspec(naked) AlignmentCheck(LIGHT_ENVIRONMENT* stack) {
 		mov ss, ax
 	}
 	{
-		LPPROCESS_INFO process = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
-		char szout[1024];
-		__printf(szout, "AlignmentCheck Exception! pid:%d\r\n", process->pid);
+		__kException((const char*)"AlignmentCheck", 17, stack);
+
 	}
 
 	__asm {
@@ -867,9 +834,8 @@ void __declspec(naked) MachineCheck(LIGHT_ENVIRONMENT* stack) {
 		mov ss, ax
 	}
 	{
-		LPPROCESS_INFO process = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
-		char szout[1024];
-		__printf(szout, "MachineCheck Exception! pid:%d\r\n", process->pid);
+		__kException((const char*)"MachineCheck", 18, stack);
+
 	}
 
 	__asm {
@@ -911,9 +877,8 @@ __declspec(naked) void SIMDException(LIGHT_ENVIRONMENT* stack) {
 		mov ss, ax
 	}
 	{
-		LPPROCESS_INFO process = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
-		char szout[1024];
-		__printf(szout, "SIMDException! pid:%d\r\n", process->pid);
+		__kException((const char*)"SIMDException", 19, stack);
+
 	}
 
 	__asm {
@@ -955,9 +920,8 @@ __declspec(naked) void VirtualizationException(LIGHT_ENVIRONMENT* stack) {
 		mov ss, ax
 	}
 	{
-		LPPROCESS_INFO process = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
-		char szout[1024];
-		__printf(szout, "VirtualizationException! pid:%d\r\n", process->pid);
+		__kException((const char*)"VirtualizationException", 20, stack);
+
 	}
 
 	__asm {
@@ -1001,9 +965,8 @@ __declspec(naked) void CtrlProtectException(LIGHT_ENVIRONMENT* stack) {
 		mov ss, ax
 	}
 	{
-		LPPROCESS_INFO process = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
-		char szout[1024];
-		__printf(szout, "CtrlProtectException! pid:%d\r\n", process->pid);
+		__kException((const char*)"CtrlProtectException", 21, stack);
+
 	}
 
 	__asm {
@@ -1045,6 +1008,8 @@ extern "C" void __declspec(naked) TimerInterrupt(LIGHT_ENVIRONMENT * stack) {
 		MOV FS, ax
 		MOV GS, AX
 		mov ss, ax
+
+		sti
 	}
 
 	{
@@ -1083,69 +1048,17 @@ extern "C" void __declspec(naked) TimerInterrupt(LIGHT_ENVIRONMENT * stack) {
 
 		jmp TimerInterrupt
 	}
-}
-
-
-
-
-extern "C" void __declspec(naked) CmosInterrupt(LIGHT_ENVIRONMENT * stack) {
-
-	__asm {
-
-		pushad
-		push ds
-		push es
-		push fs
-		push gs
-		push ss
-
-		push esp
-		sub esp, 4
-		push ebp
-		mov ebp, esp
-
-		mov eax, KERNEL_MODE_DATA
-		mov ds, ax
-		mov es, ax
-		MOV FS, ax
-		MOV GS, AX
-		mov ss, ax
-	}
 
 	{
-		outportb(0x70, 0x0c);
-		int flag = inportb(0x71);
-		//IRQF = (PF * PIE) + (AF * AIE) + (UF * UFE), if double interruptions, will not be 1
-		if (flag & 0x20) {
-			__kAlarmTimerProc();
-		}
-		else if (flag & 0x40) {
-			__kExactTimerProc();
-		}
-		else if (flag & 0x10) {
-			__kPeriodTimer();
-		}
-
-		outportb(0x20, 0x20);
-		outportb(0xa0, 0xa0);
-	}
-
-	__asm {
-		mov esp, ebp
-		pop ebp
-		add esp, 4
-		pop esp
-
-		pop ss
-		pop gs
-		pop fs
-		pop es
-		pop ds
-		popad
-
-		iretd
+		//char szout[1024];
+		//__printf(szout, "TimerInterrupt\r\n");
+		//goto TimerInterrupt;
 	}
 }
+
+
+
+
 
 
 
@@ -1368,6 +1281,67 @@ void __declspec(naked) Parallel1IntProc(LIGHT_ENVIRONMENT* stack) {
 		__printf(szout, "Parallel1IntProc!\r\n");
 		outportb(0x20, 0x20);
 		int v = inportb(0x378 + 1);
+	}
+
+	__asm {
+		mov esp, ebp
+		pop ebp
+		add esp, 4
+		pop esp
+
+		pop ss
+		pop gs
+		pop fs
+		pop es
+		pop ds
+		popad
+
+		iretd
+	}
+}
+
+
+
+extern "C" void __declspec(naked) CmosInterrupt(LIGHT_ENVIRONMENT * stack) {
+
+	__asm {
+
+		pushad
+		push ds
+		push es
+		push fs
+		push gs
+		push ss
+
+		push esp
+		sub esp, 4
+		push ebp
+		mov ebp, esp
+
+		mov eax, KERNEL_MODE_DATA
+		mov ds, ax
+		mov es, ax
+		MOV FS, ax
+		MOV GS, AX
+		mov ss, ax
+	}
+
+	{
+		outportb(0x70, 0x0c);
+		int flag = inportb(0x71);
+		//IRQF = (PF * PIE) + (AF * AIE) + (UF * UFE), if double interruptions, will not be 1
+		if (flag & 0x20) {
+			__kAlarmTimerProc();
+		}
+		else if (flag & 0x40) {
+			__kExactTimerProc();
+		}
+		else if (flag & 0x10) {
+			__kPeriodTimer();
+		}
+
+		outportb(0x20, 0x20);
+		outportb(0xa0, 0xa0);
 	}
 
 	__asm {
@@ -1672,7 +1646,7 @@ void __declspec(naked) IDEMasterIntProc(LIGHT_ENVIRONMENT* stack) {
 		int size = (high << 8) | low;
 
 		LPPROCESS_INFO proc = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
-		__printf(szout, "IDEMasterIntProc size:%x tid:%d port:%x status:%x\r\n", size,proc->tid,gAtaBasePort+7,status);
+		//__printf(szout, "IDEMasterIntProc size:%x tid:%d port:%x status:%x\r\n", size,proc->tid,gAtaBasePort+7,status);
 	}
 
 	__asm {
@@ -1727,8 +1701,7 @@ void __declspec(naked) IDESlaveIntProc(LIGHT_ENVIRONMENT* stack) {
 		int high = inportb(gAtapiBasePort + 5);
 		int size = (high << 8) | low;
 		LPPROCESS_INFO proc = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
-		__printf(szout, "IDESlaveIntProc size:%x tid:%d port:%x status:%x\r\n",
-			size, proc->tid, gAtapiBasePort + 7, status);
+		__printf(szout, "IDESlaveIntProc size:%x tid:%d port:%x status:%x\r\n",size, proc->tid, gAtapiBasePort + 7, status);
 	}
 
 	__asm {

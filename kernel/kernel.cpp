@@ -171,7 +171,7 @@ void __kKernelMain(DWORD retaddr,int pid,char * filename,char * funcname,DWORD p
 __int64 mytest() {
 
 	char szout[1024];
-	__sprintf(szout, "hello:%x,test:%s,64bit:%i64x, send:%d", 0x200, "hahaha",0x123456789abcdef, 256);
+	__sprintf(szout, "hello:%x,test:%s,64bit:%i64x,u:%u send:%d", 0, "hahaha",0x0123456789abcdef,123, 256);
 	return 0x123456789abcdef;
 
 }

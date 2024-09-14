@@ -442,11 +442,11 @@ int __free(DWORD linearAddr) {
 
 
 //make sure the first in the list is not to be deleted,or else will be locked
-void freeProcessMemory() {
+void freeProcessMemory(int pid) {
 
 	__enterSpinlock(&gAllocLock);
 
-	LPPROCESS_INFO tss = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
+	//LPPROCESS_INFO tss = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
 
 	LPMEMALLOCINFO info = (LPMEMALLOCINFO)MEMORY_ALLOC_BUFLIST;
 	do
@@ -455,7 +455,7 @@ void freeProcessMemory() {
 		{
 			break;
 		}
-		else if (info->pid == tss->pid)
+		else if (info->pid == pid)
 		{
 			resetMemAllocInfo(info);
 		}

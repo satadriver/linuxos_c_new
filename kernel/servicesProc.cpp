@@ -225,12 +225,11 @@ void __switchScreen() {
 }
 
 //https://www.felixcloutier.com/x86/cpuid
-DWORD __cpuRate(DWORD * hv) {
+unsigned __int64 __cpuRate() {
 	__asm {
 		mov eax,0x16
 		mov ecx,0
 		cpuid
-		mov dword ptr ds:[hv],edx
 		ret
 	}
 }

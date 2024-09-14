@@ -1,11 +1,12 @@
 #pragma once
-#include "def.h"
 
+#include "def.h"
+#include "task.h"
 
 #pragma pack(1)
 
 typedef struct {
-	DWORD no;
+
 	DWORD ss0;
 	DWORD gs;	//4
 	DWORD fs;	//8
@@ -29,7 +30,7 @@ typedef struct {
 }EXCEPTIONCODESTACK, *LPEXCEPTIONCODESTACK;
 
 typedef struct {
-	DWORD no;
+
 	DWORD ss0;
 	DWORD gs;	//4
 	DWORD fs;	//8
@@ -53,10 +54,13 @@ typedef struct {
 
 #pragma pack()
 
+
+
+
 #ifdef DLL_EXPORT
 
-extern "C" __declspec(dllexport) void __kException(DWORD);
+extern "C" __declspec(dllexport) void __kException(const char* descriptor, int num, LIGHT_ENVIRONMENT * tss);
 #else
 
-extern "C" __declspec(dllimport) void __kException(DWORD);
+extern "C" __declspec(dllimport) void __kException(const char* descriptor, int num, LIGHT_ENVIRONMENT * tss);
 #endif

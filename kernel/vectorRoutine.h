@@ -47,22 +47,9 @@ typedef struct {
 
 
 
-
-
-
-
-
-
-
 #pragma pack()
 
-#ifdef DLL_EXPORT
 
-extern "C" __declspec(dllexport) void __kException(DWORD);
-#else
-
-extern "C" __declspec(dllimport) void __kException(DWORD);
-#endif
 
 void  Com1IntProc(LIGHT_ENVIRONMENT* stack);
 void  Com2IntProc(LIGHT_ENVIRONMENT* stack);

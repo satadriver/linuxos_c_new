@@ -42,14 +42,9 @@ void resetAllMemAllocInfo();
 
 int resetMemAllocInfo(LPMEMALLOCINFO item);
 
-LPMEMALLOCINFO getExistAddr_size(DWORD addr,int size);
-
-LPMEMALLOCINFO getExistAddr_none_size(DWORD addr);
-
 LPMEMALLOCINFO getMemAllocInfo();
 
 int getAlignedSize(int size, int allignsize);
-
 
 LPMEMALLOCINFO getExistAddr(DWORD addr, int size);
 
@@ -59,7 +54,7 @@ DWORD pageAlignmentSize(DWORD size,int max);
 
 DWORD __kProcessMalloc(DWORD s, DWORD *retsize, int pid, DWORD vaddr);
 
-void freeProcessMemory();
+void freeProcessMemory(int pid);
 
 #ifdef DLL_EXPORT
 

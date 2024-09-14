@@ -461,7 +461,7 @@ int __i2strh(unsigned int n,int lowercase,unsigned char * buf) {
 	if (dst - buf == 2) {
 		dst[2] = 0x30;
 		dst[3] = 0;
-		dst++;
+		//dst++;
 	}
 	return dst - buf;
 }
@@ -578,152 +578,17 @@ int __strd2i(char * istr) {
 	return ret;
 }
 
-int __printf(char* buf, char* format, ...) {
-
-		if (format == 0 || buf == 0) {
-			return FALSE;
-		}
-
-		int formatLen = __strlen(format);
-		if (formatLen == 0) {
-			return FALSE;
-		}
-
-		DWORD* params = 0;
-		int param_cnt = 0;
-		__asm {
-			lea eax, format
-			add eax, 4
-			mov params, eax
-		}
-
-		char* dst = buf;
-		int spos = 0;
-		int dpos = 0;
-		char numstr[64];
-		int len = 0;
-		for (spos = 0; spos < formatLen; ) {
-
-			if (format[spos] == '%' && format[spos + 1] == 'd') {
-				spos += 2;
-				DWORD num = *params;
-				params++;
-
-				len = __i2strd(num, numstr);
-				__memcpy(dst + dpos, numstr, len);
-				dpos += len;
-			}
-			else if (format[spos] == '%' && format[spos + 1] == 'x') {
-
-				DWORD num = *params;
-				params++;
-
-				len = __i2strh(num, 1, (unsigned char*)numstr);
-				__memcpy(dst + dpos, numstr, len);
-
-				spos += 2;
-				dpos += len;
-			}
-			else if (format[spos] == '%' && format[spos + 1] == 'u') {
-
-				spos += 2;
-				DWORD num = *params;
-				params++;
-
-				len = __i2strd(num, numstr);
-				__memcpy(dst + dpos, numstr, len);
-				dpos += len;
-			}
-			else if (format[spos] == '%' && format[spos + 1] == 's') {
-				char* str = (char*)*params;
-				params++;
-				int tmpstrlen = __strlen(str);
-
-				__strcpy(dst + dpos, str);
-				dpos += tmpstrlen;
-				spos += 2;
-			}
-			else if (format[spos] == '%' && format[spos + 1] == 'X') {
-				DWORD num = *params;
-				params++;
-
-				len = __i2strh(num, 0, (unsigned char*)numstr);
-				__memcpy(dst + dpos, numstr, len);
-
-				spos += 2;
-				dpos += len;
-			}
-			else if (format[spos] == '%' && __memcmp(format + spos + 1, "i64d", 4) == 0) {
-				spos += 5;
-
-				DWORD numl = *params;
-				params++;
-				DWORD numh = *params;
-				params++;
-
-				len = __i2strd(numh, numstr);
-				__memcpy(dst + dpos, numstr, len);
-				dpos += len;
-				len = __i2strd(numl, numstr);
-				__memcpy(dst + dpos, numstr, len);
-				dpos += len;
-			}
-			else if (format[spos] == '%' && __memcmp(format + spos + 1, "i64x", 4) == 0) {
-				spos += 5;
-
-				DWORD numl = *params;
-				params++;
-				DWORD numh = *params;
-				params++;
-
-				len = __i2strh(numh, 1, (unsigned char*)numstr);
-				__memcpy(dst + dpos, numstr, len);
-				dpos += len;
-				len = __i2strh(numl, 1, (unsigned char*)numstr);
-				__memcpy(dst + dpos, numstr, len);
-				dpos += len;
-			}
-			else if (format[spos] == '%' && format[spos + 1] == 'S') {
-				wchar_t* wstr = (wchar_t*)*params;
-				params++;
-				int tmpstrlen = 2 * __wcslen(wstr);
-				spos += 2;
-				__wcscpy((wchar_t*)dst + dpos, (wchar_t*)wstr);
-				dpos += tmpstrlen;
-			}
-			else {
-				dst[dpos] = format[spos];
-				dpos++;
-				spos++;
-			}
-		}
-		dst[dpos] = 0;
-		dst[dpos + 1] = 0;
-
-	if (g_ScreenMode) {
-		int showlen = __drawGraphChars((unsigned char*)buf, 0);
-	}
-	return dpos;
-}
 
 
-int __sprintf(char* buf, char* format, ...) {
-
-	if (format == 0 || buf == 0) {
+int __kFormat(char* buf, char* format, DWORD* params) {
+	
+	if (format == 0 || buf == 0 || params == 0) {
 		return FALSE;
 	}
 
 	int formatLen = __strlen(format);
 	if (formatLen == 0) {
 		return FALSE;
-	}
-
-	DWORD* params = 0;
-	int param_cnt = 0;
-	__asm {
-		lea eax,format
-		add eax,4
-		mov params,eax
 	}
 
 	char* dst = buf;
@@ -734,7 +599,7 @@ int __sprintf(char* buf, char* format, ...) {
 	for (spos = 0; spos < formatLen; ) {
 
 		if (format[spos] == '%' && format[spos + 1] == 'd') {
-			spos+=2;
+			spos += 2;
 			DWORD num = *params;
 			params++;
 
@@ -742,12 +607,12 @@ int __sprintf(char* buf, char* format, ...) {
 			__memcpy(dst + dpos, numstr, len);
 			dpos += len;
 		}
-		else if (format[spos] == '%' && format[spos + 1] == 'x') {
+		else if (format[spos] == '%' && (format[spos + 1] == 'x' || format[spos + 1] == 'p') ) {
 
 			DWORD num = *params;
 			params++;
 
-			len = __i2strh(num,1, (unsigned char*)numstr);
+			len = __i2strh(num, 1, (unsigned char*)numstr);
 			__memcpy(dst + dpos, numstr, len);
 
 			spos += 2;
@@ -764,10 +629,10 @@ int __sprintf(char* buf, char* format, ...) {
 			dpos += len;
 		}
 		else if (format[spos] == '%' && format[spos + 1] == 's') {
-			char * str = (char*)*params;
+			char* str = (char*)*params;
 			params++;
 			int tmpstrlen = __strlen(str);
-			
+
 			__strcpy(dst + dpos, str);
 			dpos += tmpstrlen;
 			spos += 2;
@@ -782,7 +647,10 @@ int __sprintf(char* buf, char* format, ...) {
 			spos += 2;
 			dpos += len;
 		}
-		else if (format[spos] == '%' && __memcmp(format + spos + 1,"i64d",4) == 0 ) {
+		else if (format[spos] == '%' && ((__memcmp(format + spos + 1, "i64d", 4) == 0) ||
+			__memcmp(format + spos + 1, "I64d", 4) == 0||
+			__memcmp(format + spos + 1, "I64D", 4) == 0||
+			__memcmp(format + spos + 1, "i64D", 4) == 0) ){
 			spos += 5;
 
 			DWORD numl = *params;
@@ -805,17 +673,17 @@ int __sprintf(char* buf, char* format, ...) {
 			DWORD numh = *params;
 			params++;
 
-			len = __i2strh(numh,1, (unsigned char*)numstr);
+			len = __i2strh(numh, 1, (unsigned char*)numstr);
 			__memcpy(dst + dpos, numstr, len);
 			dpos += len;
-			len = __i2strh(numl,1, (unsigned char*)numstr);
+			len = __i2strh(numl, 1, (unsigned char*)numstr);
 			__memcpy(dst + dpos, numstr, len);
 			dpos += len;
 		}
 		else if (format[spos] == '%' && format[spos + 1] == 'S') {
 			wchar_t* wstr = (wchar_t*)*params;
 			params++;
-			int tmpstrlen = 2*__wcslen(wstr);
+			int tmpstrlen = 2 * __wcslen(wstr);
 			spos += 2;
 			__wcscpy((wchar_t*)dst + dpos, (wchar_t*)wstr);
 			dpos += tmpstrlen;
@@ -827,9 +695,62 @@ int __sprintf(char* buf, char* format, ...) {
 		}
 	}
 	dst[dpos] = 0;
-	dst[dpos+1] = 0;
+	dst[dpos + 1] = 0;
 
 	return dpos;
+}
+
+
+int __printf(char* buf, char* format, ...) {
+
+	if (format == 0 || buf == 0) {
+		return FALSE;
+	}
+
+	int formatLen = __strlen(format);
+	if (formatLen == 0) {
+		return FALSE;
+	}
+
+	void* params = 0;
+	int param_cnt = 0;
+	__asm {
+		lea eax, format
+		add eax, 4
+		mov params, eax
+	}
+
+	int len = __kFormat(buf, format, (DWORD*)params);
+
+	if (g_ScreenMode) {
+		int showlen = __drawGraphChars((unsigned char*)buf, 0);
+	}
+	return len;
+}
+
+
+int __sprintf(char* buf, char* format, ...) {
+
+	if (format == 0 || buf == 0) {
+		return FALSE;
+	}
+
+	int formatLen = __strlen(format);
+	if (formatLen == 0) {
+		return FALSE;
+	}
+
+	void* params = 0;
+	int param_cnt = 0;
+	__asm {
+		lea eax, format
+		add eax, 4
+		mov params, eax
+	}
+
+	int len = __kFormat(buf, format, (DWORD*)params);
+
+	return len;
 }
 
 int __strlwr(char * str) {
@@ -1028,12 +949,6 @@ DWORD __leaveLock(DWORD * lockvalue) {
 }
 
 
-
-
-
-
-
-
 int getCpuType(char* name) {
 
 	__asm {
@@ -1055,9 +970,6 @@ int getCpuInfo(char* name) {
 
 	return 0;
 }
-
-
-
 
 int __shutdownSystem() {
 
@@ -1089,7 +1001,7 @@ int __shutdownSystem() {
 	return 0;
 }
 
-//pu寻址位在第一位开始ffff:0000,当寻址位在第一位的时候及0，
+//cpu寻址位在第一位开始ffff:0000,当寻址位在第一位的时候及0，
 //会检测到当前地址0040:0072位是否为1234h,如果是1234h时，就不需要检测内存，如果不是1234h，就需要检测内存，就会重启
 int __reset() {
 

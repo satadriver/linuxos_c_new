@@ -424,8 +424,13 @@ extern "C"  __declspec(dllexport) DWORD __kTaskSchedule(LIGHT_ENVIRONMENT* regs)
 
 	if ((g_tagMsg++) % 0x100 == 0 && g_tagMsg < 0x1000) {
 		__int64 timeh2 = __rdtsc() - timeh1;
-		__printf(szout, "new task pid:%d tid:%d,old task pid:%d tid:%d,time:%x\r\n", 
-			prev->pid, prev->tid, next->pid, next->tid,(DWORD)timeh2);
+		__int64 cpurate = __cpuRate();
+
+		__printf(szout,
+			"current link:%x,prev link:%x,next link:%x,stack eflags:%x,current eflags:%x,prev eflags:%x,next eflags:%x,\
+			new task pid:%d tid:%d,old task pid:%d tid:%d,timestamp:%i64x,cpurate:%i64x\r\n", 
+			process->tss.link,prev->tss.link,next->tss.link, regs->eflags,process->tss.eflags,prev->tss.eflags,next->tss.eflags,
+			prev->pid, prev->tid, next->pid, next->tid,timeh2,cpurate);
 	}
 	return TRUE;
 }
@@ -458,10 +463,10 @@ extern "C"  __declspec(dllexport) DWORD __kTaskSchedule(LIGHT_ENVIRONMENT * env)
 		prev->status = TASK_OVER;
 		process->status = TASK_OVER;
 		if (prev->tid == prev->pid) {
-			__kFreeProcess(prev->pid);
+			//__kFreeProcess(prev->pid);
 		}
 		else {
-			__kFree(prev->espbase);
+			//__kFree(prev->espbase);
 		}
 	}
 	else if (prev->status == TASK_OVER || process->status == TASK_OVER) {
@@ -495,10 +500,10 @@ extern "C"  __declspec(dllexport) DWORD __kTaskSchedule(LIGHT_ENVIRONMENT * env)
 		if (next->status == TASK_TERMINATE) {
 			next->status = TASK_OVER;
 			if (next->tid == next->pid) {
-				__kFreeProcess(next->pid);
+				//__kFreeProcess(next->pid);
 			}
 			else {
-				__kFree(next->espbase);
+				//__kFree(next->espbase);
 			}
 			continue;
 		}
@@ -611,8 +616,13 @@ extern "C"  __declspec(dllexport) DWORD __kTaskSchedule(LIGHT_ENVIRONMENT * env)
 
 	if ((g_tagMsg++) % 0x100 == 0 && g_tagMsg < 0x1000) {
 		__int64 timeh2 = __rdtsc() - timeh1;
-		__printf(szout, "new task pid:%d tid:%d,old task pid:%d tid:%d,time:%x\r\n",
-			prev->pid, prev->tid, next->pid, next->tid, (DWORD)timeh2);
+		__int64 cpurate = __cpuRate();
+
+		__printf(szout,
+			"current link:%x,prev link:%x,next link:%x,stack eflags:%x,current eflags:%x,prev eflags:%x,next eflags:%x,\
+			new task pid:%d tid:%d,old task pid:%d tid:%d,timestamp:%i64x,cpurate:%i64x\r\n",
+			process->tss.link, prev->tss.link, next->tss.link, regs->eflags, process->tss.eflags, prev->tss.eflags, next->tss.eflags,
+			prev->pid, prev->tid, next->pid, next->tid, timeh2, cpurate);
 	}
 
 	return TRUE;

@@ -22,7 +22,7 @@ int insertPageIdx(LPMEMALLOCINFO info, DWORD addr, int size, int pid, DWORD vadd
 
 LPMEMALLOCINFO isPageIdxExist(DWORD addr, int size);
 
-void freeProcessPages();
+void freeProcessPages(int pid);
 
 void linearMapping();
 

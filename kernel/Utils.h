@@ -32,7 +32,7 @@ typedef struct
 
 #define  __kPrintf(buf,format, ...) __printf(buf,format,__VA_ARGS__)
 
-
+int __kFormat(char* buf, char* format, void** args);
 
 #ifdef DLL_EXPORT
 extern "C"  __declspec(dllexport) int __getDateTime(LPDATETIME datetime);

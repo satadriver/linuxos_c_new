@@ -19,12 +19,9 @@
 
 void __kFreeProcess(int pid) {
 
-	freeProcessMemory();
+	freeProcessMemory(pid);
 
-	//do not need to free stack esp0
-	freeProcessPages();
-
-	//clearcr3();
+	freeProcessPages(pid);
 
 	//destroyWindows();
 }
@@ -35,64 +32,56 @@ void __kFreeProcess(int pid) {
 //3 any thread of process can call this to terminate process resident in
 // any process can call this to terminate self to other process with dwtid
 //above so,the most import element is dwtid
-void __terminateProcess(int dwtid, char * filename, char * funcname, DWORD lpparams) {
-
-	int tid = dwtid & 0x7fffffff;
-	if (tid < 0 || tid >= TASK_LIMIT_TOTAL) {
-		return;
-	}
-
-	char szout[1024];
-
-	int retvalue = 0;
-	__asm {
-		mov retvalue, eax
-	}
+void __terminateProcess(int tid, char * filename, char * funcname, DWORD lpparams) {
 
 	LPPROCESS_INFO tss = (LPPROCESS_INFO)TASKS_TSS_BASE;
 
 	LPPROCESS_INFO current = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
 
-	__printf(szout, "__terminateProcess pid:%x,filename:%s,funcname:%s,current pid:%x\n",tid, filename, funcname, current->pid);
-
 	int pid = tss[tid].pid;
 
-	LPPROCESS_INFO process = 0;
-
-	__asm
-	{
-		//cli
+	if (tid < 0 || tid >= TASK_LIMIT_TOTAL || tss->tid != tid) {
+		return;
 	}
 
+	char szout[1024];
+
+	__printf(szout, "__terminateProcess tid:%x,pid:%x,current pid:%x,current tid:%x,filename:%s,funcname:%s\n",
+		tid,pid, current->pid,current->tid, filename, funcname);	
+
+	LPPROCESS_INFO process = 0;
 	
 	for (int i = 0; i < TASK_LIMIT_TOTAL; i++) {
 
 		if ( (tss[i].status == TASK_RUN) && (tss[i].pid == pid) )
 		{
 			if (tss[i].pid != tss[i].tid ) {
-
 				tss[i].status = TASK_TERMINATE;
+				
 			}
 			else {
-				process = &tss[i];
-			}
+				process = &tss[i];		
+			}		
 		}	
-
 	} 
 
 	tss[process->pid].status = TASK_TERMINATE;
 
-	__asm {
-		//sti
-	}
+	__kFreeProcess(pid);
 
-	if (dwtid & 0x80000000)
+	if (current->tid == tid)
 	{
-		__sleep(0);
+		current->status = TASK_TERMINATE;
 	}
 	else {
-		__sleep(-1);
+		//do nothing
 	}
+
+	int retvalue = 0;
+	__asm {
+		mov eax, retvalue
+	}
+	__sleep(-1);
 }
 
 
@@ -385,9 +374,9 @@ int __kCreateProcessFromName(char * filename, char * funcname, int syslevel, DWO
 
 int __kCreateProcessFromAddrFunc(DWORD filedata, int filesize,char * funcname,int syslevel, DWORD params) {
  	char filename[1024];
-// 	__getDateTimeStr(filename);
+ 	//__getDateTimeStr(filename);
 
-	__printf(filename, "process_%x", *(unsigned int*)TIMER0_TICK_COUNT);
+	__sprintf(filename, "process_%x", *(unsigned int*)TIMER0_TICK_COUNT);
 
 	return __kCreateProcess(filedata, filesize, filename, funcname, syslevel, params);
 }
@@ -422,7 +411,7 @@ int __kCreateProcess(DWORD filedata, int filesize,char * filename,char * funcnam
 
 	if (mode & DOS_PROCESS_RUNCODE)
 	{
-		ret = __initDosTss(result.lptss, result.number, filedata, filename, funcname, mode + (level | 3), params);
+		ret = __initDosTss(result.lptss, result.number, filedata, filename, funcname,3, params);
 		return ret;
 	}
 
