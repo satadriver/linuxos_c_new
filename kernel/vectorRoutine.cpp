@@ -1022,7 +1022,7 @@ extern "C" void __declspec(naked) TimerInterrupt(LIGHT_ENVIRONMENT * stack) {
 		__kTaskSchedule((LIGHT_ENVIRONMENT*)stack);
 
 		outportb(0x20, 0x20);
-		outportb(0xa0, 0xa0);
+
 	}
 
 	__asm {
@@ -1049,12 +1049,6 @@ extern "C" void __declspec(naked) TimerInterrupt(LIGHT_ENVIRONMENT * stack) {
 		iretd
 
 		jmp TimerInterrupt
-	}
-
-	{
-		//char szout[1024];
-		//__printf(szout, "TimerInterrupt\r\n");
-		//goto TimerInterrupt;
 	}
 }
 
@@ -1138,6 +1132,7 @@ void __declspec(naked) Com1IntProc(LIGHT_ENVIRONMENT* stack) {
 	{
 		char szout[1024];
 		__printf(szout, "Com1IntProc!\r\n");
+
 		outportb(0x20, 0x20);
 	}
 
@@ -1611,6 +1606,13 @@ void __declspec(naked) CoprocessorIntProc(LIGHT_ENVIRONMENT* stack) {
 
 //驱动器读取一个扇区后，自动设置状态寄存器1F7H的DRQ数据请求位，并清除BSY位忙信号。 
 //DRQ位通知主机现在可以从缓冲区中读取512字节或更多的数据，同时向主机发INTRQ中断请求信号
+// A sectorcount of 0 means 256 sectors = 128K.
+//One way of trying to reduce the number of IRQs in multitasking PIO mode is to use the READ MULTIPLE (0xC4), 
+//and WRITE MULTIPLE (0xC5) commands. These commands make the drive buffer "blocks" of sectors, 
+//and only send one IRQ per block, rather than one IRQ per sector. 
+//it is necessary to read the Regular Status Register once, to make the disk clear its interrupt flag. 
+//If the ERR bit in the Status Register is set (bit 0, value = 1),
+//you may want to read and save the "error details" value from the Error IO port (0x1F1 on the Primary bus).
 void __declspec(naked) IDEMasterIntProc(LIGHT_ENVIRONMENT* stack) {
 
 	__asm {
@@ -1637,9 +1639,10 @@ void __declspec(naked) IDEMasterIntProc(LIGHT_ENVIRONMENT* stack) {
 
 	{
 		char szout[1024];
+
+		outportb(0x376, 0);	//IRQ14
 		
-		outportb(0x20, 0x20);
-		outportb(0xa0, 0xa0);
+		int sta = inportb(0x376);	//IRQ14
 		
 		int status = inportb(gAtaBasePort + 7);
 		//below 2 line codes why can not be removed?
@@ -1649,6 +1652,9 @@ void __declspec(naked) IDEMasterIntProc(LIGHT_ENVIRONMENT* stack) {
 
 		LPPROCESS_INFO proc = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
 		//__printf(szout, "IDEMasterIntProc size:%x tid:%d port:%x status:%x\r\n", size,proc->tid,gAtaBasePort+7,status);
+
+		outportb(0x20, 0x20);
+		outportb(0xa0, 0xa0);
 	}
 
 	__asm {
@@ -1695,8 +1701,11 @@ void __declspec(naked) IDESlaveIntProc(LIGHT_ENVIRONMENT* stack) {
 	{
 		char szout[1024];
 
-		outportb(0x20, 0x20);
-		outportb(0xa0, 0xa0);
+		int sta = inportb(0x3f6); //IRQ15
+		
+		outportb(0x3f6, 0); //IRQ15
+		
+
 		int status = inportb(gAtapiBasePort + 7);
 		//below 2 line codes why can not be removed?
 		int low = inportb(gAtapiBasePort + 4);
@@ -1704,6 +1713,9 @@ void __declspec(naked) IDESlaveIntProc(LIGHT_ENVIRONMENT* stack) {
 		int size = (high << 8) | low;
 		LPPROCESS_INFO proc = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
 		__printf(szout, "IDESlaveIntProc size:%x tid:%d port:%x status:%x\r\n",size, proc->tid, gAtapiBasePort + 7, status);
+
+		outportb(0x20, 0x20);
+		outportb(0xa0, 0xa0);
 	}
 
 	__asm {

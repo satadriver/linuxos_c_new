@@ -481,7 +481,6 @@ int __i2strd(unsigned int h, char * strd) {
 	{
 
 		unsigned int d = h / divid;
-
 		if (d)
 		{
 			*strd = d + 0x30;

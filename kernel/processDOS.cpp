@@ -22,7 +22,7 @@
 DOS_PE_CONTROL g_v86ControlBloack[LIMIT_V86_PROC_COUNT] = { 0 };
 
 
-int getDosPeAddr(int type,DWORD filedata,int size,int pid) {
+int getVm86ProcAddr(int type,DWORD filedata,int size,int pid) {
 
 	LPDOS_PE_CONTROL info = (LPDOS_PE_CONTROL)g_v86ControlBloack;
 	for (int i = 0; i < LIMIT_V86_PROC_COUNT; i ++)
@@ -77,10 +77,10 @@ int relocDos(DWORD loadseg) {
 }
 
 
-DWORD __initDosExe(int type,DWORD filedata, int filesize,int pid) {
+DWORD __allocVm86Addr(int type,DWORD filedata, int filesize,int pid) {
 	int ret = 0;
 
-	DWORD seg = getDosPeAddr(type, filedata,filesize,pid);
+	DWORD seg = getVm86ProcAddr(type, filedata,filesize,pid);
 	if (seg >= INT13_RM_FILEBUF_SEG || seg <= 0)
 	{
 		return FALSE;
@@ -105,12 +105,12 @@ DWORD __initDosExe(int type,DWORD filedata, int filesize,int pid) {
 
 
 
-int __createDosCodeProc(DWORD addr, char* filename) {
+int __createDosCodeProc(DWORD addr, int size,char* filename) {
 	if (__findProcessFileName(filename))
 	{
 		return 0;
 	}
-	return __kCreateProcess(addr, 0x1000, filename, filename, DOS_PROCESS_RUNCODE | 3, 0);
+	return __kCreateProcess(addr, size, filename, filename, DOS_PROCESS_RUNCODE | 3, 0);
 }
 
 int __initDosTss(LPPROCESS_INFO tss, int pid, DWORD addr, char * filename, char * funcname, DWORD level, DWORD runparam) {

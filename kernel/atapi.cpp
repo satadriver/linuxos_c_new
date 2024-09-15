@@ -34,19 +34,19 @@ int atapiCMD(unsigned short* cmd) {
 	outportb(gAtapiBasePort + 6, gATAPIDev);
 	outportb(gAtapiBasePort + 7, 0xa0);
 
-	int res = waitDRQ(gAtapiBasePort + 7);
-
-	int low = inportb(gAtapiBasePort + 4);
-	int high = inportb(gAtapiBasePort + 5);
-	writeAtapiCMD(cmd);
-
+	int res = waitComplete(gAtapiBasePort + 7);
+	if (res) {
+		int low = inportb(gAtapiBasePort + 4);
+		int high = inportb(gAtapiBasePort + 5);
+		writeAtapiCMD(cmd);
+	}
 	return 0;
 }
 
 
 int writeAtapiCMD(unsigned short* cmd) {
 	__asm {
-		cli
+		//cli
 
 		mov dx, gAtapiBasePort
 		mov ecx, gAtapiPackSize
@@ -55,12 +55,13 @@ int writeAtapiCMD(unsigned short* cmd) {
 		cld
 		rep outsw
 
-		sti
+		//sti
 	}
 	return 0;
 }
 
 //atapi free value is 0x41,not 0x50
+/*
 int waitDRQ(WORD port) {
 
 	int cnt = 16;
@@ -71,8 +72,9 @@ int waitDRQ(WORD port) {
 		}
 		else {
 			char szout[1024];
-			if ( (r & 0x80) == 0) {
-				__printf(szout, "waitComplete:%x\r\n", r);
+			//if ( (r & 0x80) == 0)
+			{
+				__printf(szout, "waitComplete:%x,port:%x\r\n", r,port);
 			}
 			__sleep(0);
 			continue;
@@ -81,7 +83,7 @@ int waitDRQ(WORD port) {
 
 	return FALSE;
 }
-
+*/
 
 int readAtapiSector(char * buf,unsigned int secnum, unsigned int seccnt) {
 
@@ -96,7 +98,7 @@ int readAtapiSector(char * buf,unsigned int secnum, unsigned int seccnt) {
 	outportb(gAtapiBasePort + 5, (readsize >> 8)&0xff);
 	outportb(gAtapiBasePort + 7, 0xa0);
 
-	int res = waitDRQ(gAtapiBasePort + 7);
+	int res = waitComplete(gAtapiBasePort + 7);
 
 	int low = inportb(gAtapiBasePort + 4);
 	int high = inportb(gAtapiBasePort + 5);
@@ -118,9 +120,11 @@ int readAtapiSector(char * buf,unsigned int secnum, unsigned int seccnt) {
 
 	char* lpbuf = buf;
 	for (int i = 0; i < seccnt; i++) {
-		int res = waitDRQ(gAtapiBasePort + 7);
-		res = readsector(gAtapiBasePort, ATAPI_SECTOR_SIZE / 4,lpbuf);
-		lpbuf += ATAPI_SECTOR_SIZE;
+		int res = waitComplete(gAtapiBasePort + 7);
+		if (res) {
+			res = readsector(gAtapiBasePort, ATAPI_SECTOR_SIZE / 4, lpbuf);
+			lpbuf += ATAPI_SECTOR_SIZE;
+		}
 	}
 
 	return readsize;
@@ -139,7 +143,7 @@ int writeAtapiSector(char* buf, unsigned int secnum, unsigned int seccnt) {
 	outportb(gAtapiBasePort + 6, gATAPIDev);
 	outportb(gAtapiBasePort + 7, 0xa0);
 
-	int res = waitDRQ(gAtapiBasePort + 7);
+	int res = waitComplete(gAtapiBasePort + 7);
 
 	int low = inportb(gAtapiBasePort + 4);
 	int high = inportb(gAtapiBasePort + 5);
@@ -162,9 +166,11 @@ int writeAtapiSector(char* buf, unsigned int secnum, unsigned int seccnt) {
 
 	char* lpbuf = buf;
 	for (int i = 0; i < seccnt; i++) {
-		int res = waitDRQ(gAtapiBasePort + 7);
-		res = writesector(gAtapiBasePort, ATAPI_SECTOR_SIZE / 4, lpbuf);
-		lpbuf += ATAPI_SECTOR_SIZE;
+		int res = waitComplete(gAtapiBasePort + 7);
+		if (res) {
+			res = writesector(gAtapiBasePort, ATAPI_SECTOR_SIZE / 4, lpbuf);
+			lpbuf += ATAPI_SECTOR_SIZE;
+		}
 	}
 
 	return readsize;

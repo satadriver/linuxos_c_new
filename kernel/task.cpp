@@ -289,7 +289,7 @@ int __resumePid(int pid) {
 
 
 #ifndef SINGLE_TASK_TSS
-extern "C"  __declspec(dllexport) DWORD __kTaskSchedule(LIGHT_ENVIRONMENT* regs) {
+extern "C"  __declspec(dllexport) DWORD __kTaskSchedule(LIGHT_ENVIRONMENT* env) {
 
 	char szout[1024];
 
@@ -307,10 +307,10 @@ extern "C"  __declspec(dllexport) DWORD __kTaskSchedule(LIGHT_ENVIRONMENT* regs)
 	LPPROCESS_INFO process = (LPPROCESS_INFO)CURRENT_TASK_TSS_BASE;
 	LPPROCESS_INFO prev = (LPPROCESS_INFO)(tss + process->tid);
 
-	LPPROCESS_INFO next = prev;
+	
 
 	if (process->tid != prev->tid) {
-		__printf(szout, "__kTaskSchedule error\r\n");
+		__printf(szout, "__kTaskSchedule process tid:%d, prev tid:%d not same\r\n", process->tid, prev->tid);
 		return 0;
 	}
 
@@ -325,23 +325,32 @@ extern "C"  __declspec(dllexport) DWORD __kTaskSchedule(LIGHT_ENVIRONMENT* regs)
 		}
 	}
 	else if (prev->status == TASK_OVER || process->status == TASK_OVER) {
-		__printf(szout, "__kTaskSchedule error\r\n");
-		return 0;		
+		process->status = TASK_OVER;
+		prev->status = TASK_OVER;
+		__printf(szout, "__kTaskSchedule prev status TASK_OVER!\r\n");	
 	}
 	else if ( process->status == TASK_RUN || prev->status == TASK_RUN)
 	{
-		if (prev->sleep) {
-			prev->sleep--;
+		if (process->sleep) {
+			process->sleep--;
+			prev->sleep = process->sleep;
 		}
+		else if (prev->sleep) {
+			prev->sleep--;
+			process->sleep = prev->sleep;
+		}	
 	}
 	else if (process->status == TASK_SUSPEND || prev->status == TASK_SUSPEND ) {
-
+		process->status = TASK_SUSPEND;
+		prev->status = TASK_SUSPEND;
 	}
 	else {
-		__printf(szout, "__kTaskSchedule error\r\n");
+		__printf(szout, "__kTaskSchedule process status:%d, prev status:%d error\r\n", process->status, prev->status);
 		return 0;
 	}
+	process->counter++;
 
+	LPPROCESS_INFO next = prev;
 	do {
 		next++;
 		if (next - tss >= TASK_LIMIT_TOTAL) {
@@ -386,12 +395,13 @@ extern "C"  __declspec(dllexport) DWORD __kTaskSchedule(LIGHT_ENVIRONMENT* regs)
 	// 	}
 	//process->tss.ldt = ldtreg.addr;
 
-	process->counter++;
+	
 	__memcpy((char*)prev, (char*)process, sizeof(PROCESS_INFO));
 	__memcpy((char*)process, (char*)next, sizeof(PROCESS_INFO));
 	
 	//tasktest();
 
+	/*
  	char * fenvprev = (char*)FPU_STATUS_BUFFER + (prev->tid << 9);
 	//If a memory operand is not aligned on a 16-byte boundary, regardless of segment
 	//The assembler issues two instructions for the FSAVE instruction (an FWAIT instruction followed by an FNSAVE instruction), 
@@ -413,9 +423,10 @@ extern "C"  __declspec(dllexport) DWORD __kTaskSchedule(LIGHT_ENVIRONMENT* regs)
 			//frstor [fenv]
 			fxrstor[eax]
 		}
-	}
+	}*/
 
-	if ((g_tagMsg++) % 0x100 == 0 && g_tagMsg < 0x1000) {
+	//if ((g_tagMsg++) % 0x1 == 0 && g_tagMsg < 0x100)
+	{
 		__int64 timeh2 = __rdtsc() - timeh1;
 		__int64 cpurate = __cpuRate();
 
@@ -448,7 +459,7 @@ extern "C"  __declspec(dllexport) DWORD __kTaskSchedule(LIGHT_ENVIRONMENT * env)
 	LPPROCESS_INFO next = prev;
 
 	if (process->tid != prev->tid) {
-		__printf(szout, "__kTaskSchedule error\r\n");
+		__printf(szout, "__kTaskSchedule process tid:%d, prev tid:%d not same\r\n", process->tid, prev->tid);
 		return 0;
 	}
 
@@ -463,22 +474,26 @@ extern "C"  __declspec(dllexport) DWORD __kTaskSchedule(LIGHT_ENVIRONMENT * env)
 		}
 	}
 	else if (prev->status == TASK_OVER || process->status == TASK_OVER) {
-		__printf(szout, "__kTaskSchedule error\r\n");
-		return 0;	
+		process->status = TASK_OVER;
+		prev->status = TASK_OVER;
+		__printf(szout, "__kTaskSchedule prev status TASK_OVER!\r\n");
 	}
 	else if (process->status == TASK_RUN || prev->status == TASK_RUN)
 	{
-		if (prev->sleep) {
-			prev->sleep--;
+		if (process->sleep) {
+			process->sleep--;
 		}
+		prev->sleep = process->sleep;
 	}
 	else if (process->status == TASK_SUSPEND || prev->status == TASK_SUSPEND) {
-
+		process->status = TASK_SUSPEND;
+		prev->status = TASK_SUSPEND;
 	}
 	else {
-		__printf(szout, "__kTaskSchedule error\r\n");
+		__printf(szout, "__kTaskSchedule process status:%d, prev status:%d error\r\n", process->status, prev->status);
 		return 0;
 	}
+	process->counter++;
 
 	do {
 		next++;
@@ -557,7 +572,7 @@ extern "C"  __declspec(dllexport) DWORD __kTaskSchedule(LIGHT_ENVIRONMENT * env)
 	// 	}
 	//process->tss.ldt = ldtreg.addr;
 
-	process->counter++;
+	
 	__memcpy((char*)prev, (char*)process, sizeof(PROCESS_INFO));
 	__memcpy((char*)process, (char*)next, sizeof(PROCESS_INFO));
 

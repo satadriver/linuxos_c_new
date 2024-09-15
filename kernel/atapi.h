@@ -3,7 +3,7 @@
 #include "def.h"
 
 
-int waitDRQ(WORD port);
+//int waitDRQ(WORD port);
 
 int writeAtapiCMD(unsigned short* cmd);
 

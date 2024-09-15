@@ -20,6 +20,10 @@ WORD gAtapiBasePort = 0;
 
 WORD gATAPIDev = 0;
 
+DWORD gATADrv = 0;
+
+WORD gATAPIDrv = 0;
+
 DWORD gMimo = 0;
 
 DWORD gSecMax = ONCE_READ_LIMIT;
@@ -64,6 +68,7 @@ int checkIDEPort(unsigned short port) {
 		gAtaBasePort = port;
 
 		gATADev = inportb(port + 6);
+		gATADrv = gATADev & 0x10;
 
 		r = identifyDevice(port, 0xec, buffer);
 		if (r) {
@@ -83,6 +88,8 @@ int checkIDEPort(unsigned short port) {
 		gAtapiBasePort = port;
 
 		gATAPIDev = inportb(port + 6);
+
+		gATAPIDrv = gATAPIDev & 0x10;
 
 		r = identifyDevice(port , 0xa1 , buffer);
 		if (r) {
@@ -137,6 +144,10 @@ int getIDEPort() {
 
 	ret = checkIDEPort(0x170);
 	//__printf((char*)szshow, "getIDEPort 170 over\n");
+
+	ret = checkIDEPort(0x1e8);
+
+	ret = checkIDEPort(0x168);
 
 	DWORD hdport[1024] ;
 	DWORD dev = 0;
@@ -200,8 +211,11 @@ int getIDEPort() {
 //bit4-bit7:¶ÁÈ¡¶Ë¿ÚµÃÖµ¸ú1f7¶ÁÈ¡µÃ¸ß4Î»Ò»ÖÂ
 int __initIDE() {
 
-	outportb(0x3f6, 0); //IRQ15
-	outportb(0x376, 0);	//IRQ14
+	outportb(0x3f6, 0); //IRQ15 device0
+	outportb(0x376, 0);	//IRQ14	device0
+
+	outportb(0x3e6, 0); //IRQ15 device1
+	outportb(0x366, 0);	//IRQ14	device1
 
 	int r = getIDEPort();
 
@@ -216,14 +230,14 @@ int readPortSector(unsigned int secno, DWORD secnohigh, unsigned int seccnt, cha
 	CHAR* offset = buf;
 	for (int i = 0; i < readcnt; i++)
 	{
-		ret = readSectorLBA48(secno, secnohigh, gSecMax, offset, gATADev);
+		ret = readSectorLBA48(secno, secnohigh, gSecMax, offset);
 		offset += (BYTES_PER_SECTOR * gSecMax);
 		secno += gSecMax;
 	}
 
 	if (readmod)
 	{
-		ret = readSectorLBA48(secno, secnohigh, readmod, offset, gATADev);
+		ret = readSectorLBA48(secno, secnohigh, readmod, offset);
 	}
 	return ret;
 }
@@ -236,14 +250,14 @@ int writePortSector(unsigned int secno, DWORD secnohigh, unsigned int seccnt, ch
 	CHAR* offset = buf;
 	for (int i = 0; i < readcnt; i++)
 	{
-		ret = writeSectorLBA48(secno, secnohigh, gSecMax, offset, gATADev);
+		ret = writeSectorLBA48(secno, secnohigh, gSecMax, offset);
 		offset += BYTES_PER_SECTOR * gSecMax;
 		secno += gSecMax;
 	}
 
 	if (readmod)
 	{
-		ret = writeSectorLBA48(secno, secnohigh, readmod, offset, gATADev);
+		ret = writeSectorLBA48(secno, secnohigh, readmod, offset);
 	}
 	return ret;
 }
@@ -251,33 +265,35 @@ int writePortSector(unsigned int secno, DWORD secnohigh, unsigned int seccnt, ch
 
 
 int waitComplete(WORD port) {
+	int r = 0;
 	char szout[1024];
-	int r = inportb(port - 6);
-	if (r == 0) {
+	//r = inportb(port - 6);
+	//if ( r == 0 ) 
+	{
 		int cnt = 16;
 		while (cnt--) {
 			r = inportb(port);
-			if (r & 5) {
-				return FALSE;
-			}
-			else if ((r & 0xfd) == 0x58) {
+			//if (r & 1) {
+				//return FALSE;
+			//}
+			//else 
+			if ((r & 0xf9) == 0x58) {
 				return TRUE;
 			}
 			else {
 				
 				//if ((r & 0x80) == 0) 
 				{
-					outportb(port, 0);
-					__printf(szout, "waitComplete:%x\r\n",r);
+					__printf(szout, "waitComplete:%x,port:%x\r\n", r, port);
 				}
 				__sleep(0);
 				continue;
 			}
 		}
 	}
-	else {
-		__printf(szout, "waitComplete result:%x\r\n", r);
-	}
+	//else {
+	//	__printf(szout, "waitComplete:%x,port:%x\r\n", r, port-6);
+	//}
 	return FALSE;
 }
 
@@ -345,7 +361,7 @@ int readsector(int port,int len, char * buf) {
 	}
 }
 
-int readSectorLBA24(unsigned int secno, unsigned char seccnt, char* buf, int device) {
+int readSectorLBA24(unsigned int secno, unsigned char seccnt, char* buf) {
 
 	waitFree(gAtaBasePort + 7);
 
@@ -357,15 +373,22 @@ int readSectorLBA24(unsigned int secno, unsigned char seccnt, char* buf, int dev
 	outportb(gAtaBasePort + 4, (secno>>8) & 0xff);
 	outportb(gAtaBasePort + 5,( secno>>16) & 0xff);
 	outportb(gAtaBasePort + 6, ((secno >> 24) & 0x0f) + gATADev);
-
-	waitReady(gAtaBasePort + 7);
 	outportb(gAtaBasePort + 7, HD_READ_COMMAND);
 
+	waitReady(gAtaBasePort + 7);
+	
 	char* lpbuf = buf;
 	for (int i = 0; i < seccnt; i++) {
 		int res = waitComplete(gAtaBasePort + 7);
-		readsector(gAtaBasePort, BYTES_PER_SECTOR / 4, lpbuf);
-		lpbuf += BYTES_PER_SECTOR;
+		if (res) {
+			readsector(gAtaBasePort, BYTES_PER_SECTOR / 4, lpbuf);
+			lpbuf += BYTES_PER_SECTOR;
+		}
+		else {
+			char szout[1024];
+			__printf(szout, "waitComplete error\r\n");
+			break;
+		}
 	}
 
 	return seccnt * BYTES_PER_SECTOR;
@@ -373,7 +396,7 @@ int readSectorLBA24(unsigned int secno, unsigned char seccnt, char* buf, int dev
 
 
 
-int writeSectorLBA24(unsigned int secno, unsigned char seccnt, char* buf, int device) {
+int writeSectorLBA24(unsigned int secno, unsigned char seccnt, char* buf) {
 
 	waitFree(gAtaBasePort + 7);
 
@@ -385,15 +408,21 @@ int writeSectorLBA24(unsigned int secno, unsigned char seccnt, char* buf, int de
 	outportb(gAtaBasePort + 4, (secno >> 8) & 0xff);
 	outportb(gAtaBasePort + 5, (secno >> 16) & 0xff);
 	outportb(gAtaBasePort + 6, ((secno >> 24) & 0x0f) + gATADev);
-
-	waitReady(gAtaBasePort + 7);
 	outportb(gAtaBasePort + 7, HD_WRITE_COMMAND);
+	waitReady(gAtaBasePort + 7);
 
 	char* lpbuf = buf;
 	for (int i = 0; i < seccnt; i++) {
 		int res = waitComplete(gAtaBasePort + 7);
-		writesector(gAtaBasePort, BYTES_PER_SECTOR / 4, lpbuf);
-		lpbuf += BYTES_PER_SECTOR;
+		if (res) {
+			writesector(gAtaBasePort, BYTES_PER_SECTOR / 4, lpbuf);
+			lpbuf += BYTES_PER_SECTOR;
+		}
+		else {
+			char szout[1024];
+			__printf(szout, "waitComplete error\r\n");
+			break;
+		}
 	}
 
 	return seccnt * BYTES_PER_SECTOR;
@@ -401,7 +430,7 @@ int writeSectorLBA24(unsigned int secno, unsigned char seccnt, char* buf, int de
 
 
 //most 6 bytes sector no
-int readSectorLBA48(unsigned int secnoLow, unsigned int secnoHigh, unsigned char seccnt, char* buf, int device) {
+int readSectorLBA48(unsigned int secnoLow, unsigned int secnoHigh, unsigned char seccnt, char* buf) {
 
 	waitFree(gAtaBasePort + 7);
 
@@ -409,27 +438,34 @@ int readSectorLBA48(unsigned int secnoLow, unsigned int secnoHigh, unsigned char
 	outportb(gAtaBasePort + 1, 0);	//dma = 1,pio = 0
 
 	outportb(gAtaBasePort + 2, 0);	//172,first high byte of sector counter,then low byte of counter
-	outportb(gAtaBasePort + 2, seccnt & 0xff);
 
 	outportb(gAtaBasePort + 5, (secnoHigh >> 8) & 0xff);
 	outportb(gAtaBasePort + 4, secnoHigh & 0xff);
 	outportb(gAtaBasePort + 3, (secnoLow>>24) & 0xff);
 
+	outportb(gAtaBasePort + 2, seccnt & 0xff);
 	outportb(gAtaBasePort + 5, (secnoLow >> 16) & 0xff);
 	outportb(gAtaBasePort + 4, (secnoLow >> 8) & 0xff);
 	outportb(gAtaBasePort + 3, secnoLow & 0xff);
 	
-	outportb(gAtaBasePort + 6, device);
-
-	waitReady(gAtaBasePort + 7);
+	outportb(gAtaBasePort + 6, gATADrv |0x40);
 
 	outportb(gAtaBasePort + 7, HD_LBA48READ_COMMAND);
+
+	waitReady(gAtaBasePort + 7);
 
 	char* lpbuf = buf;
 	for (int i = 0; i < seccnt; i++) {
 		int res = waitComplete(gAtaBasePort + 7);
-		readsector(gAtaBasePort, BYTES_PER_SECTOR / 4, lpbuf);
-		lpbuf += BYTES_PER_SECTOR;
+		if (res) {
+			readsector(gAtaBasePort, BYTES_PER_SECTOR / 4, lpbuf);
+			lpbuf += BYTES_PER_SECTOR;
+		}
+		else {
+			char szout[1024];
+			__printf(szout, "waitComplete error\r\n");
+			break;
+		}
 	}
 
 	return seccnt * BYTES_PER_SECTOR;
@@ -437,7 +473,7 @@ int readSectorLBA48(unsigned int secnoLow, unsigned int secnoHigh, unsigned char
 
 
 
-int writeSectorLBA48(unsigned int secnoLow, unsigned int secnoHigh, unsigned char seccnt, char* buf, int device) {
+int writeSectorLBA48(unsigned int secnoLow, unsigned int secnoHigh, unsigned char seccnt, char* buf) {
 
 	waitFree(gAtaBasePort + 7);
 
@@ -445,26 +481,35 @@ int writeSectorLBA48(unsigned int secnoLow, unsigned int secnoHigh, unsigned cha
 	outportb(gAtaBasePort + 1, 0);	//dma = 1,pio = 0
 
 	outportb(gAtaBasePort + 2, 0);	//172,first high byte of sector counter,then low byte of counter
-	outportb(gAtaBasePort + 2, seccnt & 0xff);
 
 	outportb(gAtaBasePort + 5, (secnoHigh >> 8) & 0xff);
 	outportb(gAtaBasePort + 4, secnoHigh & 0xff);
 	outportb(gAtaBasePort + 3, (secnoLow >> 24) & 0xff);
 
+	outportb(gAtaBasePort + 2, seccnt & 0xff);
+
 	outportb(gAtaBasePort + 5, (secnoLow >> 16) & 0xff);
 	outportb(gAtaBasePort + 4, (secnoLow >> 8) & 0xff);
 	outportb(gAtaBasePort + 3, secnoLow & 0xff);
 
-	outportb(gAtaBasePort + 6, device);
+	outportb(gAtaBasePort + 6, gATADrv | 0x40);
+
+	outportb(gAtaBasePort + 7, HD_LBA48WRITE_COMMAND);
 
 	waitReady(gAtaBasePort + 7);
-	outportb(gAtaBasePort + 7, HD_LBA48WRITE_COMMAND);
 
 	char* lpbuf = buf;
 	for (int i = 0; i < seccnt; i++) {
 		int res = waitComplete(gAtaBasePort + 7);
-		writesector(gAtaBasePort, BYTES_PER_SECTOR / 4, lpbuf);
-		lpbuf += BYTES_PER_SECTOR;
+		if (res) {
+			writesector(gAtaBasePort, BYTES_PER_SECTOR / 4, lpbuf);
+			lpbuf += BYTES_PER_SECTOR;
+		}
+		else {
+			char szout[1024];
+			__printf(szout, "waitComplete error\r\n");
+			break;
+		}
 	}
 
 	return seccnt * BYTES_PER_SECTOR;
@@ -475,14 +520,15 @@ int writeSectorLBA48(unsigned int secnoLow, unsigned int secnoHigh, unsigned cha
 //bit1:size larger than 1MB
 //bit2:0 == 32bits address,1 == 64 bits address
 //bit4:1== prefetch,0==false
-int readSectorLBA24Mimo(unsigned int secno, unsigned char seccnt, char* buf, int device) {
+int readSectorLBA24Mimo(unsigned int secno, unsigned char seccnt, char* buf) {
 	return 0;
 }
 
-int readSectorLBA48Mimo(unsigned int secnoLow, unsigned int secnoHigh, unsigned char seccnt, char* buf, int device) {
+int readSectorLBA48Mimo(unsigned int secnoLow, unsigned int secnoHigh, unsigned char seccnt, char* buf) {
 	return 0;
 }
 
+//To use the IDENTIFY command, select a target drive by sending 0xA0 for the master drive, or 0xB0 for the slave, to the "drive select" IO port. 
 int identifyDevice(int port,int cmd,char * buffer) {	// IDENTIFY PACKET DEVICE ¨C A1h and  IDENTIFY  DEVICE ¨C ECh
 
 	waitFree(port + 7);
@@ -492,11 +538,15 @@ int identifyDevice(int port,int cmd,char * buffer) {	// IDENTIFY PACKET DEVICE ¨
 	outportb(port + 3, 0);
 	outportb(port + 4, 0);
 	outportb(port + 5, 0);
-	outportb(port + 6, 0);
-
-	waitReady(port + 7);
-
+	if (port == gAtapiBasePort) {
+		outportb(port + 6, gATAPIDrv |0xa0);
+	}
+	else if (port == gAtaBasePort) {
+		outportb(port + 6, gATADrv | 0xa0);
+	}
+	
 	outportb(port + 7, cmd);
+	waitReady(port + 7);
 
 	int res = waitComplete(port + 7);
 	if (res) 
@@ -507,7 +557,8 @@ int identifyDevice(int port,int cmd,char * buffer) {	// IDENTIFY PACKET DEVICE ¨
 		__drawGraphChars((unsigned char*)szshow, 0);
 	}
 	else {
-
+		char szout[1024];
+		__printf(szout,"waitComplete error,cmd:%x,port:%x\r\n",cmd,port+7);
 	}
 
 	//char szout[1024];

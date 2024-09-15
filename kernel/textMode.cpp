@@ -64,9 +64,9 @@ int runcmd(char * cmd) {
 		}*/
 
 #ifdef SINGLE_TASK_TSS
-		__createDosCodeProc(gV86VMIEntry, "V86VMIEntry");
+		__createDosCodeProc(gV86VMIEntry, gV86VMISize, "V86VMIEntry");
 #else
-		__createDosCodeProc(gV86VMIEntry, "V86VMIEntry");
+		__createDosCodeProc(gV86VMIEntry, gV86VMISize, "V86VMIEntry");
 #endif
 
 		int imagesize = getSizeOfImage((char*)MAIN_DLL_SOURCE_BASE);
@@ -167,7 +167,7 @@ extern "C" __declspec(dllexport) int __kTextModeEntry(LPVESAINFORMATION vesa, DW
 	int res = 0;
 
 	gV86VMIEntry = v86Proc;
-	gV86Process = v86Addr;
+	gV86IntProc = v86Addr;
 	gKernelData = kerneldata;
 	gKernel16 = kernel16;
 	gKernel32 = kernel32;

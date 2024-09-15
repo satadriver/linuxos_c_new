@@ -26,9 +26,13 @@
 
 extern DWORD gAtapiPackSize;
 
-extern DWORD gATADev ;
+extern DWORD gATADrv;
 
-extern WORD gATAPIDev ;
+extern WORD gATAPIDrv;
+
+extern DWORD gATADev;
+
+extern WORD gATAPIDev;
 
 extern WORD gAtaBasePort;
 
@@ -41,17 +45,17 @@ int readsector(int port, int size, char* buf);
 
 int identifyDevice(int port,int cmd,char * buffer);
 
-int readSectorLBA48(unsigned int secnoLow, unsigned int secnoHigh, unsigned char seccnt, char* buf, int device);
+int readSectorLBA48(unsigned int secnoLow, unsigned int secnoHigh, unsigned char seccnt, char* buf);
 
-int writeSectorLBA48(unsigned int secnoLow, unsigned int secnoHigh, unsigned char seccnt, char* buf, int device);
+int writeSectorLBA48(unsigned int secnoLow, unsigned int secnoHigh, unsigned char seccnt, char* buf);
 
-int readSectorLBA24(unsigned int secno, unsigned char seccnt, char* buf, int device);
+int readSectorLBA24(unsigned int secno, unsigned char seccnt, char* buf);
 
-int writeSectorLBA24(unsigned int secno, unsigned char seccnt, char* buf, int device);
+int writeSectorLBA24(unsigned int secno, unsigned char seccnt, char* buf);
 
-int readSectorLBA24Mimo(unsigned int secno, unsigned char seccnt, char* buf, int device);
+int readSectorLBA24Mimo(unsigned int secno, unsigned char seccnt, char* buf);
 
-int readSectorLBA48Mimo(unsigned int secnoLow, unsigned int secnoHigh, unsigned char seccnt, char* buf, int device);
+int readSectorLBA48Mimo(unsigned int secnoLow, unsigned int secnoHigh, unsigned char seccnt, char* buf);
 
 void waitFree(WORD port);
 

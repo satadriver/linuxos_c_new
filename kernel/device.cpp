@@ -63,7 +63,7 @@ void enableTSD() {
 		__emit 0x20
 		__emit 0xe0
 
-		or eax, 4
+		and eax, 0xfffffffb
 
 		__emit 0x0f
 		__emit 0x22
@@ -223,7 +223,7 @@ void enableSpeaker() {
 
 
 //d6 d7 select timer, 00 = 40h, 01 = 41h, 02 = 42h
-//d4 d5 mode :11 read read / write low byte first, than read / write high byte
+//d4 d5 mode :11 read read / write low byte first, then read / write high byte
 //d1 d2 d3 select work mode
 //d0 bcd or binary, 0 = binary, 1 = bcd
 void init8254() {
@@ -239,6 +239,19 @@ void init8254() {
 	outportb(TIMER_COMMAND_REG, 0Xb6);
 	outportb(0x42, 0);
 	outportb(0x42, 0);
+}
+
+unsigned int getTimerCounter() {
+	__asm {
+		mov al,36h
+		out 43h, al
+		in al, 40h
+		mov ah, al
+		in al, 40h
+		xchg ah,al
+		movzx eax, ax
+		ret
+	}
 }
 
 int readTimer(int num) {
@@ -340,7 +353,7 @@ void init8259() {
 	outportb(0xa1, 0x1);
 
 	outportb(0x20, 0x00);
-	outportb(0xa0, 0x00);
+	outportb(0xa0, 0x0);
 
 	//0: level trigger,1: pulse trigger
 	outportb(0x4d0, 0);

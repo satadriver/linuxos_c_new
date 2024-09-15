@@ -69,6 +69,9 @@ int initFileSystem() {
 }
 
 int getMBR() {
+	char szout[1024];
+	__printf(szout, "getMBR entry\r\n");
+
 	int ret = readSector(0, 0, 1, (char*)&gMBR);
 
 	if (*(WORD*)gMBR.systemFlag != 0xaa55)
@@ -77,7 +80,7 @@ int getMBR() {
 		return FALSE;
 	}
 	else {
-		char szout[1024];
+		
 		__printf(szout, "getMBR ok\r\n");
 	}
 

@@ -177,7 +177,7 @@ int __kExplorer(unsigned int retaddr, int tid, char * filename, char * funcname,
 		}
 		else if (asc == VK_F3)
 		{
-			__createDosCodeProc(gV86VMIEntry, "V86VMIEntry");
+			__createDosCodeProc(gV86VMIEntry, gV86VMISize,"V86VMIEntry");
 			continue;
 		}
 

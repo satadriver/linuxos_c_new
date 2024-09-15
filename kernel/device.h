@@ -1,6 +1,7 @@
 #pragma once
 
 
+unsigned int getTimerCounter();
 
 void initDevices();
 void init8254();

@@ -44,18 +44,24 @@
 
 
 DWORD gV86VMIEntry = 0;
-DWORD gV86Process = 0;
-DWORD gKernel16;
-DWORD gKernel32;
-DWORD gKernelData;
+DWORD gV86VMISize = 0;
+DWORD gV86IntProc = 0;
+DWORD gKernel16 = 0;
+DWORD gKernel32 = 0;
+DWORD gKernelData = 0;
 
 
-int __kernelEntry(LPVESAINFORMATION vesa, DWORD fontbase,DWORD v86Proc,DWORD v86Addr ,DWORD kerneldata,DWORD kernel16,DWORD kernel32) {
+int __kernelEntry(LPVESAINFORMATION vesa, DWORD fontbase,DWORD v86ProcessBase,int v86ProcessLen,
+	DWORD v86IntBase ,DWORD kerneldata,DWORD kernel16,DWORD kernel32) {
 
 	int ret = 0;
 	
-	gV86VMIEntry = v86Proc;
-	gV86Process = v86Addr;
+	gV86VMIEntry = v86ProcessBase;
+
+	gV86VMISize = v86ProcessLen;
+
+	gV86IntProc = v86IntBase;
+
 	gKernelData = kerneldata;
 	gKernel16 = kernel16;
 	gKernel32 = kernel32;
@@ -102,9 +108,9 @@ int __kernelEntry(LPVESAINFORMATION vesa, DWORD fontbase,DWORD v86Proc,DWORD v86
 	//__printf(szout, "Hello world of Liunux!\r\n");
 
 #ifdef SINGLE_TASK_TSS
-	//__createDosCodeProc(gV86VMIEntry, "V86VMIEntry");
+	__createDosCodeProc(gV86VMIEntry, gV86VMISize, "V86VMIEntry");
 #else
-	__createDosCodeProc(gV86VMIEntry, "V86VMIEntry");
+	//__createDosCodeProc(gV86VMIEntry,gV86VMISize, "V86VMIEntry");
 #endif
 
 	initFileSystem();
@@ -118,6 +124,7 @@ int __kernelEntry(LPVESAINFORMATION vesa, DWORD fontbase,DWORD v86Proc,DWORD v86
 		//__kCreateThread((DWORD)__kSpeakerProc, (DWORD)&cmd, "__kSpeakerProc");
 		//__kCreateThread((unsigned int)kernelMain, KERNEL_DLL_BASE, (DWORD)&cmd, "__kKernelMain");
 		__kCreateProcess((unsigned int)KERNEL_DLL_SOURCE_BASE, imagesize, "kernel.dll", "__kKernelMain", 3, 0);
+		__printf(szout,"__kCreateProcess __kKernelMain\r\n");
 	}
 
 	//logFile("__kernelEntry\n");

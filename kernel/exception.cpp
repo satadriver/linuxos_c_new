@@ -121,7 +121,7 @@ void __kException(const char* descriptor, int num, LIGHT_ENVIRONMENT* param){
 		}
 	}
 
-	__logShow((unsigned char*)showinfo, EXCEPTION_TIPS_COLOR);
+	//__logShow((unsigned char*)showinfo, EXCEPTION_TIPS_COLOR);
 
 	LPPROCESS_INFO taskinfo = __findProcessByPid(pid);
 	if (taskinfo)
@@ -129,7 +129,7 @@ void __kException(const char* descriptor, int num, LIGHT_ENVIRONMENT* param){
 		__printf(showinfo, "Exception tid:%d,pid:%d,level:%d,status:%x,counter:%d,base:%x,sleep:%d,function:%s,file:%s\r\n",
 			taskinfo->tid,taskinfo->pid, taskinfo->level, taskinfo->status,taskinfo->counter, taskinfo->moduleaddr,taskinfo->sleep,
 			taskinfo->funcname, taskinfo->filename);
-		__logShow((unsigned char*)showinfo, EXCEPTION_TIPS_COLOR);
+		//__logShow((unsigned char*)showinfo, EXCEPTION_TIPS_COLOR);
 	}
 	
 	__terminateProcess(pid , process->filename, process->funcname, 0);

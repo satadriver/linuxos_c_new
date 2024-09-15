@@ -18,17 +18,17 @@ typedef struct
 
 
 #ifdef DLL_EXPORT
-extern "C"  __declspec(dllexport ) int __createDosCodeProc(DWORD addr, char* filename);
+extern "C"  __declspec(dllexport ) int __createDosCodeProc(DWORD addr,int size, char* filename);
 #else
-extern "C"  __declspec(dllimport) int __createDosCodeProc(DWORD addr, char* filename);
+extern "C"  __declspec(dllimport) int __createDosCodeProc(DWORD addr, int size,char* filename);
 #endif
 
 
 
 int __initDosTss(LPPROCESS_INFO tss, int num, DWORD addr, char * filename, char * funcname, DWORD syslevel, DWORD runparam);
 
-int getDosPeAddr(int type,DWORD filedata,int size,int pid);
+int getVm86ProcAddr(int type,DWORD filedata,int size,int pid);
 
 int relocDos(DWORD loadseg);
 
-DWORD __initDosExe(int type,DWORD filedata, int filesize,int pid);
+DWORD __allocVm86Addr(int type,DWORD filedata, int filesize,int pid);

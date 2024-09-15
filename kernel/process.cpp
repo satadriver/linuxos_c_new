@@ -388,6 +388,12 @@ int __kCreateProcess(DWORD filedata, int filesize,char * filename,char * funcnam
 	int ret = 0;
 	char szout[1024];
 
+	if (filesize == 0)
+	{
+		//return FALSE;
+	}
+	
+
 	//同一个进程不论线性还是物理地址，都可以访问。
 	//当一个进程把当前进程的线性地址转换为物理地址，传递给另一个进程，
 	//进入另外一个的这个进程后，其访问这个物理地址的时候是要经过映射的
@@ -419,22 +425,16 @@ int __kCreateProcess(DWORD filedata, int filesize,char * filename,char * funcnam
 	int petype = getPeType(filedata);
 	if (petype == DOS_EXE_FILE || petype == DOS_COM_FILE)
 	{
-		if (filesize == 0)
+		DWORD dosaddr = __allocVm86Addr(petype,filedata, filesize, result.number);
+		if (dosaddr)
 		{
-			return FALSE;
+			ret = __initDosTss(result.lptss, result.number, dosaddr, filename, funcname, 3, params);
+			return ret;
 		}
 		else {
-			DWORD dosaddr = __initDosExe(petype,filedata, filesize, result.number);
-			if (dosaddr)
-			{
-				ret = __initDosTss(result.lptss, result.number, dosaddr, filename, funcname, 3, params);
-				return ret;
-			}
-			else {
-				__printf(szout, "__kCreateProcess __initDosTss:%s error\n", filename);
+			__printf(szout, "__kCreateProcess __initDosTss:%s error\n", filename);
 
-				return FALSE;
-			}
+			return FALSE;
 		}
 	}
 	else if (petype == 2)
