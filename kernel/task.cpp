@@ -401,7 +401,7 @@ extern "C"  __declspec(dllexport) DWORD __kTaskSchedule(LIGHT_ENVIRONMENT* env) 
 	
 	//tasktest();
 
-	/*
+	
  	char * fenvprev = (char*)FPU_STATUS_BUFFER + (prev->tid << 9);
 	//If a memory operand is not aligned on a 16-byte boundary, regardless of segment
 	//The assembler issues two instructions for the FSAVE instruction (an FWAIT instruction followed by an FNSAVE instruction), 
@@ -423,9 +423,9 @@ extern "C"  __declspec(dllexport) DWORD __kTaskSchedule(LIGHT_ENVIRONMENT* env) 
 			//frstor [fenv]
 			fxrstor[eax]
 		}
-	}*/
+	}
 
-	//if ((g_tagMsg++) % 0x1 == 0 && g_tagMsg < 0x100)
+	if ((g_tagMsg++) % 0x1 == 0 && g_tagMsg < 0x100)
 	{
 		__int64 timeh2 = __rdtsc() - timeh1;
 		__int64 cpurate = __cpuRate();

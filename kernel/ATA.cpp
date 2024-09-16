@@ -373,9 +373,11 @@ int readSectorLBA24(unsigned int secno, unsigned char seccnt, char* buf) {
 	outportb(gAtaBasePort + 4, (secno>>8) & 0xff);
 	outportb(gAtaBasePort + 5,( secno>>16) & 0xff);
 	outportb(gAtaBasePort + 6, ((secno >> 24) & 0x0f) + gATADev);
-	outportb(gAtaBasePort + 7, HD_READ_COMMAND);
+	
 
 	waitReady(gAtaBasePort + 7);
+
+	outportb(gAtaBasePort + 7, HD_READ_COMMAND);
 	
 	char* lpbuf = buf;
 	for (int i = 0; i < seccnt; i++) {
@@ -408,8 +410,10 @@ int writeSectorLBA24(unsigned int secno, unsigned char seccnt, char* buf) {
 	outportb(gAtaBasePort + 4, (secno >> 8) & 0xff);
 	outportb(gAtaBasePort + 5, (secno >> 16) & 0xff);
 	outportb(gAtaBasePort + 6, ((secno >> 24) & 0x0f) + gATADev);
-	outportb(gAtaBasePort + 7, HD_WRITE_COMMAND);
+	
 	waitReady(gAtaBasePort + 7);
+
+	outportb(gAtaBasePort + 7, HD_WRITE_COMMAND);
 
 	char* lpbuf = buf;
 	for (int i = 0; i < seccnt; i++) {
@@ -450,9 +454,11 @@ int readSectorLBA48(unsigned int secnoLow, unsigned int secnoHigh, unsigned char
 	
 	outportb(gAtaBasePort + 6, gATADrv |0x40);
 
+	waitReady(gAtaBasePort + 7);
+
 	outportb(gAtaBasePort + 7, HD_LBA48READ_COMMAND);
 
-	waitReady(gAtaBasePort + 7);
+	
 
 	char* lpbuf = buf;
 	for (int i = 0; i < seccnt; i++) {
@@ -494,9 +500,11 @@ int writeSectorLBA48(unsigned int secnoLow, unsigned int secnoHigh, unsigned cha
 
 	outportb(gAtaBasePort + 6, gATADrv | 0x40);
 
+	waitReady(gAtaBasePort + 7);
+
 	outportb(gAtaBasePort + 7, HD_LBA48WRITE_COMMAND);
 
-	waitReady(gAtaBasePort + 7);
+	
 
 	char* lpbuf = buf;
 	for (int i = 0; i < seccnt; i++) {
@@ -539,14 +547,16 @@ int identifyDevice(int port,int cmd,char * buffer) {	// IDENTIFY PACKET DEVICE ¨
 	outportb(port + 4, 0);
 	outportb(port + 5, 0);
 	if (port == gAtapiBasePort) {
-		outportb(port + 6, gATAPIDrv |0xa0);
+		outportb(port + 6, gATAPIDev);
 	}
 	else if (port == gAtaBasePort) {
-		outportb(port + 6, gATADrv | 0xa0);
+		outportb(port + 6, gATADev);
 	}
 	
-	outportb(port + 7, cmd);
 	waitReady(port + 7);
+
+	outportb(port + 7, cmd);
+	
 
 	int res = waitComplete(port + 7);
 	if (res) 
