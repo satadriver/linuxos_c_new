@@ -547,11 +547,13 @@ int identifyDevice(int port,int cmd,char * buffer) {	// IDENTIFY PACKET DEVICE ¨
 	outportb(port + 4, 0);
 	outportb(port + 5, 0);
 	if (port == gAtapiBasePort) {
-		outportb(port + 6, gATAPIDev);
+		//outportb(port + 6, gATAPIDev);
 	}
 	else if (port == gAtaBasePort) {
-		outportb(port + 6, gATADev);
+		//outportb(port + 6, gATADev);
 	}
+
+	outportb(port + 6, 0);
 	
 	waitReady(port + 7);
 

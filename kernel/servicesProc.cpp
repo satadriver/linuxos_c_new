@@ -231,11 +231,11 @@ void __switchScreen() {
 //https://www.felixcloutier.com/x86/cpuid
 unsigned __int64 __cpuRate() {
 	__asm {
-		ret
+
 		mov eax,0x16
 		mov ecx,0
 		cpuid
-		ret
+
 	}
 }
 
@@ -243,7 +243,7 @@ unsigned __int64 __rdtsc() {
 	__asm {
 
 		rdtsc
-		ret
+
 	}
 }
 
